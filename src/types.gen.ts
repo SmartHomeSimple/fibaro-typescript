@@ -69,6 +69,155 @@ export type InlineResponse201 = {
     id?: number;
 };
 
+export type AnalyticsRequest = {
+    /**
+     * Flag indicating if device reconfiguration data should be included in response
+     */
+    withReconfigurations?: boolean;
+    /**
+     * Flag indicating if ZWave migration logs should be included in response
+     */
+    withZwaveMigrationLog?: boolean;
+};
+
+export type Error = {
+    /**
+     * Type of error message
+     */
+    message: string;
+};
+
+export type ActionStatus = 'pending' | 'running' | 'done' | 'failed';
+
+export type CreateActionResponse = {
+    /**
+     * Association action id
+     */
+    actionId: number;
+    status: ActionStatus;
+};
+
+/**
+ * Response status
+ */
+export type ActionStatusResponse = {
+    /**
+     * Association action id
+     */
+    id?: number;
+    status?: ActionStatus;
+    /**
+     * The original request that served to create the action.
+     */
+    request?: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * Node id of device
+ */
+export type NodeId = number;
+
+/**
+ * Group id of device
+ */
+export type GroupId = number;
+
+/**
+ * Endpoint id of device
+ */
+export type EndpointId = number;
+
+export type Command = {
+    /**
+     * Command name
+     */
+    command: string;
+    /**
+     * Name of command class
+     */
+    commandClass: string;
+};
+
+export type AssociationGroupInfo = {
+    groupId: GroupId;
+    /**
+     * Group name
+     */
+    name?: string;
+    /**
+     * Group's Profile, e.g. Lifeline
+     */
+    profile?: string;
+    /**
+     * Does group support Multichannel Associations
+     */
+    multichannel: boolean;
+    maxTargets: number;
+    commands?: Array<Command>;
+};
+
+export type EndpointAssociationGroupInfo = {
+    endpointId: EndpointId;
+    groups: Array<AssociationGroupInfo>;
+};
+
+export type AssociationGroup = {
+    groupId: GroupId;
+    /**
+     * nodeId or [nodeId endpointId]
+     */
+    targets: Array<NodeId | Array<number>>;
+};
+
+export type EndpointAssociationGroups = {
+    endpointId: EndpointId;
+    groups: Array<AssociationGroup>;
+};
+
+export type AssociationSetAction = {
+    name: 'associationSet';
+    groupId: GroupId;
+    endpointId: EndpointId;
+    targets: Array<NodeId | Array<number>>;
+};
+
+export type AssociationSetAllAction = {
+    /**
+     * Action name
+     */
+    name: 'associationSetAll';
+    endpoints: Array<EndpointAssociationGroups>;
+};
+
+export type AssociationClearAllAction = {
+    /**
+     * Action name
+     */
+    name: 'associationClearAll';
+};
+
+export type AssociationClearAction = {
+    name: 'associationClear';
+    groupId: GroupId;
+    endpointId: EndpointId;
+};
+
+export type AssociationAddAction = {
+    name: 'associationAdd';
+    groupId: GroupId;
+    endpointId: EndpointId;
+    target: NodeId | Array<number>;
+};
+
+export type AssociationRemoveAction = {
+    name: 'associationRemove';
+    groupId: GroupId;
+    endpointId: EndpointId;
+    target: NodeId | Array<number>;
+};
+
 export type CategoryDto = {
     id?: number;
     name?: string;
@@ -1220,6 +1369,18 @@ export type DeviceParametersDto = {
     }>;
 };
 
+export type FtiDto = {
+    currentStep: FtiStepEnum;
+    availableSteps: Array<FtiStepDto>;
+    finished?: boolean;
+};
+
+export type FtiStepDto = {
+    name: FtiStepEnum;
+};
+
+export type FtiStepEnum = 'zwave' | 'network' | 'location' | 'timeAndUnits' | 'localAccess' | 'remoteAccess' | 'finish';
+
 export type GatewayDiscoveredData = {
     serial: string;
     ip: string;
@@ -1357,6 +1518,82 @@ export type IconListDto = {
     device?: Array<DeviceIconDto>;
     room?: Array<RoomIconDto>;
     scene?: Array<SceneIconDto>;
+};
+
+export type Installer = {
+    /**
+     * installer's email
+     */
+    email: string;
+    /**
+     * installer's first name
+     */
+    firstName: string;
+    /**
+     * installer's last name
+     */
+    lastName: string;
+    /**
+     * installer is certified
+     */
+    isCertified?: boolean;
+    /**
+     * installer is synchronized
+     */
+    isSynchronized?: boolean;
+    /**
+     * indicates whether insteller can use remote acces to gateway
+     */
+    remoteAccess: boolean;
+    /**
+     * indicates whether insteller can monitor gateway
+     */
+    monitoring?: boolean;
+    /**
+     * remaing time in seconds of remote access (provided only if remoteAccess==true)
+     */
+    remainingTime?: number;
+};
+
+export type InstallerCreateRequest = {
+    /**
+     * installer's email
+     */
+    email?: string;
+    /**
+     * indicates whether insteller can use remote acces to gateway
+     */
+    remoteAccess?: boolean;
+};
+
+export type InstallerPutRequest = {
+    /**
+     * indicates whether insteller can use remote acces to gateway
+     */
+    remoteAccess?: boolean;
+    /**
+     * indicates whether insteller can monitor gateway
+     */
+    monitoring?: boolean;
+};
+
+export type InstallerMonitoringRequest = {
+    /**
+     * installer's email
+     */
+    email?: string;
+    /**
+     * installer's first name
+     */
+    firstName?: string;
+    /**
+     * installer's last name
+     */
+    lastName?: string;
+};
+
+export type MobileDevicesToNotify = {
+    mobileDevicesToNotify?: Array<number>;
 };
 
 export type IOsDev = {
@@ -1596,41 +1833,6 @@ export type NotificationCenterDataIconDto = {
      * Icon source
      */
     source?: string;
-};
-
-export type StartUpgradeDto = {
-    status?: string;
-};
-
-export type AbortUpgradeDto = {
-    status?: string;
-};
-
-export type CheckUpgradeAvailabilityDto = {
-    status?: string;
-};
-
-export type GetChangelogDto = {
-    changelog?: Array<string>;
-    devId?: number;
-    status?: string;
-    warnings?: Array<string>;
-};
-
-export type StartUpgrade = {
-    args?: Array<number | boolean>;
-};
-
-export type AbortUpgrade = {
-    args?: Array<number>;
-};
-
-export type CheckUpgradeAvailability = {
-    args?: Array<number>;
-};
-
-export type GetChangelog = {
-    args?: Array<number>;
 };
 
 /**
@@ -2033,6 +2235,41 @@ export type SprinklerScheduleRequest = {
     days?: Day;
     sequences?: Array<SprinklerSequenceRequest>;
     isActive?: boolean;
+};
+
+export type StartUpgradeDto = {
+    status?: string;
+};
+
+export type AbortUpgradeDto = {
+    status?: string;
+};
+
+export type CheckUpgradeAvailabilityDto = {
+    status?: string;
+};
+
+export type GetChangelogDto = {
+    changelog?: Array<string>;
+    devId?: number;
+    status?: string;
+    warnings?: Array<string>;
+};
+
+export type StartUpgrade = {
+    args?: Array<number | boolean>;
+};
+
+export type AbortUpgrade = {
+    args?: Array<number>;
+};
+
+export type CheckUpgradeAvailability = {
+    args?: Array<number>;
+};
+
+export type GetChangelog = {
+    args?: Array<number>;
 };
 
 export type Status = {
@@ -3662,6 +3899,637 @@ export type ArmAlarmPartitionByIdResponses = {
 };
 
 export type ArmAlarmPartitionByIdResponse = ArmAlarmPartitionByIdResponses[keyof ArmAlarmPartitionByIdResponses];
+
+export type GetAnalyticsData = {
+    /**
+     * Analytics request data
+     */
+    body: AnalyticsRequest;
+    path?: never;
+    query?: never;
+    url: '/analytics';
+};
+
+export type GetAnalyticsResponses = {
+    /**
+     * Analytics data
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type GetAnalyticsResponse = GetAnalyticsResponses[keyof GetAnalyticsResponses];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoData = {
+    body?: never;
+    path: {
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+    };
+    query?: never;
+    url: '/apps/com.fibaro.zwave/nodes/{nodeId}/associationGroupInfo';
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node was not found or it does not handle AGI.
+     */
+    404: Error;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoError = GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoErrors[keyof GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoErrors];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoResponses = {
+    /**
+     * List of groups information from all endpoints.
+     */
+    200: Array<EndpointAssociationGroupInfo>;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoResponse = GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoResponses[keyof GetAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoResponses];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoData = {
+    body?: never;
+    path: {
+        /**
+         * Slave Id on which we call the action
+         */
+        uuid: string;
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+    };
+    query?: never;
+    url: '/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/associationGroupInfo';
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node was not found or it does not handle AGI.
+     */
+    404: Error;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoError = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoErrors[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoErrors];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoResponses = {
+    /**
+     * List of groups information from all endpoints.
+     */
+    200: Array<EndpointAssociationGroupInfo>;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoResponse = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoResponses[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationGroupInfoResponses];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoData = {
+    body?: never;
+    path: {
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+        /**
+         * Id of existing endpoint
+         */
+        endpointId: EndpointId;
+    };
+    query?: never;
+    url: '/apps/com.fibaro.zwave/nodes/{nodeId}/endpoints/{endpointId}/associationGroupInfo';
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node or endpoint was not found.
+     */
+    404: Error;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoError = GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoErrors[keyof GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoErrors];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoResponses = {
+    /**
+     * List of endpoint's groups information.
+     */
+    200: Array<AssociationGroupInfo>;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoResponse = GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoResponses[keyof GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoResponses];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoData = {
+    body?: never;
+    path: {
+        /**
+         * Slave Id on which we call the action
+         */
+        uuid: string;
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+        /**
+         * Id of existing endpoint
+         */
+        endpointId: EndpointId;
+    };
+    query?: never;
+    url: '/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/endpoints/{endpointId}/associationGroupInfo';
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node or endpoint was not found.
+     */
+    404: Error;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoError = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoErrors[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoErrors];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoResponses = {
+    /**
+     * List of endpoint's groups information.
+     */
+    200: Array<AssociationGroupInfo>;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoResponse = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoResponses[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationGroupInfoResponses];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationsData = {
+    body?: never;
+    path: {
+        /**
+         * id of existing node
+         */
+        nodeId: NodeId;
+    };
+    query?: never;
+    url: '/apps/com.fibaro.zwave/nodes/{nodeId}/associations';
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationsErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node was not found.
+     */
+    404: Error;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationsError = GetAppsComFibaroZwaveNodesByNodeIdAssociationsErrors[keyof GetAppsComFibaroZwaveNodesByNodeIdAssociationsErrors];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationsResponses = {
+    /**
+     * List of all endpoints association groups.
+     */
+    200: Array<EndpointAssociationGroups>;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdAssociationsResponse = GetAppsComFibaroZwaveNodesByNodeIdAssociationsResponses[keyof GetAppsComFibaroZwaveNodesByNodeIdAssociationsResponses];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsData = {
+    body?: never;
+    path: {
+        /**
+         * Slave Id on which we call the action
+         */
+        uuid: string;
+        /**
+         * id of existing node
+         */
+        nodeId: NodeId;
+    };
+    query?: never;
+    url: '/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/associations';
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node was not found.
+     */
+    404: Error;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsError = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsErrors[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsErrors];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsResponses = {
+    /**
+     * List of all endpoints association groups.
+     */
+    200: Array<EndpointAssociationGroups>;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsResponse = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsResponses[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdAssociationsResponses];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsData = {
+    body?: never;
+    path: {
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+        endpointId: EndpointId;
+    };
+    query?: never;
+    url: '/apps/com.fibaro.zwave/nodes/{nodeId}/endpoints/{endpointId}/associations';
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node or endpoint was not found.
+     */
+    404: Error;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsError = GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsErrors[keyof GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsErrors];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsResponses = {
+    /**
+     * List of endpoint's association groups.
+     */
+    200: Array<AssociationGroup>;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsResponse = GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsResponses[keyof GetAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsResponses];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsData = {
+    body?: never;
+    path: {
+        /**
+         * Slave Id on which we call the action
+         */
+        uuid: string;
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+        endpointId: EndpointId;
+    };
+    query?: never;
+    url: '/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/endpoints/{endpointId}/associations';
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node or endpoint was not found.
+     */
+    404: Error;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsError = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsErrors[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsErrors];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsResponses = {
+    /**
+     * List of endpoint's association groups.
+     */
+    200: Array<AssociationGroup>;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsResponse = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsResponses[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdEndpointsByEndpointIdAssociationsResponses];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsData = {
+    body?: never;
+    path: {
+        /**
+         * id of existing node
+         */
+        nodeId: NodeId;
+    };
+    query?: never;
+    url: '/apps/com.fibaro.zwave/nodes/{nodeId}/actions';
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node or Action was not found.
+     */
+    404: Error;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsError = GetAppsComFibaroZwaveNodesByNodeIdActionsErrors[keyof GetAppsComFibaroZwaveNodesByNodeIdActionsErrors];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsResponses = {
+    /**
+     * Status of requested action.
+     */
+    200: Array<ActionStatusResponse>;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsResponse = GetAppsComFibaroZwaveNodesByNodeIdActionsResponses[keyof GetAppsComFibaroZwaveNodesByNodeIdActionsResponses];
+
+export type PostAppsComFibaroZwaveNodesByNodeIdActionsData = {
+    body: AssociationSetAction | AssociationSetAllAction | AssociationClearAllAction | AssociationClearAction | AssociationAddAction | AssociationRemoveAction;
+    path: {
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+    };
+    query?: never;
+    url: '/apps/com.fibaro.zwave/nodes/{nodeId}/actions';
+};
+
+export type PostAppsComFibaroZwaveNodesByNodeIdActionsErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node was not found.
+     */
+    404: Error;
+};
+
+export type PostAppsComFibaroZwaveNodesByNodeIdActionsError = PostAppsComFibaroZwaveNodesByNodeIdActionsErrors[keyof PostAppsComFibaroZwaveNodesByNodeIdActionsErrors];
+
+export type PostAppsComFibaroZwaveNodesByNodeIdActionsResponses = {
+    /**
+     * Action for request was created.
+     */
+    202: CreateActionResponse;
+};
+
+export type PostAppsComFibaroZwaveNodesByNodeIdActionsResponse = PostAppsComFibaroZwaveNodesByNodeIdActionsResponses[keyof PostAppsComFibaroZwaveNodesByNodeIdActionsResponses];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Slave Id on which we call the action
+         */
+        uuid: string;
+        /**
+         * id of existing node
+         */
+        nodeId: NodeId;
+    };
+    query?: never;
+    url: '/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/actions';
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node or Action was not found.
+     */
+    404: Error;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsError = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsErrors[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsErrors];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsResponses = {
+    /**
+     * Status of requested action.
+     */
+    200: Array<ActionStatusResponse>;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsResponse = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsResponses[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsResponses];
+
+export type PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsData = {
+    body: AssociationSetAction | AssociationSetAllAction | AssociationClearAllAction | AssociationClearAction | AssociationAddAction | AssociationRemoveAction;
+    path: {
+        /**
+         * Slave Id on which we call the action
+         */
+        uuid: string;
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+    };
+    query?: never;
+    url: '/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/actions';
+};
+
+export type PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node was not found.
+     */
+    404: Error;
+};
+
+export type PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsError = PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsErrors[keyof PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsErrors];
+
+export type PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsResponses = {
+    /**
+     * Action for request was created.
+     */
+    202: CreateActionResponse;
+};
+
+export type PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsResponse = PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsResponses[keyof PostSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsResponses];
+
+export type DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdData = {
+    body?: never;
+    path: {
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+        /**
+         * Id of existing action
+         */
+        actionId: number;
+    };
+    query?: never;
+    url: '/apps/com.fibaro.zwave/nodes/{nodeId}/actions/{actionId}';
+};
+
+export type DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * It's not allowed to delete action, e.g. action is in progress.
+     */
+    403: Error;
+    /**
+     * Node or Action was not found.
+     */
+    404: Error;
+};
+
+export type DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdError = DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors[keyof DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors];
+
+export type DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses = {
+    /**
+     * Success.
+     */
+    204: void;
+};
+
+export type DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponse = DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses[keyof DeleteAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdData = {
+    body?: never;
+    path: {
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+        /**
+         * id of existing action
+         */
+        actionId: number;
+    };
+    query?: never;
+    url: '/apps/com.fibaro.zwave/nodes/{nodeId}/actions/{actionId}';
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node or Action was not found.
+     */
+    404: Error;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdError = GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors[keyof GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors];
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses = {
+    /**
+     * Status of requested action.
+     */
+    200: ActionStatusResponse;
+};
+
+export type GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponse = GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses[keyof GetAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses];
+
+export type DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdData = {
+    body?: never;
+    path: {
+        /**
+         * Slave Id on which we call the action
+         */
+        uuid: string;
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+        /**
+         * Id of existing action
+         */
+        actionId: number;
+    };
+    query?: never;
+    url: '/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/actions/{actionId}';
+};
+
+export type DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * It's not allowed to delete action, e.g. action is in progress.
+     */
+    403: Error;
+    /**
+     * Node or Action was not found.
+     */
+    404: Error;
+};
+
+export type DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdError = DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors[keyof DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors];
+
+export type DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses = {
+    /**
+     * Success.
+     */
+    204: void;
+};
+
+export type DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponse = DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses[keyof DeleteSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdData = {
+    body?: never;
+    path: {
+        /**
+         * Slave Id on which we call the action
+         */
+        uuid: string;
+        /**
+         * Id of existing node
+         */
+        nodeId: NodeId;
+        /**
+         * id of existing action
+         */
+        actionId: number;
+    };
+    query?: never;
+    url: '/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/actions/{actionId}';
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors = {
+    /**
+     * Bad request.
+     */
+    400: Error;
+    /**
+     * Node or Action was not found.
+     */
+    404: Error;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdError = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdErrors];
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses = {
+    /**
+     * Status of requested action.
+     */
+    200: ActionStatusResponse;
+};
+
+export type GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponse = GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses[keyof GetSlaveByUuidApiAppsComFibaroZwaveNodesByNodeIdActionsByActionIdResponses];
 
 export type GetCategoriesData = {
     body?: never;
@@ -5622,6 +6490,69 @@ export type GetDeviceParametersTemplateResponses = {
 
 export type GetDeviceParametersTemplateResponse = GetDeviceParametersTemplateResponses[keyof GetDeviceParametersTemplateResponses];
 
+export type GetFtiModelData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/fti/v2';
+};
+
+export type GetFtiModelResponses = {
+    /**
+     * OK
+     */
+    200: FtiDto;
+};
+
+export type GetFtiModelResponse = GetFtiModelResponses[keyof GetFtiModelResponses];
+
+export type SetFtiStepData = {
+    body?: never;
+    path: {
+        /**
+         * Name of an current FTI step
+         */
+        step: string;
+    };
+    query?: never;
+    url: '/fti/v2/changeStep/{step}';
+};
+
+export type SetFtiStepResponses = {
+    /**
+     * Ok
+     */
+    200: unknown;
+};
+
+export type FinishFtiData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/fti/v2/finish';
+};
+
+export type FinishFtiResponses = {
+    /**
+     * Ok
+     */
+    200: unknown;
+};
+
+export type ResetFtiData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/fti/v2/reset';
+};
+
+export type ResetFtiResponses = {
+    /**
+     * Ok
+     */
+    200: unknown;
+};
+
 export type DiscoveryResolveData = {
     body?: never;
     path: {
@@ -6121,6 +7052,169 @@ export type UploadIconResponses = {
 };
 
 export type UploadIconResponse = UploadIconResponses[keyof UploadIconResponses];
+
+export type DeleteInstallerData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/installer';
+};
+
+export type DeleteInstallerResponses = {
+    /**
+     * Operation succesfull
+     */
+    200: unknown;
+};
+
+export type GetInstallerData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/installer';
+};
+
+export type GetInstallerResponses = {
+    /**
+     * Returns installer info
+     */
+    200: Installer;
+};
+
+export type GetInstallerResponse = GetInstallerResponses[keyof GetInstallerResponses];
+
+export type PostInstallerData = {
+    /**
+     * installer data
+     */
+    body: InstallerCreateRequest;
+    path?: never;
+    query?: never;
+    url: '/installer';
+};
+
+export type PostInstallerResponses = {
+    /**
+     * Installer succesfully assigned to HC
+     */
+    200: unknown;
+};
+
+export type PutInstallerData = {
+    body: InstallerPutRequest;
+    path?: never;
+    query?: never;
+    url: '/installer';
+};
+
+export type PutInstallerResponses = {
+    /**
+     * Operation succesfull
+     */
+    200: unknown;
+};
+
+export type PostInstallerMonitoringRequestData = {
+    /**
+     * installer data
+     */
+    body: InstallerMonitoringRequest;
+    path?: never;
+    query?: never;
+    url: '/installer/monitoringRequest';
+};
+
+export type PostInstallerMonitoringRequestResponses = {
+    /**
+     * Installer request ok
+     */
+    200: unknown;
+};
+
+export type PostInstallerRemoteAccessRequestData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/installer/remoteAccessRequest';
+};
+
+export type PostInstallerRemoteAccessRequestResponses = {
+    /**
+     * Installer request ok
+     */
+    200: unknown;
+};
+
+export type GetInstallerMobileDevicesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/installer/mobileDevicesToNotify';
+};
+
+export type GetInstallerMobileDevicesResponses = {
+    /**
+     * list of mobile device ids
+     */
+    200: MobileDevicesToNotify;
+};
+
+export type GetInstallerMobileDevicesResponse = GetInstallerMobileDevicesResponses[keyof GetInstallerMobileDevicesResponses];
+
+export type PutInstallerMobileDevicesData = {
+    /**
+     * list of mobile device ids
+     */
+    body: MobileDevicesToNotify;
+    path?: never;
+    query?: never;
+    url: '/installer/mobileDevicesToNotify';
+};
+
+export type PutInstallerMobileDevicesResponses = {
+    /**
+     * Device list updated succesfully
+     */
+    200: unknown;
+};
+
+export type DeleteInstallerMobileDeviceData = {
+    body?: never;
+    path: {
+        /**
+         * Device id
+         */
+        deviceId: number;
+    };
+    query?: never;
+    url: '/installer/mobileDevicesToNotify/{deviceId}';
+};
+
+export type DeleteInstallerMobileDeviceResponses = {
+    /**
+     * Device removed succesfully
+     */
+    200: unknown;
+};
+
+export type PutInstallerMobileDeviceData = {
+    body?: never;
+    path: {
+        /**
+         * Device id
+         */
+        deviceId: number;
+    };
+    query?: never;
+    url: '/installer/mobileDevicesToNotify/{deviceId}';
+};
+
+export type PutInstallerMobileDeviceResponses = {
+    /**
+     * Device added succesfully
+     */
+    200: unknown;
+};
 
 export type GetIosDevicesData = {
     body?: never;
@@ -6759,126 +7853,6 @@ export type MarkNotificationAsUnreadResponses = {
      */
     200: unknown;
 };
-
-export type StartUpgradeZwaveDeviceData = {
-    /**
-     * Configuration data
-     */
-    body: StartUpgrade;
-    path?: never;
-    query?: never;
-    url: '/panelService/1/action/startUpgrade';
-};
-
-export type StartUpgradeZwaveDeviceErrors = {
-    /**
-     * Bad request
-     */
-    400: unknown;
-    /**
-     * Not found
-     */
-    404: unknown;
-};
-
-export type StartUpgradeZwaveDeviceResponses = {
-    /**
-     * Returns upgrade status
-     */
-    200: StartUpgradeDto;
-};
-
-export type StartUpgradeZwaveDeviceResponse = StartUpgradeZwaveDeviceResponses[keyof StartUpgradeZwaveDeviceResponses];
-
-export type AbortUpgradeZwaveDeviceData = {
-    /**
-     * Configuration data
-     */
-    body: AbortUpgrade;
-    path?: never;
-    query?: never;
-    url: '/panelService/1/action/abortUpgrade';
-};
-
-export type AbortUpgradeZwaveDeviceErrors = {
-    /**
-     * Bad request
-     */
-    400: unknown;
-    /**
-     * Not found
-     */
-    404: unknown;
-};
-
-export type AbortUpgradeZwaveDeviceResponses = {
-    /**
-     * Returns abort upgrade status
-     */
-    200: AbortUpgradeDto;
-};
-
-export type AbortUpgradeZwaveDeviceResponse = AbortUpgradeZwaveDeviceResponses[keyof AbortUpgradeZwaveDeviceResponses];
-
-export type CheckUpgradeAvailabilityZwaveDeviceData = {
-    /**
-     * Configuration data
-     */
-    body: CheckUpgradeAvailability;
-    path?: never;
-    query?: never;
-    url: '/panelService/1/action/checkUpgradeAvailability';
-};
-
-export type CheckUpgradeAvailabilityZwaveDeviceErrors = {
-    /**
-     * Bad request
-     */
-    400: unknown;
-    /**
-     * Not found
-     */
-    404: unknown;
-};
-
-export type CheckUpgradeAvailabilityZwaveDeviceResponses = {
-    /**
-     * Returns checking upgrade availability status
-     */
-    200: CheckUpgradeAvailabilityDto;
-};
-
-export type CheckUpgradeAvailabilityZwaveDeviceResponse = CheckUpgradeAvailabilityZwaveDeviceResponses[keyof CheckUpgradeAvailabilityZwaveDeviceResponses];
-
-export type GetZwaveDeviceChangelogData = {
-    /**
-     * Configuration data
-     */
-    body: GetChangelog;
-    path?: never;
-    query?: never;
-    url: '/panelService/1/action/changelog';
-};
-
-export type GetZwaveDeviceChangelogErrors = {
-    /**
-     * Bad request
-     */
-    400: unknown;
-    /**
-     * Not found
-     */
-    404: unknown;
-};
-
-export type GetZwaveDeviceChangelogResponses = {
-    /**
-     * Returns changelog for device
-     */
-    200: GetChangelogDto;
-};
-
-export type GetZwaveDeviceChangelogResponse = GetZwaveDeviceChangelogResponses[keyof GetZwaveDeviceChangelogResponses];
 
 export type GetClimatesData = {
     body?: never;
@@ -8118,6 +9092,126 @@ export type PostSprinklerSequenceStopWateringResponses = {
     200: unknown;
 };
 
+export type StartUpgradeZwaveDeviceData = {
+    /**
+     * Configuration data
+     */
+    body: StartUpgrade;
+    path?: never;
+    query?: never;
+    url: '/panelService/1/action/startUpgrade';
+};
+
+export type StartUpgradeZwaveDeviceErrors = {
+    /**
+     * Bad request
+     */
+    400: unknown;
+    /**
+     * Not found
+     */
+    404: unknown;
+};
+
+export type StartUpgradeZwaveDeviceResponses = {
+    /**
+     * Returns upgrade status
+     */
+    200: StartUpgradeDto;
+};
+
+export type StartUpgradeZwaveDeviceResponse = StartUpgradeZwaveDeviceResponses[keyof StartUpgradeZwaveDeviceResponses];
+
+export type AbortUpgradeZwaveDeviceData = {
+    /**
+     * Configuration data
+     */
+    body: AbortUpgrade;
+    path?: never;
+    query?: never;
+    url: '/panelService/1/action/abortUpgrade';
+};
+
+export type AbortUpgradeZwaveDeviceErrors = {
+    /**
+     * Bad request
+     */
+    400: unknown;
+    /**
+     * Not found
+     */
+    404: unknown;
+};
+
+export type AbortUpgradeZwaveDeviceResponses = {
+    /**
+     * Returns abort upgrade status
+     */
+    200: AbortUpgradeDto;
+};
+
+export type AbortUpgradeZwaveDeviceResponse = AbortUpgradeZwaveDeviceResponses[keyof AbortUpgradeZwaveDeviceResponses];
+
+export type CheckUpgradeAvailabilityZwaveDeviceData = {
+    /**
+     * Configuration data
+     */
+    body: CheckUpgradeAvailability;
+    path?: never;
+    query?: never;
+    url: '/panelService/1/action/checkUpgradeAvailability';
+};
+
+export type CheckUpgradeAvailabilityZwaveDeviceErrors = {
+    /**
+     * Bad request
+     */
+    400: unknown;
+    /**
+     * Not found
+     */
+    404: unknown;
+};
+
+export type CheckUpgradeAvailabilityZwaveDeviceResponses = {
+    /**
+     * Returns checking upgrade availability status
+     */
+    200: CheckUpgradeAvailabilityDto;
+};
+
+export type CheckUpgradeAvailabilityZwaveDeviceResponse = CheckUpgradeAvailabilityZwaveDeviceResponses[keyof CheckUpgradeAvailabilityZwaveDeviceResponses];
+
+export type GetZwaveDeviceChangelogData = {
+    /**
+     * Configuration data
+     */
+    body: GetChangelog;
+    path?: never;
+    query?: never;
+    url: '/panelService/1/action/changelog';
+};
+
+export type GetZwaveDeviceChangelogErrors = {
+    /**
+     * Bad request
+     */
+    400: unknown;
+    /**
+     * Not found
+     */
+    404: unknown;
+};
+
+export type GetZwaveDeviceChangelogResponses = {
+    /**
+     * Returns changelog for device
+     */
+    200: GetChangelogDto;
+};
+
+export type GetZwaveDeviceChangelogResponse = GetZwaveDeviceChangelogResponses[keyof GetZwaveDeviceChangelogResponses];
+
 export type PasswordForgottenData = {
     body?: never;
     path?: never;
@@ -8554,7 +9648,7 @@ export type ResetZigbeeData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/resetZigbee';
+    url: '/service/resetZigbee';
 };
 
 export type ResetZigbeeResponses = {
@@ -11231,3 +12325,10201 @@ export type GetWeatherResponses = {
 };
 
 export type GetWeatherResponse = GetWeatherResponses[keyof GetWeatherResponses];
+
+export type GetAlarmSensorData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The type of Alarm Sensor as defined by SDS13781.
+         */
+        sensor_type: number;
+    };
+    query?: never;
+    url: '/zwave/alarm_sensors/{addr}/{sensor_type}';
+};
+
+export type GetAlarmSensorResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The name of Alarm Sensor (human-readable, translated).
+         */
+        sensorName?: string | null;
+        /**
+         * The current alarm state (indicates alarm).
+         */
+        state?: boolean;
+    };
+};
+
+export type GetAlarmSensorResponse = GetAlarmSensorResponses[keyof GetAlarmSensorResponses];
+
+export type PollAlarmSensorData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The type of Alarm Sensor as defined by SDS13781.
+         */
+        sensor_type: number;
+    };
+    query?: never;
+    url: '/zwave/polling/alarm_sensors/{addr}/{sensor_type}';
+};
+
+export type PollAlarmSensorResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollAlarmSensorResponse = PollAlarmSensorResponses[keyof PollAlarmSensorResponses];
+
+export type GetAllSwitchData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/all_switches/{node_id}';
+};
+
+export type GetAllSwitchResponses = {
+    /**
+     * OK
+     */
+    200: {
+        configuration?: {
+            /**
+             * The mode used to set the all on/all off functionality of the device as defined by SDS13781.
+             */
+            mode?: number;
+            /**
+             * The name of All Switch mode (human-readable, translated).
+             */
+            modeName?: string;
+        };
+        /**
+         * The list of available modes.
+         */
+        modeSelection?: Array<{
+            value: string | number;
+            title?: string;
+            disabled?: boolean;
+        }>;
+    };
+};
+
+export type GetAllSwitchResponse = GetAllSwitchResponses[keyof GetAllSwitchResponses];
+
+export type TurnAllSwitchData = {
+    body?: {
+        /**
+         * The requested state.
+         */
+        targetValue: boolean;
+    };
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/all_switches/{node_id}';
+};
+
+export type TurnAllSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type TurnAllSwitchResponse = TurnAllSwitchResponses[keyof TurnAllSwitchResponses];
+
+export type ConfigureAllSwitchData = {
+    /**
+     * ConfigureAllSwitch
+     */
+    body?: {
+        /**
+         * The mode used to set the all on/all off functionality of the device as defined by SDS13781.
+         */
+        mode: number;
+    };
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/all_switches/{node_id}/configuration';
+};
+
+export type ConfigureAllSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ConfigureAllSwitchResponse = ConfigureAllSwitchResponses[keyof ConfigureAllSwitchResponses];
+
+export type PollAllSwitchData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/polling/all_switches/{node_id}';
+};
+
+export type PollAllSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollAllSwitchResponse = PollAllSwitchResponses[keyof PollAllSwitchResponses];
+
+export type TurnAllSwitchesData = {
+    body?: {
+        /**
+         * The requested state.
+         */
+        targetValue: boolean;
+    };
+    path?: never;
+    query?: never;
+    url: '/zwave/switching/all_switches';
+};
+
+export type TurnAllSwitchesResponses = {
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type TurnAllSwitchesResponse = TurnAllSwitchesResponses[keyof TurnAllSwitchesResponses];
+
+export type AssociationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Association source address filter.
+         *
+         * If `{node_id}` is specified (e.g. `5`), all associations originating from given
+         * node are listed.
+         *
+         * If `{node_id}.{endpoint_id}` is specified (e.g. `5.0`), all associations originating
+         * from given endpoint are listed.
+         *
+         */
+        source_addr?: string;
+        /**
+         * Only include associations originating from group with given ID.
+         *
+         * Requires endpoint-type (e.g. `5.0`) `source_addr` filter to also be specified.
+         *
+         */
+        group?: number;
+        /**
+         * Only include associations targeting given destination.
+         *
+         * If `{node_id}` is specified (e.g. `3`), all associations (node and multi channel)
+         * targeting given node are listed.
+         *
+         */
+        destination_addr?: string;
+    };
+    url: '/zwave/associations';
+};
+
+export type AssociationsResponses = {
+    /**
+     * Associations
+     *
+     * A list of found associations.
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Association ID (synthetic).
+             *
+             * Can be used to identify an association to be removed.
+             *
+             */
+            id?: number;
+            /**
+             * Source endpoint address.
+             */
+            sourceAddr?: string;
+            /**
+             * ID of a source association group (on the source endpoint).
+             */
+            sourceGroup?: number;
+            /**
+             * Destination node ID.
+             */
+            destinationNode?: number;
+            /**
+             * Destination endpoint ID (Z-Wave address).
+             *
+             * `null` for _node_ associations.
+             *
+             * Multi Channel Multi Endpoint destinations are encoded as defined
+             * by SDS13782 (Bit Address + Endpoint ID).
+             *
+             */
+            destinationEndpoint?: number | null;
+        }>;
+    };
+};
+
+export type AssociationsResponse = AssociationsResponses[keyof AssociationsResponses];
+
+export type DeleteAssocationsData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/associations/{id}';
+};
+
+export type DeleteAssocationsResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type DeleteAssocationsResponse = DeleteAssocationsResponses[keyof DeleteAssocationsResponses];
+
+export type GetAllAssociationGroupsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/association_groups/{node_id}';
+};
+
+export type GetAllAssociationGroupsResponses = {
+    /**
+     * AssociationGroups
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+            /**
+             * Group ID on given endpoint.
+             */
+            groupNumber?: number;
+            /**
+             * Group name.
+             *
+             * `null` if AGI is not provided.
+             *
+             */
+            groupName?: string | null;
+            /**
+             * Maximum number of destinations to be associated in this group.
+             */
+            maxTargets?: number;
+            /**
+             * This group allows to create node associations only.
+             */
+            nodeOnly?: boolean;
+            /**
+             * The group profile.
+             *
+             * `null` if AGI is not provided.
+             *
+             */
+            profile?: number | null;
+            /**
+             * The name of group profile (human-readable, translated).
+             *
+             * `null` if AGI is not provided.
+             *
+             */
+            profileLabel?: string | null;
+            /**
+             * The commands that are sent via an association group.
+             */
+            commands?: Array<{
+                /**
+                 * Command Class ID and Command ID.
+                 */
+                id?: string;
+                /**
+                 * Human readable name of the command.
+                 */
+                name?: string | null;
+            }> | null;
+        }>;
+    };
+};
+
+export type GetAllAssociationGroupsResponse = GetAllAssociationGroupsResponses[keyof GetAllAssociationGroupsResponses];
+
+export type GetAssociationGroupsData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/association_groups/{addr}';
+};
+
+export type GetAssociationGroupsResponses = {
+    /**
+     * AssociationGroups
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+            /**
+             * Group ID on given endpoint.
+             */
+            groupNumber?: number;
+            /**
+             * Group name.
+             *
+             * `null` if AGI is not provided.
+             *
+             */
+            groupName?: string | null;
+            /**
+             * Maximum number of destinations to be associated in this group.
+             */
+            maxTargets?: number;
+            /**
+             * This group allows to create node associations only.
+             */
+            nodeOnly?: boolean;
+            /**
+             * The group profile.
+             *
+             * `null` if AGI is not provided.
+             *
+             */
+            profile?: number | null;
+            /**
+             * The name of group profile (human-readable, translated).
+             *
+             * `null` if AGI is not provided.
+             *
+             */
+            profileLabel?: string | null;
+            /**
+             * The commands that are sent via an association group.
+             */
+            commands?: Array<{
+                /**
+                 * Command Class ID and Command ID.
+                 */
+                id?: string;
+                /**
+                 * Human readable name of the command.
+                 */
+                name?: string | null;
+            }> | null;
+        }>;
+    };
+};
+
+export type GetAssociationGroupsResponse = GetAssociationGroupsResponses[keyof GetAssociationGroupsResponses];
+
+export type GetAssociationGroupData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Association group ID.
+         */
+        group_id: number;
+    };
+    query?: never;
+    url: '/zwave/association_groups/{addr}/{group_id}';
+};
+
+export type GetAssociationGroupResponses = {
+    /**
+     * Association group data.
+     */
+    200: {
+        /**
+         * Endpoint Address
+         *
+         * Depending on the type of endpoint following formats are possible:
+         *
+         * - individual endpoint `<node_id>.<endpoint_id>`
+         * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+         *
+         */
+        addr?: string;
+        /**
+         * Group ID on given endpoint.
+         */
+        groupNumber?: number;
+        /**
+         * Group name.
+         *
+         * `null` if AGI is not provided.
+         *
+         */
+        groupName?: string | null;
+        /**
+         * Maximum number of destinations to be associated in this group.
+         */
+        maxTargets?: number;
+        /**
+         * This group allows to create node associations only.
+         */
+        nodeOnly?: boolean;
+        /**
+         * The group profile.
+         *
+         * `null` if AGI is not provided.
+         *
+         */
+        profile?: number | null;
+        /**
+         * The name of group profile (human-readable, translated).
+         *
+         * `null` if AGI is not provided.
+         *
+         */
+        profileLabel?: string | null;
+        /**
+         * The commands that are sent via an association group.
+         */
+        commands?: Array<{
+            /**
+             * Command Class ID and Command ID.
+             */
+            id?: string;
+            /**
+             * Human readable name of the command.
+             */
+            name?: string | null;
+        }> | null;
+    };
+};
+
+export type GetAssociationGroupResponse = GetAssociationGroupResponses[keyof GetAssociationGroupResponses];
+
+export type CreateAssociationData = {
+    body?: {
+        /**
+         * Destination node ID.
+         */
+        destinationNode: number;
+        /**
+         * Destination endpoint ID (Z-Wave address).
+         *
+         * `null` for _node_ associations.
+         *
+         * Multi Channel Multi Endpoint destinations are encoded as defined
+         * by SDS13782 (Bit Address + Endpoint ID).
+         *
+         */
+        destinationEndpoint?: number | null;
+    };
+    path: {
+        addr: string;
+        /**
+         * Association group ID.
+         */
+        group_id: number;
+    };
+    query?: {
+        /**
+         * Dry run of an association creation.
+         *
+         * If set, only preconditions for an association would be checked.
+         * An attempt to create it would not be made.
+         *
+         */
+        dry_run?: boolean;
+    };
+    url: '/zwave/association_groups/{addr}/{group_id}/associations';
+};
+
+export type CreateAssociationResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type CreateAssociationResponse = CreateAssociationResponses[keyof CreateAssociationResponses];
+
+export type GetAssociationActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/mailbox/{node_id}/associations';
+};
+
+export type GetAssociationActionsResponses = {
+    /**
+     * AssociationActions
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'addition' | 'removal';
+            /**
+             * Source endpoint address.
+             */
+            sourceAddr?: string;
+            /**
+             * ID of a source association group (on the source endpoint).
+             */
+            sourceGroup?: number;
+            /**
+             * Destination node ID.
+             */
+            destinationNode?: number;
+            /**
+             * Destination endpoint ID (Z-Wave address).
+             *
+             * `null` for _node_ associations.
+             *
+             * Multi Channel Multi Endpoint destinations are encoded as defined
+             * by SDS13782 (Bit Address + Endpoint ID).
+             *
+             */
+            destinationEndpoint?: number | null;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'clearGroup';
+            /**
+             * Source endpoint address.
+             */
+            sourceAddr?: string;
+            /**
+             * ID of a source association group (on the source endpoint).
+             */
+            sourceGroup?: number;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'clearAll';
+            /**
+             * Source endpoint address.
+             */
+            sourceAddr?: string;
+        }>;
+    };
+};
+
+export type GetAssociationActionsResponse = GetAssociationActionsResponses[keyof GetAssociationActionsResponses];
+
+export type ClearAssociationActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/mailbox/{node_id}/associations/clear';
+};
+
+export type ClearAssociationActionsResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetConfigurationActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/mailbox/{node_id}/configuration_parameters';
+};
+
+export type GetConfigurationActionsResponses = {
+    /**
+     * ConfigurationActions
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'resetAll';
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'setDefault';
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+            /**
+             * Parameter number.
+             */
+            parameterNumber?: number;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'set';
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+            /**
+             * Parameter number.
+             */
+            parameterNumber?: number;
+            /**
+             * Parameter value.
+             */
+            configurationValue?: number;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'pollConfiguration';
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+            /**
+             * Parameter number.
+             */
+            parameterNumber?: number;
+        }>;
+    };
+};
+
+export type GetConfigurationActionsResponse = GetConfigurationActionsResponses[keyof GetConfigurationActionsResponses];
+
+export type ClearConfigurationActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/mailbox/{node_id}/configuration_parameters/clear';
+};
+
+export type ClearConfigurationActionsResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetBatteryData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/batteries/{addr}';
+};
+
+export type GetBatteryResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Charge level in [0..100] range (percentage).
+         */
+        level?: number | null;
+        /**
+         * Last time a low-warning has been received.
+         */
+        lastLowWarningAt?: string;
+    };
+};
+
+export type GetBatteryResponse = GetBatteryResponses[keyof GetBatteryResponses];
+
+export type PollBatteryData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/batteries/{addr}';
+};
+
+export type PollBatteryResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollBatteryResponse = PollBatteryResponses[keyof PollBatteryResponses];
+
+export type GetBasicData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/basic/{addr}';
+};
+
+export type GetBasicResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Current state as reported by device (as defined in SDS13781, SDS11847, SDS14224).
+         */
+        value?: number | null;
+        /**
+         * Target state as reported by device.
+         *
+         * This field may be non null even when transition has been completed.
+         *
+         */
+        targetValue?: number | null;
+        /**
+         * The time when device is expected to reach a target value.
+         *
+         */
+        targetAfter?: string | null;
+    };
+};
+
+export type GetBasicResponse = GetBasicResponses[keyof GetBasicResponses];
+
+export type ChangeBasicValueData = {
+    /**
+     * ChangeBasicValue
+     *
+     * Target Value as specified by SDS13781.
+     *
+     */
+    body?: {
+        /**
+         * Target value
+         */
+        targetValue: number;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/basic/{addr}';
+};
+
+export type ChangeBasicValueResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ChangeBasicValueResponse = ChangeBasicValueResponses[keyof ChangeBasicValueResponses];
+
+export type PollBasicData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/basic/{addr}';
+};
+
+export type PollBasicResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollBasicResponse = PollBasicResponses[keyof PollBasicResponses];
+
+export type GetBinarySensorData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The type of Binary Sensor as defined by SDS13781.
+         */
+        sensor_type: number;
+    };
+    query?: never;
+    url: '/zwave/binary_sensors/{addr}/{sensor_type}';
+};
+
+export type GetBinarySensorResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The name of Binary Sensor (human-readable, translated).
+         */
+        sensorName?: string | null;
+        /**
+         * Indicates whether the sensor has detected an event.
+         */
+        eventDetected?: boolean;
+    };
+};
+
+export type GetBinarySensorResponse = GetBinarySensorResponses[keyof GetBinarySensorResponses];
+
+export type PollBinarySensorData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The type of Binary Sensor as defined by SDS13781.
+         */
+        sensor_type: number;
+    };
+    query?: never;
+    url: '/zwave/polling/binary_sensors/{addr}/{sensor_type}';
+};
+
+export type PollBinarySensorResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollBinarySensorResponse = PollBinarySensorResponses[keyof PollBinarySensorResponses];
+
+export type GetBinarySwitchData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/binary_switches/{addr}';
+};
+
+export type GetBinarySwitchResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Current state as reported by device.
+         */
+        value?: boolean | null;
+        /**
+         * Target state as reported by device.
+         *
+         * This field may be non null even when transition has been completed.
+         *
+         */
+        targetValue?: boolean | null;
+        /**
+         * The time when device is expected to reach a target value.
+         *
+         * This field may indicate the past if transition has already been completed.
+         *
+         */
+        targetAfter?: string | null;
+        /**
+         * Whether `duration` may be included when requesting new state.
+         */
+        supportsDuration?: boolean;
+    };
+};
+
+export type GetBinarySwitchResponse = GetBinarySwitchResponses[keyof GetBinarySwitchResponses];
+
+export type PostZwaveBinarySwitchesByAddrData = {
+    /**
+     * TurnBinarySwitch
+     *
+     * `duration` is available only if `supportsDuration` is true in GET response.
+     *
+     */
+    body?: {
+        /**
+         * Target state
+         */
+        targetValue: boolean;
+        /**
+         * Requested transition duration.
+         */
+        duration?: {
+            seconds?: number;
+            minutes?: number;
+            factoryDefault?: boolean;
+        } | null;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/binary_switches/{addr}';
+};
+
+export type PostZwaveBinarySwitchesByAddrResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PostZwaveBinarySwitchesByAddrResponse = PostZwaveBinarySwitchesByAddrResponses[keyof PostZwaveBinarySwitchesByAddrResponses];
+
+export type PollBinarySwitchData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/binary_switches/{addr}';
+};
+
+export type PollBinarySwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollBinarySwitchResponse = PollBinarySwitchResponses[keyof PollBinarySwitchResponses];
+
+export type GetCentralSceneData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/central_scenes/{addr}';
+};
+
+export type GetCentralSceneResponses = {
+    /**
+     * OK
+     */
+    200: {
+        scenes?: Array<{
+            /**
+             * The number assigned by origin device for this scene.
+             */
+            sceneNumber?: number;
+            /**
+             * The scene name (human-readable, translated).
+             */
+            sceneName?: string | null;
+            /**
+             * The list of supported key attributes by this scene.
+             */
+            keyAttributes?: Array<{
+                value?: number;
+                description?: string;
+            }>;
+        }>;
+        configuration?: {
+            /**
+             * Current configuration of slow refresh functionality.
+             */
+            slowRefresh?: boolean | null;
+        };
+    };
+};
+
+export type GetCentralSceneResponse = GetCentralSceneResponses[keyof GetCentralSceneResponses];
+
+export type GetCentralSceneNotificationsData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: {
+        /**
+         * If given, only notifications with lower ID will be returned.
+         */
+        start?: number;
+        /**
+         * Limits the number of returned notifications.
+         */
+        limit?: number;
+    };
+    url: '/zwave/central_scenes/{addr}/notifications';
+};
+
+export type GetCentralSceneNotificationsResponses = {
+    /**
+     * CentralSceneNotifications
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Identifies activated scene.
+             */
+            sceneNumber?: number;
+            /**
+             * Event detected by the key.
+             */
+            keyAttribute?: number;
+            /**
+             * Time at which notification has been received.
+             */
+            occurredAt?: string;
+        }>;
+        /**
+         * Next Notification ID
+         *
+         * It should only be used as a value for `start` parameter and
+         * must not be interpreted by a client.
+         *
+         */
+        next?: number | null;
+    };
+};
+
+export type GetCentralSceneNotificationsResponse = GetCentralSceneNotificationsResponses[keyof GetCentralSceneNotificationsResponses];
+
+export type ConfigureCentralSceneData = {
+    /**
+     * ConfigureCentralScene
+     */
+    body?: {
+        slowRefresh?: boolean;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/central_scenes/{addr}/configuration';
+};
+
+export type ConfigureCentralSceneResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ConfigureCentralSceneResponse = ConfigureCentralSceneResponses[keyof ConfigureCentralSceneResponses];
+
+export type GetColorSwitchComponentsData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/color_switches/{addr}';
+};
+
+export type GetColorSwitchComponentsResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The list of available color components.
+         */
+        colorComponents?: Array<{
+            componentNumber?: number;
+            currentValue?: number;
+        }>;
+        /**
+         * Whether duration may be included when requesting new level.
+         */
+        supportsDuration?: boolean;
+    };
+};
+
+export type GetColorSwitchComponentsResponse = GetColorSwitchComponentsResponses[keyof GetColorSwitchComponentsResponses];
+
+export type GetColorSwitchComponentData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The Color Switch Component Id as defined by SDS13781.
+         */
+        component_id: number;
+    };
+    query?: never;
+    url: '/zwave/color_switches/{addr}/{component_id}';
+};
+
+export type GetColorSwitchComponentResponses = {
+    /**
+     * OK
+     */
+    200: {
+        componentNumber?: number;
+        currentValue?: number;
+    };
+};
+
+export type GetColorSwitchComponentResponse = GetColorSwitchComponentResponses[keyof GetColorSwitchComponentResponses];
+
+export type ChangeColorSwitchComponentData = {
+    /**
+     * ChangeColorSwitchComponent
+     */
+    body?: {
+        /**
+         * Color Component value.
+         */
+        value: number;
+        /**
+         * Requested transition duration.
+         */
+        duration?: {
+            seconds?: number;
+            minutes?: number;
+            factoryDefault?: boolean;
+        } | null;
+    };
+    path: {
+        addr: string;
+        /**
+         * The Color Switch Component Id as defined by SDS13781.
+         */
+        component_id: number;
+    };
+    query?: never;
+    url: '/zwave/color_switches/{addr}/{component_id}';
+};
+
+export type ChangeColorSwitchComponentResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ChangeColorSwitchComponentResponse = ChangeColorSwitchComponentResponses[keyof ChangeColorSwitchComponentResponses];
+
+export type PollColorSwitchData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The Color Switch Component Id as defined by SDS13781.
+         */
+        component_id: number;
+    };
+    query?: never;
+    url: '/zwave/polling/color_switches/{addr}/{component_id}';
+};
+
+export type PollColorSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollColorSwitchResponse = PollColorSwitchResponses[keyof PollColorSwitchResponses];
+
+export type GetConfigurationParametersData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/configuration_parameters/{addr}';
+};
+
+export type GetConfigurationParametersResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Indicates if an individual parameter can be reset.
+         */
+        canResetIndividualParameters?: boolean;
+        items?: Array<{
+            /**
+             * Parameter number.
+             */
+            parameterNumber?: number;
+            /**
+             * Parameter value.
+             */
+            configurationValue?: number | null;
+            /**
+             * Size (in bytes).
+             */
+            size?: number | null;
+            /**
+             * Parameter source.
+             */
+            source?: {
+                type?: 'protocol';
+                /**
+                 * Size as reported by device (in bytes).
+                 */
+                size?: number;
+                /**
+                 * Parameter format as defined by SDS13781
+                 */
+                format?: number;
+                /**
+                 * Parameter format in human readable form.
+                 */
+                format_str?: 'Signed Integer' | 'Unsigned Integer' | 'Enumerated' | 'Bit field';
+                /**
+                 * Parameter min value.
+                 */
+                minValue?: number;
+                /**
+                 * Parameter max value.
+                 */
+                maxValue?: number;
+                /**
+                 * Parameter default value.
+                 */
+                defaultValue?: number;
+                /**
+                 * Indicates whether this parameter modifying a node’s and/or (non-dynamic) Multi Channel End Point.
+                 */
+                alteringCapabilities?: boolean | null;
+                /**
+                 * Indicates if this parameter is read only.
+                 */
+                readOnly?: boolean | null;
+                /**
+                 * Indicates if bulk operation is supported for this parameter.
+                 */
+                noBulkSupport?: boolean | null;
+                /**
+                 * Indicates if this parameter is advanced parameter (and shall be showed only for advanced users).
+                 */
+                advanced?: boolean | null;
+                /**
+                 * Parameter name.
+                 */
+                name?: string;
+                /**
+                 * Parameter info.
+                 */
+                info?: string;
+            } | {
+                type?: 'user';
+                /**
+                 * Size as defined by user (in bytes).
+                 */
+                size?: number;
+                /**
+                 * Parameter info.
+                 */
+                info?: string;
+                /**
+                 * Indicates if this parameter is read only.
+                 */
+                readOnly?: boolean;
+            };
+        }>;
+    };
+};
+
+export type GetConfigurationParametersResponse = GetConfigurationParametersResponses[keyof GetConfigurationParametersResponses];
+
+export type DefaultResetAllParametersData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/configuration_parameters/{addr}/default';
+};
+
+export type DefaultResetAllParametersResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type DefaultResetAllParametersResponse = DefaultResetAllParametersResponses[keyof DefaultResetAllParametersResponses];
+
+export type SetConfigurationParameterToDefaultData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Parameter number.
+         */
+        number: number;
+    };
+    query?: never;
+    url: '/zwave/configuration_parameters/{addr}/{number}/default';
+};
+
+export type SetConfigurationParameterToDefaultResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetConfigurationParameterToDefaultResponse = SetConfigurationParameterToDefaultResponses[keyof SetConfigurationParameterToDefaultResponses];
+
+export type SetConfigurationParameterValueData = {
+    /**
+     * ChangeConfigurationValue
+     */
+    body?: {
+        /**
+         * New parameter value.
+         */
+        value?: number;
+    };
+    path: {
+        addr: string;
+        /**
+         * Parameter number.
+         */
+        number: number;
+    };
+    query?: never;
+    url: '/zwave/configuration_parameters/{addr}/{number}/value';
+};
+
+export type SetConfigurationParameterValueResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetConfigurationParameterValueResponse = SetConfigurationParameterValueResponses[keyof SetConfigurationParameterValueResponses];
+
+export type DeleteConfigurationParameterData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Parameter number.
+         */
+        number: number;
+    };
+    query?: never;
+    url: '/zwave/configuration_parameters/{addr}/{number}';
+};
+
+export type DeleteConfigurationParameterErrors = {
+    /**
+     * Not Found
+     */
+    404: unknown;
+};
+
+export type DeleteConfigurationParameterResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetConfigurationParameterValueData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Parameter number.
+         */
+        number: number;
+    };
+    query?: never;
+    url: '/zwave/configuration_parameters/{addr}/{number}';
+};
+
+export type GetConfigurationParameterValueResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Parameter number.
+         */
+        parameterNumber?: number;
+        /**
+         * Parameter value.
+         */
+        configurationValue?: number | null;
+        /**
+         * Size (in bytes).
+         */
+        size?: number | null;
+        /**
+         * Parameter source.
+         */
+        source?: {
+            type?: 'protocol';
+            /**
+             * Size as reported by device (in bytes).
+             */
+            size?: number;
+            /**
+             * Parameter format as defined by SDS13781
+             */
+            format?: number;
+            /**
+             * Parameter format in human readable form.
+             */
+            format_str?: 'Signed Integer' | 'Unsigned Integer' | 'Enumerated' | 'Bit field';
+            /**
+             * Parameter min value.
+             */
+            minValue?: number;
+            /**
+             * Parameter max value.
+             */
+            maxValue?: number;
+            /**
+             * Parameter default value.
+             */
+            defaultValue?: number;
+            /**
+             * Indicates whether this parameter modifying a node’s and/or (non-dynamic) Multi Channel End Point.
+             */
+            alteringCapabilities?: boolean | null;
+            /**
+             * Indicates if this parameter is read only.
+             */
+            readOnly?: boolean | null;
+            /**
+             * Indicates if bulk operation is supported for this parameter.
+             */
+            noBulkSupport?: boolean | null;
+            /**
+             * Indicates if this parameter is advanced parameter (and shall be showed only for advanced users).
+             */
+            advanced?: boolean | null;
+            /**
+             * Parameter name.
+             */
+            name?: string;
+            /**
+             * Parameter info.
+             */
+            info?: string;
+        } | {
+            type?: 'user';
+            /**
+             * Size as defined by user (in bytes).
+             */
+            size?: number;
+            /**
+             * Parameter info.
+             */
+            info?: string;
+            /**
+             * Indicates if this parameter is read only.
+             */
+            readOnly?: boolean;
+        };
+    };
+};
+
+export type GetConfigurationParameterValueResponse = GetConfigurationParameterValueResponses[keyof GetConfigurationParameterValueResponses];
+
+export type AddConfigurationParameterData = {
+    /**
+     * UserParameterEntry
+     */
+    body?: {
+        /**
+         * Size defined by user (in bytes).
+         */
+        size?: number;
+        /**
+         * Parameter info.
+         */
+        info?: string;
+        /**
+         * Indicates if this parameter is read only.
+         */
+        readOnly?: boolean;
+    };
+    path: {
+        addr: string;
+        /**
+         * Parameter number.
+         */
+        number: number;
+    };
+    query?: never;
+    url: '/zwave/configuration_parameters/{addr}/{number}';
+};
+
+export type AddConfigurationParameterResponses = {
+    /**
+     * OK. Parameter has been updated
+     */
+    200: unknown;
+    /**
+     * Created
+     */
+    201: unknown;
+};
+
+export type PollConfigurationParameterData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Parameter number.
+         */
+        number: number;
+    };
+    query?: never;
+    url: '/zwave/polling/configuration_parameters/{addr}/{number}';
+};
+
+export type PollConfigurationParameterResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollConfigurationParameterResponse = PollConfigurationParameterResponses[keyof PollConfigurationParameterResponses];
+
+export type GenerateParametersTemplateData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/parameters_templates/{addr}';
+};
+
+export type GenerateParametersTemplateResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type GenerateParametersTemplateResponse = GenerateParametersTemplateResponses[keyof GenerateParametersTemplateResponses];
+
+export type RemoveParametersTemplateOverrideData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/parameters_templates/{addr}/override';
+};
+
+export type RemoveParametersTemplateOverrideResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type OverrideParametersTemplateData = {
+    /**
+     * OverrideParametersTemplate
+     */
+    body?: {
+        /**
+         * ID of a user defined parameters template to be used.
+         *
+         * If `null`, the parameters list from protocol or the simplifed user defined list
+         * would be used. This allows to disable parameters list from the official parameters
+         * template.
+         *
+         */
+        userTemplateId?: string | null;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/parameters_templates/{addr}/override';
+};
+
+export type OverrideParametersTemplateResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetUserParametersTemplateListData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/user_parameters_templates';
+};
+
+export type GetUserParametersTemplateListResponses = {
+    /**
+     * UserParametersTemplateList
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * User template ID.
+             */
+            id?: string;
+            /**
+             * Template name.
+             */
+            name?: string;
+            /**
+             * List of devices using this template.
+             */
+            usedBy?: Array<string>;
+        }>;
+    };
+};
+
+export type GetUserParametersTemplateListResponse = GetUserParametersTemplateListResponses[keyof GetUserParametersTemplateListResponses];
+
+export type UploadUserTemplateData = {
+    body?: Blob | File;
+    path?: never;
+    query?: never;
+    url: '/zwave/user_parameters_templates';
+};
+
+export type UploadUserTemplateResponses = {
+    /**
+     * User parameters template info.
+     */
+    201: {
+        /**
+         * User template ID.
+         */
+        id?: string;
+        /**
+         * Template name.
+         */
+        name?: string;
+        /**
+         * List of devices using this template.
+         */
+        usedBy?: Array<string>;
+    };
+};
+
+export type UploadUserTemplateResponse = UploadUserTemplateResponses[keyof UploadUserTemplateResponses];
+
+export type RemoveUserTemplateData = {
+    body?: never;
+    path: {
+        /**
+         * User template ID.
+         */
+        template_id: string;
+    };
+    query?: never;
+    url: '/zwave/user_parameters_templates/{template_id}';
+};
+
+export type RemoveUserTemplateResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type DownloadUserTemplateData = {
+    body?: never;
+    path: {
+        /**
+         * User template ID.
+         */
+        template_id: string;
+    };
+    query?: never;
+    url: '/zwave/user_parameters_templates/{template_id}';
+};
+
+export type DownloadUserTemplateResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type DownloadUserTemplateResponse = DownloadUserTemplateResponses[keyof DownloadUserTemplateResponses];
+
+export type ReplaceUserTemplateData = {
+    body?: Blob | File;
+    path: {
+        /**
+         * User template ID.
+         */
+        template_id: string;
+    };
+    query?: never;
+    url: '/zwave/user_parameters_templates/{template_id}';
+};
+
+export type ReplaceUserTemplateResponses = {
+    /**
+     * User parameters template info.
+     */
+    200: {
+        /**
+         * User template ID.
+         */
+        id?: string;
+        /**
+         * Template name.
+         */
+        name?: string;
+        /**
+         * List of devices using this template.
+         */
+        usedBy?: Array<string>;
+    };
+};
+
+export type ReplaceUserTemplateResponse = ReplaceUserTemplateResponses[keyof ReplaceUserTemplateResponses];
+
+export type GetFirmwareUpdateInfoData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/fw_update/{addr}/';
+};
+
+export type GetFirmwareUpdateInfoResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Firmware targets available to update on specified Endpoint.
+         */
+        targets?: Array<{
+            /**
+             * Firmware target number.
+             */
+            firmwareNumber?: number;
+            /**
+             * Id defined by a producer of a product.
+             */
+            firmwareId?: number;
+        }>;
+        /**
+         * Device hardware version.
+         */
+        hardwareVersion?: number;
+        /**
+         * Does device respond to actions while transferring update.
+         */
+        supportsCcsDuringTransfer?: boolean;
+        /**
+         * Does device support activation of firmware installation after update.
+         */
+        supportsActivation?: boolean;
+        /**
+         * Whether the device can support activation of firmware installation after upgrade.
+         *
+         * Set when device supports Firmware Update Command Class version 4 or higher.
+         *
+         */
+        allowsActivationRequest?: boolean;
+    };
+};
+
+export type GetFirmwareUpdateInfoResponse = GetFirmwareUpdateInfoResponses[keyof GetFirmwareUpdateInfoResponses];
+
+export type RequestFirmwareUpdateData = {
+    /**
+     * RequestFirmwareUpdate
+     */
+    body?: {
+        /**
+         * Firmware update file.
+         */
+        update_file: Blob | File;
+        /**
+         * Unique Firmware ID to each existing product variant.
+         */
+        firmwareId: number;
+        /**
+         * The Manufacturer ID is a unique ID identifying the manufacturer of the device.
+         *
+         */
+        manufacturerId: number;
+        /**
+         * Indicates if there is no intention to update other targets on this node.
+         *
+         * Can be used to perform a session consisting of several firmware update processes.
+         *
+         */
+        isLast?: boolean;
+    };
+    path: {
+        addr: string;
+        /**
+         * Firmware Target Number
+         */
+        target: number;
+    };
+    query?: {
+        /**
+         * The Activation is used to advertise if the receiving node may delay the actual firmware update.
+         */
+        activation?: boolean;
+    };
+    url: '/zwave/fw_update/{addr}/{target}/request';
+};
+
+export type RequestFirmwareUpdateErrors = {
+    /**
+     * ErrorObject
+     *
+     * Error object as defined in RFC7807.
+     */
+    400: {
+        /**
+         * Error URI reference.
+         */
+        type?: string;
+        /**
+         * Summary of the problem (human-readable, translated).
+         */
+        title?: string;
+        /**
+         * A human-readable explanation specific to this occurrence of the problem.
+         */
+        detail?: string;
+    };
+};
+
+export type RequestFirmwareUpdateError = RequestFirmwareUpdateErrors[keyof RequestFirmwareUpdateErrors];
+
+export type RequestFirmwareUpdateResponses = {
+    /**
+     * Firmware update process.
+     */
+    200: {
+        /**
+         * Process identifier.
+         */
+        id?: number;
+        /**
+         * Endpoint Address
+         *
+         * Depending on the type of endpoint following formats are possible:
+         *
+         * - individual endpoint `<node_id>.<endpoint_id>`
+         * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+         *
+         */
+        addr?: string;
+        /**
+         * Total number of firmware parts.
+         */
+        totalParts?: number;
+        /**
+         * Number of firmware parts that has been transferred.
+         */
+        sentParts?: number;
+        /**
+         * Status of firmware update process.
+         */
+        status?: 'CANCELLED' | 'FAILED' | 'DONE' | 'TIMEOUT';
+        /**
+         * An input for translation for the detailed message of what happened during firmware update.
+         *
+         * Status codes are described in SDS13782, table 11.
+         *
+         */
+        protocolStatus?: number | null;
+        /**
+         * Detailed message about what happened during the firmware update.
+         *
+         * Details about status codes and their descriptions are provided in SDS13782, table 11.
+         *
+         */
+        protocolStatusDetails?: string | null;
+        /**
+         * The last status change time.
+         */
+        statusChangedAt?: string;
+        /**
+         * The time (in seconds) that is needed before the receiving node becomes available again for communication after the transfer of an image.
+         */
+        waitTime?: number;
+        /**
+         * Whether the firmware update process has been started.
+         */
+        running?: boolean;
+        /**
+         * Whether the firmware update process is waiting for the device to wake up.
+         */
+        waitingForWakeUp?: boolean;
+    } & {
+        /**
+         * Firmware target number.
+         */
+        firmwareNumber?: number;
+        /**
+         * Id defined by a producer of a product.
+         */
+        firmwareId?: number;
+    };
+};
+
+export type RequestFirmwareUpdateResponse = RequestFirmwareUpdateResponses[keyof RequestFirmwareUpdateResponses];
+
+export type FirmwareUpdateProcessesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/fw_update_processes';
+};
+
+export type FirmwareUpdateProcessesResponses = {
+    /**
+     * FirmwareUpdateProcesses
+     *
+     * A list of firmware update processes.
+     */
+    200: Array<{
+        /**
+         * Process identifier.
+         */
+        id?: number;
+        /**
+         * Endpoint Address
+         *
+         * Depending on the type of endpoint following formats are possible:
+         *
+         * - individual endpoint `<node_id>.<endpoint_id>`
+         * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+         *
+         */
+        addr?: string;
+        /**
+         * Total number of firmware parts.
+         */
+        totalParts?: number;
+        /**
+         * Number of firmware parts that has been transferred.
+         */
+        sentParts?: number;
+        /**
+         * Status of firmware update process.
+         */
+        status?: 'CANCELLED' | 'FAILED' | 'DONE' | 'TIMEOUT';
+        /**
+         * An input for translation for the detailed message of what happened during firmware update.
+         *
+         * Status codes are described in SDS13782, table 11.
+         *
+         */
+        protocolStatus?: number | null;
+        /**
+         * Detailed message about what happened during the firmware update.
+         *
+         * Details about status codes and their descriptions are provided in SDS13782, table 11.
+         *
+         */
+        protocolStatusDetails?: string | null;
+        /**
+         * The last status change time.
+         */
+        statusChangedAt?: string;
+        /**
+         * The time (in seconds) that is needed before the receiving node becomes available again for communication after the transfer of an image.
+         */
+        waitTime?: number;
+        /**
+         * Whether the firmware update process has been started.
+         */
+        running?: boolean;
+        /**
+         * Whether the firmware update process is waiting for the device to wake up.
+         */
+        waitingForWakeUp?: boolean;
+    } & {
+        /**
+         * Firmware target number.
+         */
+        firmwareNumber?: number;
+        /**
+         * Id defined by a producer of a product.
+         */
+        firmwareId?: number;
+    }>;
+};
+
+export type FirmwareUpdateProcessesResponse = FirmwareUpdateProcessesResponses[keyof FirmwareUpdateProcessesResponses];
+
+export type GetZwaveFwUpdateProcessesByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/fw_update_processes/{id}';
+};
+
+export type GetZwaveFwUpdateProcessesByIdResponses = {
+    /**
+     * Firmware update process.
+     */
+    200: {
+        /**
+         * Process identifier.
+         */
+        id?: number;
+        /**
+         * Endpoint Address
+         *
+         * Depending on the type of endpoint following formats are possible:
+         *
+         * - individual endpoint `<node_id>.<endpoint_id>`
+         * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+         *
+         */
+        addr?: string;
+        /**
+         * Total number of firmware parts.
+         */
+        totalParts?: number;
+        /**
+         * Number of firmware parts that has been transferred.
+         */
+        sentParts?: number;
+        /**
+         * Status of firmware update process.
+         */
+        status?: 'CANCELLED' | 'FAILED' | 'DONE' | 'TIMEOUT';
+        /**
+         * An input for translation for the detailed message of what happened during firmware update.
+         *
+         * Status codes are described in SDS13782, table 11.
+         *
+         */
+        protocolStatus?: number | null;
+        /**
+         * Detailed message about what happened during the firmware update.
+         *
+         * Details about status codes and their descriptions are provided in SDS13782, table 11.
+         *
+         */
+        protocolStatusDetails?: string | null;
+        /**
+         * The last status change time.
+         */
+        statusChangedAt?: string;
+        /**
+         * The time (in seconds) that is needed before the receiving node becomes available again for communication after the transfer of an image.
+         */
+        waitTime?: number;
+        /**
+         * Whether the firmware update process has been started.
+         */
+        running?: boolean;
+        /**
+         * Whether the firmware update process is waiting for the device to wake up.
+         */
+        waitingForWakeUp?: boolean;
+    } & {
+        /**
+         * Firmware target number.
+         */
+        firmwareNumber?: number;
+        /**
+         * Id defined by a producer of a product.
+         */
+        firmwareId?: number;
+    };
+};
+
+export type GetZwaveFwUpdateProcessesByIdResponse = GetZwaveFwUpdateProcessesByIdResponses[keyof GetZwaveFwUpdateProcessesByIdResponses];
+
+export type StopFirmwareUpdateProcessData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/fw_update_processes/{id}/cancel';
+};
+
+export type StopFirmwareUpdateProcessResponses = {
+    /**
+     * Ok. The client must poll process state till its status is non-null.
+     *
+     */
+    200: unknown;
+};
+
+export type ActivationFirmwareUpdateStatusData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/fw_update_processes/{id}/activate';
+};
+
+export type ActivationFirmwareUpdateStatusResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * An input for translation for the detailed message of what happened during activation firmware update.
+         *
+         * Status codes are described in SDS13782, table 12.
+         *
+         */
+        activationProtocolStatus?: number;
+        /**
+         * Date and time of activation entered by user.
+         *
+         * An acceptable value with [RFC3339](https://tools.ietf.org/html/rfc3339#section-5.6).
+         *
+         */
+        activation_at?: string | null;
+        /**
+         * Date and time when activation was performed.
+         *
+         * An acceptable value with [RFC3339](https://tools.ietf.org/html/rfc3339#section-5.6).
+         *
+         */
+        occurred_at?: string | null;
+    };
+};
+
+export type ActivationFirmwareUpdateStatusResponse = ActivationFirmwareUpdateStatusResponses[keyof ActivationFirmwareUpdateStatusResponses];
+
+export type ActivateFirmwareUpdateTimeData = {
+    /**
+     * ActivationTime
+     */
+    body?: {
+        /**
+         * Specify the moment when the activation will be performed.
+         *
+         * An acceptable value with [RFC3339](https://tools.ietf.org/html/rfc3339#section-5.6).
+         * The given date cannot be from the past.
+         *
+         */
+        activationTime?: string;
+    };
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/fw_update_processes/{id}/activate';
+};
+
+export type ActivateFirmwareUpdateTimeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetIndicatorData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Indicator ID as defined by SDS14220.
+         */
+        indicator_id: number;
+    };
+    query?: never;
+    url: '/zwave/indicators/{addr}/{indicator_id}';
+};
+
+export type GetIndicatorResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Name of an indicator (human-readable).
+         *
+         * It may be either a generic name defined by SDS14220 (translated) or
+         * a name defined by device manufacturer.
+         *
+         */
+        indicatorName?: string | null;
+        /**
+         * Type of indication used.
+         */
+        indicationType?: 'Binary' | 'Multilevel' | 'Toggling';
+        /**
+         * Expected time at which current indication would end.
+         */
+        indicationEndsOn?: string | null;
+        /**
+         * Current indication level.
+         */
+        indicationLevel?: number;
+        /**
+         * Supported property groups.
+         *
+         * The list of known groups is defined by SDS14220.
+         *
+         */
+        supportedGroups?: Array<'Binary' | 'Multilevel' | 'Toggling' | 'Timeout' | 'SoundLevel'>;
+        /**
+         * Defines available settings of a toggling indication.
+         */
+        togglingDefinition?: {
+            /**
+             * Number of toggling cycles can be specified.
+             */
+            hasCycles?: boolean;
+            /**
+             * Toggling period can be specified.
+             */
+            hasPeriod?: boolean;
+            /**
+             * The time indication remains on during a period can be specified.
+             */
+            hasOnTime?: boolean;
+        } | null;
+        /**
+         * Defines available components of indication timeout.
+         */
+        timeoutDefinition?: {
+            /**
+             * Minutes component available.
+             */
+            hasMinutes?: boolean;
+            /**
+             * Seconds component available.
+             */
+            hasSeconds?: boolean;
+            /**
+             * Centiseconds component available.
+             */
+            hasCentiseconds?: boolean;
+        } | null;
+    };
+};
+
+export type GetIndicatorResponse = GetIndicatorResponses[keyof GetIndicatorResponses];
+
+export type SetBinaryIndicationData = {
+    /**
+     * SetBinaryIndication
+     */
+    body?: {
+        /**
+         * Target state.
+         */
+        targetValue: boolean;
+    };
+    path: {
+        addr: string;
+        /**
+         * Indicator ID as defined by SDS14220.
+         */
+        indicator_id: number;
+    };
+    query?: never;
+    url: '/zwave/indicators/{addr}/{indicator_id}/binary';
+};
+
+export type SetBinaryIndicationResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetBinaryIndicationResponse = SetBinaryIndicationResponses[keyof SetBinaryIndicationResponses];
+
+export type SetMultilevelIndicationData = {
+    /**
+     * SetMultilevelIndication
+     */
+    body?: {
+        /**
+         * Target level.
+         *
+         * Valid values are:
+         * - 0-99 to set specific level,
+         * - 255 to restore most recent non-zero value
+         *
+         */
+        targetLevel: number;
+    };
+    path: {
+        addr: string;
+        /**
+         * Indicator ID as defined by SDS14220.
+         */
+        indicator_id: number;
+    };
+    query?: never;
+    url: '/zwave/indicators/{addr}/{indicator_id}/multilevel';
+};
+
+export type SetMultilevelIndicationResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetMultilevelIndicationResponse = SetMultilevelIndicationResponses[keyof SetMultilevelIndicationResponses];
+
+export type SetTogglingIndicationData = {
+    /**
+     * SetTogglingIndication
+     */
+    body?: {
+        /**
+         * On/Off period duration in deciseconds.
+         */
+        period?: number | null;
+        /**
+         * Number of On/Off toggling cycles.
+         *
+         * Ignored if `untilStopped` has been requested.
+         *
+         */
+        cycles?: number | null;
+        /**
+         * Toggle until stopped.
+         */
+        untilStopped?: boolean;
+        /**
+         * On time within an On/Off period in deciseconds.
+         *
+         * Must be shorter than `period`.
+         *
+         */
+        onTime?: number | null;
+    };
+    path: {
+        addr: string;
+        /**
+         * Indicator ID as defined by SDS14220.
+         */
+        indicator_id: number;
+    };
+    query?: never;
+    url: '/zwave/indicators/{addr}/{indicator_id}/toggling';
+};
+
+export type SetTogglingIndicationResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetTogglingIndicationResponse = SetTogglingIndicationResponses[keyof SetTogglingIndicationResponses];
+
+export type SetIndicationTimeoutData = {
+    /**
+     * SetIndicationTimeout
+     */
+    body?: {
+        /**
+         * Number of minutes.
+         */
+        minutes?: number | null;
+        /**
+         * Number of seconds.
+         */
+        seconds?: number | null;
+        /**
+         * Number of centiseconds.
+         */
+        centiseconds?: number | null;
+    };
+    path: {
+        addr: string;
+        /**
+         * Indicator ID as defined by SDS14220.
+         */
+        indicator_id: number;
+    };
+    query?: never;
+    url: '/zwave/indicators/{addr}/{indicator_id}/timeout';
+};
+
+export type SetIndicationTimeoutResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetIndicationTimeoutResponse = SetIndicationTimeoutResponses[keyof SetIndicationTimeoutResponses];
+
+export type SetSoundIndicationData = {
+    /**
+     * SetSoundIndication
+     */
+    body?: {
+        /**
+         * Target level.
+         *
+         * Valid values are:
+         * - 0-100 to set specific level,
+         * - 255 to restore most recent non-zero value
+         *
+         */
+        targetLevel: number;
+    };
+    path: {
+        addr: string;
+        /**
+         * Indicator ID as defined by SDS14220.
+         */
+        indicator_id: number;
+    };
+    query?: never;
+    url: '/zwave/indicators/{addr}/{indicator_id}/sound_level';
+};
+
+export type SetSoundIndicationResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetSoundIndicationResponse = SetSoundIndicationResponses[keyof SetSoundIndicationResponses];
+
+export type GetMeterData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/meters/{addr}';
+};
+
+export type GetMeterResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The type of metering physical unit as defined by SDS13781.
+         */
+        meterType?: number;
+        /**
+         * The name of Meter (human-readable, translated).
+         */
+        meterName?: string;
+        /**
+         * Whether meter supports reset functionality.
+         */
+        supportsReset?: boolean;
+        /**
+         * Meter readings.
+         */
+        readings?: Array<{
+            /**
+             * Meter reading scale as defined by SDS13781.
+             */
+            scale?: number;
+            /**
+             * The name of scale (human-readable, translated).
+             */
+            scaleLabel?: string;
+            /**
+             * The unit symbol of this measurement.
+             */
+            unitSymbol?: string;
+            /**
+             * Indicate if the actual reading advertises import or export values as defined by SDS13781.
+             */
+            rateType?: number;
+            /**
+             * Reading value.
+             */
+            value?: number;
+        }>;
+    };
+};
+
+export type GetMeterResponse = GetMeterResponses[keyof GetMeterResponses];
+
+export type GetMeterReadingData = {
+    body?: never;
+    path: {
+        addr: string;
+        scale: number;
+        rate_type: number;
+    };
+    query?: never;
+    url: '/zwave/meter_readings/{addr}/{scale}/{rate_type}';
+};
+
+export type GetMeterReadingResponses = {
+    /**
+     * Meter reading.
+     */
+    200: {
+        /**
+         * Meter reading scale as defined by SDS13781.
+         */
+        scale?: number;
+        /**
+         * The name of scale (human-readable, translated).
+         */
+        scaleLabel?: string;
+        /**
+         * The unit symbol of this measurement.
+         */
+        unitSymbol?: string;
+        /**
+         * Indicate if the actual reading advertises import or export values as defined by SDS13781.
+         */
+        rateType?: number;
+        /**
+         * Reading value.
+         */
+        value?: number;
+    };
+};
+
+export type GetMeterReadingResponse = GetMeterReadingResponses[keyof GetMeterReadingResponses];
+
+export type GetHistoricalMeterReadingsData = {
+    body?: never;
+    path: {
+        addr: string;
+        scale: number;
+        rate_type: number;
+    };
+    query?: {
+        /**
+         * If given, only historical readings with lower ID will be returned.
+         */
+        start?: number;
+        /**
+         * Limits the number of returned entries.
+         */
+        limit?: number;
+    };
+    url: '/zwave/meter_readings/{addr}/{scale}/{rate_type}/history';
+};
+
+export type GetHistoricalMeterReadingsResponses = {
+    /**
+     * GetHistoricalMeterReadings
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Historical reading value.
+             */
+            value?: number;
+            /**
+             * Timestamp of the historical reading.
+             */
+            reportedAt?: string;
+        }>;
+        /**
+         * Next Historical Reading ID
+         *
+         * It should only be used as a value for `start` parameter and
+         * must not be interpreted by a client.
+         *
+         */
+        next?: number | null;
+    };
+};
+
+export type GetHistoricalMeterReadingsResponse = GetHistoricalMeterReadingsResponses[keyof GetHistoricalMeterReadingsResponses];
+
+export type PollMeterReadingData = {
+    body?: never;
+    path: {
+        addr: string;
+        scale: number;
+        rate_type: number;
+    };
+    query?: never;
+    url: '/zwave/polling/meter_readings/{addr}/{scale}/{rate_type}';
+};
+
+export type PollMeterReadingResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollMeterReadingResponse = PollMeterReadingResponses[keyof PollMeterReadingResponses];
+
+export type ResetMeterData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/reset/meters/{addr}';
+};
+
+export type ResetMeterResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ResetMeterResponse = ResetMeterResponses[keyof ResetMeterResponses];
+
+export type GetDoorLockData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/door_locks/{addr}';
+};
+
+export type GetDoorLockResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Current Lock Mode (as defined by SDS13781).
+         */
+        lockMode?: number | null;
+        /**
+         * The name of Current Lock Mode (human-readable, translated).
+         */
+        lockModeName?: string | null;
+        /**
+         * Target Lock Mode (as defined by SDS13781).
+         */
+        targetLockMode?: number | null;
+        /**
+         * The name of Target Lock Mode (human-readable, translated).
+         */
+        targetLockModeName?: string | null;
+        /**
+         * The time when device is expected to reach a target lock mode.
+         *
+         * This field may indicate the past if transition has already been completed.
+         *
+         */
+        targetAfter?: string | null;
+        /**
+         * The time when door lock will be automatically locked again.
+         */
+        willBeSecuredAt?: string | null;
+        /**
+         * Door Condition
+         *
+         * Available only if door lock supports Door component.
+         *
+         */
+        doorClosed?: boolean;
+        /**
+         * Bolt Condition
+         *
+         * Available only if door lock supports Bolt component.
+         *
+         */
+        boltUnlocked?: boolean;
+        /**
+         * Latch Condition
+         *
+         * Available only if door lock supports Latch component.
+         *
+         */
+        latchClosed?: boolean;
+        /**
+         * The status of each individual outside door handle.
+         *
+         * See `supportedHandles` for encoding of this field.
+         *
+         */
+        handlesMode?: number;
+        /**
+         * The list of supported Inside and Outside Handles.
+         *
+         * Encoded as bit-mask as specified by SDS13781 CC:0062.04.03.11.002 :
+         *
+         * - MSB bits (7..4) are used to encode Outside Handles
+         * - LSB bits (3..0) are used to encode Inside Handles
+         *
+         */
+        supportedHandles?: number;
+        /**
+         * The list of available lock modes the door lock may operate in.
+         */
+        lockModeSelection?: Array<{
+            value: string | number;
+            title?: string;
+            disabled?: boolean;
+        }>;
+        /**
+         * The list of available operation types the door lock may be configured with.
+         */
+        operationTypeSelection?: Array<{
+            value: string | number;
+            title?: string;
+            disabled?: boolean;
+        }>;
+        /**
+         * Fields may be missing depending on what is supported by Door Lock.
+         *
+         */
+        configuration?: {
+            /**
+             * The operation type (as defined by SDS13781 CC:0062.04.04.11.002).
+             */
+            operationType: number;
+            /**
+             * The time setting in seconds that the supporting node must wait before returning to the secured mode (as defined by SDS13781).
+             *
+             */
+            lockTimeout: number;
+            /**
+             * The time setting in seconds for auto-relock functionality (as defined by SDS13781 CC:0062.04.04.11.014).
+             */
+            autoRelockTime?: number | null;
+            /**
+             * The time setting in seconds for letting the latch retracted (as defined by SDS13781 CC:0062.04.04.11.017).
+             */
+            holdAndReleaseTime?: number | null;
+            /**
+             * Enable or disable twist assist functionality (as defined by SDS13781 CC:0062.04.04.11.01B).
+             */
+            enableTwistAssist?: boolean | null;
+            /**
+             * Enable or disable block to block functionality (as defined by SDS13781 CC:0062.04.04.11.01D).
+             */
+            enableBlockToBlock?: boolean | null;
+            /**
+             * Enable or disable each individual outside and inside door handles (as defined by SDS13781 CC:0062.04.04.11.005 CC:0062.04.04.11.008).
+             *
+             * See `supportedHandles` for encoding of this field.
+             *
+             */
+            enabledHandles?: number;
+        };
+    };
+};
+
+export type GetDoorLockResponse = GetDoorLockResponses[keyof GetDoorLockResponses];
+
+export type OperateDoorLockData = {
+    /**
+     * OperateDoorLock
+     */
+    body?: {
+        /**
+         * Target lock mode.
+         */
+        targetLockMode: number;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/door_locks/{addr}';
+};
+
+export type OperateDoorLockResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type OperateDoorLockResponse = OperateDoorLockResponses[keyof OperateDoorLockResponses];
+
+export type ConfigureDoorLockData = {
+    /**
+     * Fields may be missing depending on what is supported by Door Lock.
+     *
+     */
+    body?: {
+        /**
+         * The operation type (as defined by SDS13781 CC:0062.04.04.11.002).
+         */
+        operationType: number;
+        /**
+         * The time setting in seconds that the supporting node must wait before returning to the secured mode (as defined by SDS13781).
+         *
+         */
+        lockTimeout: number;
+        /**
+         * The time setting in seconds for auto-relock functionality (as defined by SDS13781 CC:0062.04.04.11.014).
+         */
+        autoRelockTime?: number | null;
+        /**
+         * The time setting in seconds for letting the latch retracted (as defined by SDS13781 CC:0062.04.04.11.017).
+         */
+        holdAndReleaseTime?: number | null;
+        /**
+         * Enable or disable twist assist functionality (as defined by SDS13781 CC:0062.04.04.11.01B).
+         */
+        enableTwistAssist?: boolean | null;
+        /**
+         * Enable or disable block to block functionality (as defined by SDS13781 CC:0062.04.04.11.01D).
+         */
+        enableBlockToBlock?: boolean | null;
+        /**
+         * Enable or disable each individual outside and inside door handles (as defined by SDS13781 CC:0062.04.04.11.005 CC:0062.04.04.11.008).
+         *
+         * See `supportedHandles` for encoding of this field.
+         *
+         */
+        enabledHandles?: number;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/door_locks/{addr}/configuration';
+};
+
+export type ConfigureDoorLockResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ConfigureDoorLockResponse = ConfigureDoorLockResponses[keyof ConfigureDoorLockResponses];
+
+export type PollDoorLockData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/door_locks/{addr}';
+};
+
+export type PollDoorLockResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollDoorLockResponse = PollDoorLockResponses[keyof PollDoorLockResponses];
+
+export type PollDoorLockConfigurationData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/door_locks/{addr}/configuration';
+};
+
+export type PollDoorLockConfigurationResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollDoorLockConfigurationResponse = PollDoorLockConfigurationResponses[keyof PollDoorLockConfigurationResponses];
+
+export type GetMultilevelSensorData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The type of Multilevel Sensor as defined by SDS13812.
+         */
+        sensor_type: number;
+    };
+    query?: never;
+    url: '/zwave/multilevel_sensors/{addr}/{sensor_type}';
+};
+
+export type GetMultilevelSensorResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Sensor type (as defined by SDS13812).
+         */
+        sensorType?: number;
+        /**
+         * The name of Multilevel Sensor (human-readable, translated).
+         */
+        sensorName?: string | null;
+        /**
+         * Last reported reading by this sensor.
+         */
+        value?: number;
+        /**
+         * The scale of last reported reading (as defined by SDS13812).
+         *
+         * A single Multilevel Sensor may report readings in several scales.
+         *
+         */
+        scale?: number;
+        /**
+         * The scale label as defined by SDS13812 (human-readable, translated).
+         */
+        scaleLabel?: string | null;
+        /**
+         * The unit symbol of last reported reading.
+         */
+        unitSymbol?: string | null;
+        /**
+         * True if polling form is provided for this sensor.
+         */
+        hasPollingForm?: boolean;
+    };
+};
+
+export type GetMultilevelSensorResponse = GetMultilevelSensorResponses[keyof GetMultilevelSensorResponses];
+
+export type PollMultilevelSensorData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The type of Multilevel Sensor as defined by SDS13812.
+         */
+        sensor_type: number;
+    };
+    query?: never;
+    url: '/zwave/polling/multilevel_sensors/{addr}/{sensor_type}';
+};
+
+export type PollMultilevelSensorResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollMultilevelSensorResponse = PollMultilevelSensorResponses[keyof PollMultilevelSensorResponses];
+
+export type GetMultilevelSwitchData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/multilevel_switches/{addr}';
+};
+
+export type GetMultilevelSwitchResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Current level
+         */
+        level?: number | null;
+        /**
+         * Target level
+         *
+         * This field may be non null even when transition has been completed.
+         *
+         */
+        targetLevel?: number | null;
+        /**
+         * The time when device is expected to reach a target value.
+         *
+         * This field may indicate the past if transition has already been completed.
+         *
+         */
+        targetAfter?: string | null;
+        /**
+         * Whether duration may be included when requesting new level.
+         */
+        supportsDuration?: boolean;
+    };
+};
+
+export type GetMultilevelSwitchResponse = GetMultilevelSwitchResponses[keyof GetMultilevelSwitchResponses];
+
+export type ChangeLevelData = {
+    /**
+     * ChangeMultilevelSwitchLevel
+     *
+     * `duration` is available only if `supportsDuration` is true in GET response.
+     *
+     */
+    body?: {
+        /**
+         * Target Level as specified by SDS13781 (except "restore most
+         * recent level").
+         *
+         */
+        targetLevel: number;
+        /**
+         * Requested transition duration.
+         */
+        duration?: {
+            seconds?: number;
+            minutes?: number;
+            factoryDefault?: boolean;
+        } | null;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/multilevel_switches/{addr}';
+};
+
+export type ChangeLevelResponses = {
+    /**
+     * Ok
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ChangeLevelResponse = ChangeLevelResponses[keyof ChangeLevelResponses];
+
+export type StartMotionTransitionData = {
+    /**
+     * StartMotionTransition
+     *
+     * `duration` is available only if `supportsDuration` is true in GET response.
+     *
+     */
+    body?: {
+        backward: boolean;
+        startLevel?: number | null;
+        /**
+         * Requested transition duration.
+         */
+        duration?: {
+            seconds?: number;
+            minutes?: number;
+            factoryDefault?: boolean;
+        } | null;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/multilevel_switches/{addr}/start_transition';
+};
+
+export type StartMotionTransitionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type StartMotionTransitionResponse = StartMotionTransitionResponses[keyof StartMotionTransitionResponses];
+
+export type StopMotionTransitionData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/multilevel_switches/{addr}/stop_transition';
+};
+
+export type StopMotionTransitionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type StopMotionTransitionResponse = StopMotionTransitionResponses[keyof StopMotionTransitionResponses];
+
+export type TurnMultilevelSwitchData = {
+    /**
+     * TurnMultilevelSwitch
+     *
+     * `duration` is available only if `supportsDuration` is true in GET response.
+     *
+     */
+    body?: {
+        /**
+         * Target state
+         */
+        targetValue: boolean;
+        /**
+         * Requested transition duration.
+         */
+        duration?: {
+            seconds?: number;
+            minutes?: number;
+            factoryDefault?: boolean;
+        } | null;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/switching/multilevel_switches/{addr}';
+};
+
+export type TurnMultilevelSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type TurnMultilevelSwitchResponse = TurnMultilevelSwitchResponses[keyof TurnMultilevelSwitchResponses];
+
+export type PollMultilevelSwitchData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/multilevel_switches/{addr}';
+};
+
+export type PollMultilevelSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollMultilevelSwitchResponse = PollMultilevelSwitchResponses[keyof PollMultilevelSwitchResponses];
+
+export type GetZwaveNotificationGroupsByAddrData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/notification_groups/{addr}';
+};
+
+export type GetZwaveNotificationGroupsByAddrResponses = {
+    /**
+     * NotificationGroups
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Notification Type as specified by SDS13781.
+             *
+             * See SDS13713 for a list of possible values.
+             *
+             */
+            notificationType?: number;
+            /**
+             * The name of this group (as declared by SDS13713).
+             *
+             * This string is human-readable, translated.
+             *
+             */
+            name?: string | null;
+            /**
+             * Whether notifications from this group are ignored.
+             *
+             * This field is missing if a device does not support silencing.
+             *
+             */
+            silenced?: boolean;
+            /**
+             * Notification state variables contained by this group.
+             */
+            variables?: Array<{
+                /**
+                 * The name of this variable as specified by SDS13713.
+                 *
+                 * The purpose of this field is only identification and should not be displayed
+                 * to the user.
+                 *
+                 */
+                name?: string;
+                /**
+                 * The text describing this variable ready to be displayed to the user.
+                 *
+                 * __UNSTABLE__! This might be a subject for translation and
+                 * the actual text may change between releases.
+                 *
+                 */
+                label?: string | null;
+                /**
+                 * Current state as specified by SDS13713.
+                 */
+                state?: number | null;
+                /**
+                 * Specific parameter value for events with single parameter.
+                 *
+                 * A duration is encoded as seconds.
+                 *
+                 */
+                params?: number | null;
+                /**
+                 * The time of last notification that altered this variable.
+                 */
+                changedAt?: string;
+            }>;
+            /**
+             * Events/States supported by this notification group.
+             */
+            events?: Array<{
+                /**
+                 * Notification Event State as specified by SDS13781.
+                 *
+                 * See SDS13713 for a list of possible values.
+                 *
+                 */
+                eventState: number;
+                /**
+                 * Event Description (human-readable, translated).
+                 */
+                description: string | null;
+                /**
+                 * The name of Notification State variable.
+                 *
+                 * A state variable can transition between multiple states.
+                 * If this event is part of any state variable, it is considered to be a states.
+                 * See SDS13781 and SDS14223 for more information.
+                 *
+                 * Omitted if this is not a state, i.e. it is not a part of any State Variable.
+                 *
+                 */
+                variableName?: string;
+            }>;
+        }>;
+    };
+};
+
+export type GetZwaveNotificationGroupsByAddrResponse = GetZwaveNotificationGroupsByAddrResponses[keyof GetZwaveNotificationGroupsByAddrResponses];
+
+export type DeleteZwaveNotificationGroupsByAddrByNotificationTypeSilencerData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Notification Type
+         */
+        notification_type: number;
+    };
+    query?: never;
+    url: '/zwave/notification_groups/{addr}/{notification_type}/silencer';
+};
+
+export type DeleteZwaveNotificationGroupsByAddrByNotificationTypeSilencerResponses = {
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+    /**
+     * Unmuted successfully
+     */
+    204: void;
+};
+
+export type DeleteZwaveNotificationGroupsByAddrByNotificationTypeSilencerResponse = DeleteZwaveNotificationGroupsByAddrByNotificationTypeSilencerResponses[keyof DeleteZwaveNotificationGroupsByAddrByNotificationTypeSilencerResponses];
+
+export type PutZwaveNotificationGroupsByAddrByNotificationTypeSilencerData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Notification Type
+         */
+        notification_type: number;
+    };
+    query?: never;
+    url: '/zwave/notification_groups/{addr}/{notification_type}/silencer';
+};
+
+export type PutZwaveNotificationGroupsByAddrByNotificationTypeSilencerResponses = {
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+    /**
+     * Muted successfully
+     */
+    204: void;
+};
+
+export type PutZwaveNotificationGroupsByAddrByNotificationTypeSilencerResponse = PutZwaveNotificationGroupsByAddrByNotificationTypeSilencerResponses[keyof PutZwaveNotificationGroupsByAddrByNotificationTypeSilencerResponses];
+
+export type PostZwaveNotificationVariablesByAddrByNotificationTypeByNameData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Notification Type
+         */
+        notification_type: number;
+        /**
+         * State variable name
+         */
+        name: string;
+    };
+    query?: never;
+    url: '/zwave/notification_variables/{addr}/{notification_type}/{name}';
+};
+
+export type PostZwaveNotificationVariablesByAddrByNotificationTypeByNameResponses = {
+    /**
+     * NotificationStateVariable
+     *
+     * OK
+     */
+    200: number;
+};
+
+export type PostZwaveNotificationVariablesByAddrByNotificationTypeByNameResponse = PostZwaveNotificationVariablesByAddrByNotificationTypeByNameResponses[keyof PostZwaveNotificationVariablesByAddrByNotificationTypeByNameResponses];
+
+export type GetNotificationVarHistoryData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Notification Type
+         */
+        notification_type: number;
+        /**
+         * State variable name
+         */
+        name: string;
+    };
+    query?: {
+        start?: number;
+        limit?: number;
+    };
+    url: '/zwave/notification_variables/{addr}/{notification_type}/{name}/history';
+};
+
+export type GetNotificationVarHistoryResponses = {
+    /**
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Notification Type as specified by SDS13781.
+             */
+            notificationType?: number;
+            /**
+             * Event/State as specified by SDS13713.
+             */
+            eventState?: number | null;
+            /**
+             * Specific parameter value for events with single parameter.
+             *
+             * A duration is encoded as seconds.
+             *
+             */
+            params?: number | null;
+            /**
+             * The time of arrival.
+             */
+            occurredAt?: string;
+        }>;
+        /**
+         * Next notification ID
+         *
+         * It should not be interpreted by a client. The only purpose is to
+         * build a link to next page with more notifications.
+         *
+         */
+        next?: number | null;
+    };
+};
+
+export type GetNotificationVarHistoryResponse = GetNotificationVarHistoryResponses[keyof GetNotificationVarHistoryResponses];
+
+export type GetNotificationsData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: {
+        start?: number;
+        limit?: number;
+    };
+    url: '/zwave/notification/{addr}';
+};
+
+export type GetNotificationsResponses = {
+    /**
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Notification Type as specified by SDS13781.
+             */
+            notificationType?: number;
+            /**
+             * Event/State as specified by SDS13713.
+             */
+            eventState?: number | null;
+            /**
+             * Specific parameter value for events with single parameter.
+             *
+             * A duration is encoded as seconds.
+             *
+             */
+            params?: number | null;
+            /**
+             * The time of arrival.
+             */
+            occurredAt?: string;
+        }>;
+        /**
+         * Next notification ID
+         *
+         * It should not be interpreted by a client. The only purpose is to
+         * build a link to next page with more notifications.
+         *
+         */
+        next?: number | null;
+    };
+};
+
+export type GetNotificationsResponse = GetNotificationsResponses[keyof GetNotificationsResponses];
+
+export type StartInclusionData = {
+    body?: {
+        /**
+         * Use S0 security bootstrapping if node supports it.
+         */
+        allowS0?: boolean;
+        /**
+         * Use S2 security bootstrapping if node supports it.
+         */
+        allowS2?: boolean;
+        /**
+         * Perform inclusion in short range only
+         */
+        lowPower?: boolean;
+        /**
+         * Allow routed requests for inclusion
+         */
+        networkWide?: boolean;
+        /**
+         * Allow to specify additional options during inclusion (e.g. a list of keys to be granted to joining node)
+         */
+        advancedJoining?: boolean;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    };
+    path?: never;
+    query?: never;
+    url: '/zwave/nm/inclusions';
+};
+
+export type StartInclusionErrors = {
+    /**
+     * NetworkManagementBusy
+     *
+     * Busy doing other network management operation.
+     *
+     * Z-Wave service allows only single network management operation at the time.
+     * Network management operations include:
+     *
+     * * node inclusion/exclusion/learn mode
+     * * neighbor discovery
+     * * firmware update
+     * * node interview
+     *
+     */
+    503: {
+        /**
+         * Error URI reference.
+         */
+        type?: 'http://fibaro.com/api/zwave/errors/NetworkManagementBusyError';
+        /**
+         * Service is busy with another process.
+         */
+        title?: string;
+        /**
+         * There is another process that is waiting for completion.
+         */
+        detail?: string;
+        /**
+         * Temporarily unable to handle the request.
+         */
+        status?: number;
+        /**
+         * ID number of the currently running process.
+         */
+        processId?: number;
+        /**
+         * The name of the currently running process.
+         */
+        processName?: 'inclusion' | 'exclusion' | 'learnMode' | 'firmwareUpdate';
+    };
+};
+
+export type StartInclusionError = StartInclusionErrors[keyof StartInclusionErrors];
+
+export type StartInclusionResponses = {
+    /**
+     * Created inclusion process
+     */
+    201: {
+        /**
+         * Process identifier.
+         */
+        id?: number;
+        /**
+         * Status of inclusion process
+         */
+        status?: 'DONE' | 'FAILED' | 'SECURITY_FAILED' | 'ALREADY_EXISTED' | 'FAILED_BUSY';
+        /**
+         * Information about whether the process can be interrupted.
+         */
+        cancelable?: boolean;
+        /**
+         * Is protocol ready for incoming NIF ?
+         */
+        protocolReady?: boolean;
+        /**
+         * Protocol detected node.
+         */
+        nodeFound?: boolean;
+        deviceClass?: {
+            /**
+             * Generic Device Class
+             */
+            generic: number;
+            /**
+             * Specific Device Class
+             */
+            specific: number;
+        } | null;
+        /**
+         * Whether protocol part of inclusion completed.
+         */
+        protocolDone?: boolean;
+        /**
+         * ID of added node (if any).
+         */
+        newNodeId?: number | null;
+        /**
+         * KEX Fail Type as specified by SDS13783.
+         */
+        kexFailType?: number;
+        /**
+         * Description of KEX Fail Type.
+         *
+         * This text is translated and can be displayed to user.
+         *
+         */
+        kexFailName?: string | null;
+        alreadyExisted?: boolean;
+        /**
+         * Security classes exchanged with this device.
+         */
+        grantedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        keysReport?: {
+            /**
+             * Security classes requested by a joining device.
+             */
+            requestedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+            /**
+             * Whether joining device requests Client Side Authentication.
+             */
+            requestCsa?: boolean;
+        } | null;
+        dskReport?: {
+            /**
+             * Partial DSK
+             *
+             * DSK with zeroed blocks at the front.
+             *
+             */
+            dsk?: string;
+            /**
+             * PIN Length
+             *
+             * The number of DSK blocks that user must enter.
+             *
+             * Equals zero if no PIN is to be entered.
+             *
+             */
+            inputDskLen?: number;
+        } | null;
+    } & {
+        /**
+         * Use S0 security bootstrapping if node supports it.
+         */
+        allowS0?: boolean;
+        /**
+         * Use S2 security bootstrapping if node supports it.
+         */
+        allowS2?: boolean;
+        /**
+         * Perform inclusion in short range only
+         */
+        lowPower?: boolean;
+        /**
+         * Allow routed requests for inclusion
+         */
+        networkWide?: boolean;
+        /**
+         * Allow to specify additional options during inclusion (e.g. a list of keys to be granted to joining node)
+         */
+        advancedJoining?: boolean;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    };
+};
+
+export type StartInclusionResponse = StartInclusionResponses[keyof StartInclusionResponses];
+
+export type GetInclusionStateData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/nm/inclusions/{id}';
+};
+
+export type GetInclusionStateResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Process identifier.
+         */
+        id?: number;
+        /**
+         * Status of inclusion process
+         */
+        status?: 'DONE' | 'FAILED' | 'SECURITY_FAILED' | 'ALREADY_EXISTED' | 'FAILED_BUSY';
+        /**
+         * Information about whether the process can be interrupted.
+         */
+        cancelable?: boolean;
+        /**
+         * Is protocol ready for incoming NIF ?
+         */
+        protocolReady?: boolean;
+        /**
+         * Protocol detected node.
+         */
+        nodeFound?: boolean;
+        deviceClass?: {
+            /**
+             * Generic Device Class
+             */
+            generic: number;
+            /**
+             * Specific Device Class
+             */
+            specific: number;
+        } | null;
+        /**
+         * Whether protocol part of inclusion completed.
+         */
+        protocolDone?: boolean;
+        /**
+         * ID of added node (if any).
+         */
+        newNodeId?: number | null;
+        /**
+         * KEX Fail Type as specified by SDS13783.
+         */
+        kexFailType?: number;
+        /**
+         * Description of KEX Fail Type.
+         *
+         * This text is translated and can be displayed to user.
+         *
+         */
+        kexFailName?: string | null;
+        alreadyExisted?: boolean;
+        /**
+         * Security classes exchanged with this device.
+         */
+        grantedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        keysReport?: {
+            /**
+             * Security classes requested by a joining device.
+             */
+            requestedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+            /**
+             * Whether joining device requests Client Side Authentication.
+             */
+            requestCsa?: boolean;
+        } | null;
+        dskReport?: {
+            /**
+             * Partial DSK
+             *
+             * DSK with zeroed blocks at the front.
+             *
+             */
+            dsk?: string;
+            /**
+             * PIN Length
+             *
+             * The number of DSK blocks that user must enter.
+             *
+             * Equals zero if no PIN is to be entered.
+             *
+             */
+            inputDskLen?: number;
+        } | null;
+    } & {
+        /**
+         * Use S0 security bootstrapping if node supports it.
+         */
+        allowS0?: boolean;
+        /**
+         * Use S2 security bootstrapping if node supports it.
+         */
+        allowS2?: boolean;
+        /**
+         * Perform inclusion in short range only
+         */
+        lowPower?: boolean;
+        /**
+         * Allow routed requests for inclusion
+         */
+        networkWide?: boolean;
+        /**
+         * Allow to specify additional options during inclusion (e.g. a list of keys to be granted to joining node)
+         */
+        advancedJoining?: boolean;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    };
+};
+
+export type GetInclusionStateResponse = GetInclusionStateResponses[keyof GetInclusionStateResponses];
+
+export type PostZwaveNmInclusionsByIdCancelData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/nm/inclusions/{id}/cancel';
+};
+
+export type PostZwaveNmInclusionsByIdCancelResponses = {
+    /**
+     * Ok. The client must poll inclusion state till its status is non-null. A node may still be added due to race condition between cancellation and node inclusion.
+     *
+     */
+    200: unknown;
+};
+
+export type GrantKeysToJoiningNodeData = {
+    body?: {
+        /**
+         * Security classes accepted by the user.
+         */
+        acceptKeys: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        /**
+         * Whether user accepts Client Side Authentication.
+         */
+        acceptCsa: boolean;
+    };
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/nm/inclusions/{id}/grant_keys';
+};
+
+export type GrantKeysToJoiningNodeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type EnterPinOfJoiningNodeData = {
+    /**
+     * EnterJoiningNodePin
+     */
+    body?: {
+        /**
+         * The missing part of DSK.
+         *
+         * The number of blocks should be as specified by DSK report (`inputDskLen` field).
+         *
+         */
+        pin: string;
+    };
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/nm/inclusions/{id}/accept_dsk';
+};
+
+export type EnterPinOfJoiningNodeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type StartExclusionData = {
+    body?: {
+        /**
+         * ID of specific node to exclude. Required when excluding failed node.
+         *
+         */
+        specifiedNodeId?: number | null;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    };
+    path?: never;
+    query?: never;
+    url: '/zwave/nm/exclusions';
+};
+
+export type StartExclusionErrors = {
+    /**
+     * Missing node ID in request for excluding failed node.
+     */
+    400: unknown;
+    /**
+     * Busy doing other network management operation.
+     */
+    503: unknown;
+};
+
+export type StartExclusionResponses = {
+    /**
+     * Created exclusion process
+     */
+    201: {
+        /**
+         * ID of specific node to exclude. Required when excluding failed node.
+         *
+         */
+        specifiedNodeId?: number | null;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    } & {
+        /**
+         * Process identifier.
+         */
+        id?: number;
+        /**
+         * Status of exclusion process
+         */
+        status?: 'DONE' | 'FAILED' | 'FAILED_BUSY';
+        /**
+         * Is protocol ready for incoming NIF ?
+         */
+        protocolReady?: boolean;
+        /**
+         * ID of removed node (if any).
+         */
+        removedNodeId?: number | null;
+    };
+};
+
+export type StartExclusionResponse = StartExclusionResponses[keyof StartExclusionResponses];
+
+export type GetZwaveNmExclusionsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/nm/exclusions/{id}';
+};
+
+export type GetZwaveNmExclusionsByIdResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * ID of specific node to exclude. Required when excluding failed node.
+         *
+         */
+        specifiedNodeId?: number | null;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    } & {
+        /**
+         * Process identifier.
+         */
+        id?: number;
+        /**
+         * Status of exclusion process
+         */
+        status?: 'DONE' | 'FAILED' | 'FAILED_BUSY';
+        /**
+         * Is protocol ready for incoming NIF ?
+         */
+        protocolReady?: boolean;
+        /**
+         * ID of removed node (if any).
+         */
+        removedNodeId?: number | null;
+    };
+};
+
+export type GetZwaveNmExclusionsByIdResponse = GetZwaveNmExclusionsByIdResponses[keyof GetZwaveNmExclusionsByIdResponses];
+
+export type PostZwaveNmExclusionsByIdCancelData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/nm/exclusions/{id}/cancel';
+};
+
+export type PostZwaveNmExclusionsByIdCancelResponses = {
+    /**
+     * Ok. The client must poll exclusion state till its status is non-null. A node may still be removed due to race condition between cancellation and node exclusion.
+     *
+     */
+    200: unknown;
+};
+
+export type GetPvsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/node_provisioning_list';
+};
+
+export type GetPvsResponses = {
+    /**
+     * GetNodeProvisioningList
+     *
+     * A list of found DSK.
+     */
+    200: {
+        /**
+         * Indicates if this functionality is currently available
+         */
+        available?: boolean;
+        items?: Array<{
+            /**
+             * Device specific key (is not supported for PUT query).
+             */
+            dsk: string;
+            /**
+             * Generic device class ID (SDS10242, SDS11847).
+             */
+            genericDeviceClass?: number;
+            /**
+             * Specific device class ID (SDS10242, SDS11847).
+             */
+            specificDeviceClass?: number;
+            /**
+             * Icon type (SDS13738)
+             */
+            installerIconType?: number;
+            /**
+             * Manufacturer ID.
+             */
+            manufacturerId?: number;
+            /**
+             * Product Type ID.
+             */
+            productType?: number;
+            /**
+             * Product ID
+             */
+            productId?: number;
+            /**
+             * Application Version (Firmware 0 Version).
+             */
+            applicationVersion?: number;
+            /**
+             * Application Sub Version (Firmware 0 Sub Version).
+             */
+            applicationSubversion?: number;
+            /**
+             * Max inclusion request interval.
+             * Whether a power constrained Smart Start node will issue inclusion request at a higher interval value than the default 512 seconds.
+             *
+             * This field is used to advertise the Smart Start inclusion request interval used by the node.
+             * The value MUST be represented in the unit of 128 seconds.
+             * The value MUST be encoded as an unsigned integer in the range 5..99; corresponding to a range of 640..12672 seconds, eg. for 5 intervals of 128 seconds each, the whole process is 640 seconds.
+             *
+             */
+            maxInclusionRequestInterval?: number;
+            uuid16?: {
+                /**
+                 * The format for presenting the node’s UUID (SDS13944).
+                 */
+                presentationFormat?: number;
+                /**
+                 * The data field, carrying 16 bytes of manufacturer-defined information; unique for a given product (SDS13944).
+                 */
+                data?: Array<number>;
+            };
+            /**
+             * Array of supported protocols by node. This field MUST be treated as a bitmask.
+             *
+             * Bitm- when bit 0 is set then `classic Z-Wave` is supported,
+             * - when bit 1 is set then `Z-Wave Long Range` is supported.ask:
+             *
+             *
+             * The device can support both protocols - then both bits are set.
+             *
+             */
+            supportedProtocols?: Array<number>;
+            /**
+             * The name assigned to a supporting node.
+             */
+            name?: string;
+            /**
+             * The location assigned to a supporting node.
+             */
+            location?: string;
+            /**
+             * Security classes to be exchanged with joining device.
+             */
+            advancedJoining?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+            /**
+             * SmartStart Inclusion Setting as defined by SDS13944.
+             */
+            smartStartInclusionSetting?: number;
+            /**
+             * Which bootstrapping mode (as defined by SDS13944) must be used when including
+             * the node advertised in this entry.
+             *
+             */
+            bootstrappingMode?: number;
+            /**
+             * The node identifier assigned to to a supporting node during network inclusion.
+             */
+            assignedNodeId?: number;
+            /**
+             * The network status of the this entry as defined by SDS13944.
+             */
+            networkStatus?: number;
+        }>;
+    };
+};
+
+export type GetPvsResponse = GetPvsResponses[keyof GetPvsResponses];
+
+export type DeleteDskFromPvsData = {
+    body?: never;
+    path: {
+        /**
+         * Device specific key.
+         */
+        dsk: string;
+    };
+    query?: never;
+    url: '/zwave/node_provisioning_list/{dsk}';
+};
+
+export type DeleteDskFromPvsResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type DeleteDskFromPvsResponse = DeleteDskFromPvsResponses[keyof DeleteDskFromPvsResponses];
+
+export type GetPvsEntryData = {
+    body?: never;
+    path: {
+        /**
+         * Device specific key.
+         */
+        dsk: string;
+    };
+    query?: never;
+    url: '/zwave/node_provisioning_list/{dsk}';
+};
+
+export type GetPvsEntryResponses = {
+    /**
+     * An entry based on DSK.
+     */
+    200: {
+        /**
+         * Device specific key (is not supported for PUT query).
+         */
+        dsk: string;
+        /**
+         * Generic device class ID (SDS10242, SDS11847).
+         */
+        genericDeviceClass?: number;
+        /**
+         * Specific device class ID (SDS10242, SDS11847).
+         */
+        specificDeviceClass?: number;
+        /**
+         * Icon type (SDS13738)
+         */
+        installerIconType?: number;
+        /**
+         * Manufacturer ID.
+         */
+        manufacturerId?: number;
+        /**
+         * Product Type ID.
+         */
+        productType?: number;
+        /**
+         * Product ID
+         */
+        productId?: number;
+        /**
+         * Application Version (Firmware 0 Version).
+         */
+        applicationVersion?: number;
+        /**
+         * Application Sub Version (Firmware 0 Sub Version).
+         */
+        applicationSubversion?: number;
+        /**
+         * Max inclusion request interval.
+         * Whether a power constrained Smart Start node will issue inclusion request at a higher interval value than the default 512 seconds.
+         *
+         * This field is used to advertise the Smart Start inclusion request interval used by the node.
+         * The value MUST be represented in the unit of 128 seconds.
+         * The value MUST be encoded as an unsigned integer in the range 5..99; corresponding to a range of 640..12672 seconds, eg. for 5 intervals of 128 seconds each, the whole process is 640 seconds.
+         *
+         */
+        maxInclusionRequestInterval?: number;
+        uuid16?: {
+            /**
+             * The format for presenting the node’s UUID (SDS13944).
+             */
+            presentationFormat?: number;
+            /**
+             * The data field, carrying 16 bytes of manufacturer-defined information; unique for a given product (SDS13944).
+             */
+            data?: Array<number>;
+        };
+        /**
+         * Array of supported protocols by node. This field MUST be treated as a bitmask.
+         *
+         * Bitm- when bit 0 is set then `classic Z-Wave` is supported,
+         * - when bit 1 is set then `Z-Wave Long Range` is supported.ask:
+         *
+         *
+         * The device can support both protocols - then both bits are set.
+         *
+         */
+        supportedProtocols?: Array<number>;
+        /**
+         * The name assigned to a supporting node.
+         */
+        name?: string;
+        /**
+         * The location assigned to a supporting node.
+         */
+        location?: string;
+        /**
+         * Security classes to be exchanged with joining device.
+         */
+        advancedJoining?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        /**
+         * SmartStart Inclusion Setting as defined by SDS13944.
+         */
+        smartStartInclusionSetting?: number;
+        /**
+         * Which bootstrapping mode (as defined by SDS13944) must be used when including
+         * the node advertised in this entry.
+         *
+         */
+        bootstrappingMode?: number;
+        /**
+         * The node identifier assigned to to a supporting node during network inclusion.
+         */
+        assignedNodeId?: number;
+        /**
+         * The network status of the this entry as defined by SDS13944.
+         */
+        networkStatus?: number;
+    };
+};
+
+export type GetPvsEntryResponse = GetPvsEntryResponses[keyof GetPvsEntryResponses];
+
+export type AddDskToPvsData = {
+    body?: {
+        /**
+         * Device specific key (is not supported for PUT query).
+         */
+        dsk: string;
+        /**
+         * Generic device class ID (SDS10242, SDS11847).
+         */
+        genericDeviceClass?: number;
+        /**
+         * Specific device class ID (SDS10242, SDS11847).
+         */
+        specificDeviceClass?: number;
+        /**
+         * Icon type (SDS13738)
+         */
+        installerIconType?: number;
+        /**
+         * Manufacturer ID.
+         */
+        manufacturerId?: number;
+        /**
+         * Product Type ID.
+         */
+        productType?: number;
+        /**
+         * Product ID
+         */
+        productId?: number;
+        /**
+         * Application Version (Firmware 0 Version).
+         */
+        applicationVersion?: number;
+        /**
+         * Application Sub Version (Firmware 0 Sub Version).
+         */
+        applicationSubversion?: number;
+        /**
+         * Max inclusion request interval.
+         * Whether a power constrained Smart Start node will issue inclusion request at a higher interval value than the default 512 seconds.
+         *
+         * This field is used to advertise the Smart Start inclusion request interval used by the node.
+         * The value MUST be represented in the unit of 128 seconds.
+         * The value MUST be encoded as an unsigned integer in the range 5..99; corresponding to a range of 640..12672 seconds, eg. for 5 intervals of 128 seconds each, the whole process is 640 seconds.
+         *
+         */
+        maxInclusionRequestInterval?: number;
+        uuid16?: {
+            /**
+             * The format for presenting the node’s UUID (SDS13944).
+             */
+            presentationFormat?: number;
+            /**
+             * The data field, carrying 16 bytes of manufacturer-defined information; unique for a given product (SDS13944).
+             */
+            data?: Array<number>;
+        };
+        /**
+         * Array of supported protocols by node. This field MUST be treated as a bitmask.
+         *
+         * Bitm- when bit 0 is set then `classic Z-Wave` is supported,
+         * - when bit 1 is set then `Z-Wave Long Range` is supported.ask:
+         *
+         *
+         * The device can support both protocols - then both bits are set.
+         *
+         */
+        supportedProtocols?: Array<number>;
+        /**
+         * The name assigned to a supporting node.
+         */
+        name?: string;
+        /**
+         * The location assigned to a supporting node.
+         */
+        location?: string;
+        /**
+         * Security classes to be exchanged with joining device.
+         */
+        advancedJoining?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        /**
+         * SmartStart Inclusion Setting as defined by SDS13944.
+         */
+        smartStartInclusionSetting?: number;
+        /**
+         * Which bootstrapping mode (as defined by SDS13944) must be used when including
+         * the node advertised in this entry.
+         *
+         */
+        bootstrappingMode?: number;
+        /**
+         * The node identifier assigned to to a supporting node during network inclusion.
+         */
+        assignedNodeId?: number;
+        /**
+         * The network status of the this entry as defined by SDS13944.
+         */
+        networkStatus?: number;
+    };
+    path: {
+        /**
+         * Device specific key.
+         */
+        dsk: string;
+    };
+    query?: never;
+    url: '/zwave/node_provisioning_list/{dsk}';
+};
+
+export type AddDskToPvsErrors = {
+    /**
+     * Conflict
+     */
+    409: unknown;
+};
+
+export type AddDskToPvsResponses = {
+    /**
+     * Created
+     */
+    201: unknown;
+};
+
+export type AddEntryToPvsByQrCodeData = {
+    body?: {
+        /**
+         * QR code payload.
+         */
+        data: string;
+        /**
+         * Used to advertise the bootstrapping mode to use when including the node advertised in Provisioning List entry.
+         *
+         */
+        bootstrappingMode: 'security2' | 'smartStart' | 'longRangeSmartStart';
+    };
+    path?: never;
+    query?: never;
+    url: '/zwave/node_provisioning_list/qr_code';
+};
+
+export type AddEntryToPvsByQrCodeErrors = {
+    /**
+     * Conflict
+     */
+    409: unknown;
+};
+
+export type AddEntryToPvsByQrCodeResponses = {
+    /**
+     * An entry based on QR Code.
+     */
+    200: {
+        /**
+         * Device specific key (is not supported for PUT query).
+         */
+        dsk: string;
+        /**
+         * Generic device class ID (SDS10242, SDS11847).
+         */
+        genericDeviceClass?: number;
+        /**
+         * Specific device class ID (SDS10242, SDS11847).
+         */
+        specificDeviceClass?: number;
+        /**
+         * Icon type (SDS13738)
+         */
+        installerIconType?: number;
+        /**
+         * Manufacturer ID.
+         */
+        manufacturerId?: number;
+        /**
+         * Product Type ID.
+         */
+        productType?: number;
+        /**
+         * Product ID
+         */
+        productId?: number;
+        /**
+         * Application Version (Firmware 0 Version).
+         */
+        applicationVersion?: number;
+        /**
+         * Application Sub Version (Firmware 0 Sub Version).
+         */
+        applicationSubversion?: number;
+        /**
+         * Max inclusion request interval.
+         * Whether a power constrained Smart Start node will issue inclusion request at a higher interval value than the default 512 seconds.
+         *
+         * This field is used to advertise the Smart Start inclusion request interval used by the node.
+         * The value MUST be represented in the unit of 128 seconds.
+         * The value MUST be encoded as an unsigned integer in the range 5..99; corresponding to a range of 640..12672 seconds, eg. for 5 intervals of 128 seconds each, the whole process is 640 seconds.
+         *
+         */
+        maxInclusionRequestInterval?: number;
+        uuid16?: {
+            /**
+             * The format for presenting the node’s UUID (SDS13944).
+             */
+            presentationFormat?: number;
+            /**
+             * The data field, carrying 16 bytes of manufacturer-defined information; unique for a given product (SDS13944).
+             */
+            data?: Array<number>;
+        };
+        /**
+         * Array of supported protocols by node. This field MUST be treated as a bitmask.
+         *
+         * Bitm- when bit 0 is set then `classic Z-Wave` is supported,
+         * - when bit 1 is set then `Z-Wave Long Range` is supported.ask:
+         *
+         *
+         * The device can support both protocols - then both bits are set.
+         *
+         */
+        supportedProtocols?: Array<number>;
+        /**
+         * The name assigned to a supporting node.
+         */
+        name?: string;
+        /**
+         * The location assigned to a supporting node.
+         */
+        location?: string;
+        /**
+         * Security classes to be exchanged with joining device.
+         */
+        advancedJoining?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        /**
+         * SmartStart Inclusion Setting as defined by SDS13944.
+         */
+        smartStartInclusionSetting?: number;
+        /**
+         * Which bootstrapping mode (as defined by SDS13944) must be used when including
+         * the node advertised in this entry.
+         *
+         */
+        bootstrappingMode?: number;
+        /**
+         * The node identifier assigned to to a supporting node during network inclusion.
+         */
+        assignedNodeId?: number;
+        /**
+         * The network status of the this entry as defined by SDS13944.
+         */
+        networkStatus?: number;
+    };
+};
+
+export type AddEntryToPvsByQrCodeResponse = AddEntryToPvsByQrCodeResponses[keyof AddEntryToPvsByQrCodeResponses];
+
+export type DecodeQrCodeData = {
+    body?: {
+        /**
+         * QR code payload.
+         */
+        data: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/zwave/node_provisioning_list/qr_code/decoder';
+};
+
+export type DecodeQrCodeErrors = {
+    /**
+     * Conflict
+     */
+    409: unknown;
+};
+
+export type DecodeQrCodeResponses = {
+    /**
+     * Decoded QR Code.
+     */
+    200: {
+        /**
+         * Version of QR code.
+         */
+        version?: 's2Only' | 'smartStart';
+        /**
+         * Security classes requested by this device.
+         */
+        requestedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        metaData?: {
+            /**
+             * Device specific key (is not supported for PUT query).
+             */
+            dsk: string;
+            /**
+             * Generic device class ID (SDS10242, SDS11847).
+             */
+            genericDeviceClass?: number;
+            /**
+             * Specific device class ID (SDS10242, SDS11847).
+             */
+            specificDeviceClass?: number;
+            /**
+             * Icon type (SDS13738)
+             */
+            installerIconType?: number;
+            /**
+             * Manufacturer ID.
+             */
+            manufacturerId?: number;
+            /**
+             * Product Type ID.
+             */
+            productType?: number;
+            /**
+             * Product ID
+             */
+            productId?: number;
+            /**
+             * Application Version (Firmware 0 Version).
+             */
+            applicationVersion?: number;
+            /**
+             * Application Sub Version (Firmware 0 Sub Version).
+             */
+            applicationSubversion?: number;
+            /**
+             * Max inclusion request interval.
+             * Whether a power constrained Smart Start node will issue inclusion request at a higher interval value than the default 512 seconds.
+             *
+             * This field is used to advertise the Smart Start inclusion request interval used by the node.
+             * The value MUST be represented in the unit of 128 seconds.
+             * The value MUST be encoded as an unsigned integer in the range 5..99; corresponding to a range of 640..12672 seconds, eg. for 5 intervals of 128 seconds each, the whole process is 640 seconds.
+             *
+             */
+            maxInclusionRequestInterval?: number;
+            uuid16?: {
+                /**
+                 * The format for presenting the node’s UUID (SDS13944).
+                 */
+                presentationFormat?: number;
+                /**
+                 * The data field, carrying 16 bytes of manufacturer-defined information; unique for a given product (SDS13944).
+                 */
+                data?: Array<number>;
+            };
+            /**
+             * Array of supported protocols by node. This field MUST be treated as a bitmask.
+             *
+             * Bitm- when bit 0 is set then `classic Z-Wave` is supported,
+             * - when bit 1 is set then `Z-Wave Long Range` is supported.ask:
+             *
+             *
+             * The device can support both protocols - then both bits are set.
+             *
+             */
+            supportedProtocols?: Array<number>;
+            /**
+             * The name assigned to a supporting node.
+             */
+            name?: string;
+            /**
+             * The location assigned to a supporting node.
+             */
+            location?: string;
+            /**
+             * Security classes to be exchanged with joining device.
+             */
+            advancedJoining?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+            /**
+             * SmartStart Inclusion Setting as defined by SDS13944.
+             */
+            smartStartInclusionSetting?: number;
+            /**
+             * Which bootstrapping mode (as defined by SDS13944) must be used when including
+             * the node advertised in this entry.
+             *
+             */
+            bootstrappingMode?: number;
+            /**
+             * The node identifier assigned to to a supporting node during network inclusion.
+             */
+            assignedNodeId?: number;
+            /**
+             * The network status of the this entry as defined by SDS13944.
+             */
+            networkStatus?: number;
+        };
+    };
+};
+
+export type DecodeQrCodeResponse = DecodeQrCodeResponses[keyof DecodeQrCodeResponses];
+
+export type GetZwaveNodesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/nodes';
+};
+
+export type GetZwaveNodesResponses = {
+    /**
+     * AllNodes
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            nodeId: number;
+            /**
+             * Whether this node is considered a failed node at protocol level.
+             *
+             * This flag is based upon node reachability during last communication
+             * with it.
+             *
+             */
+            protocolFailing?: boolean;
+            /**
+             * Whether this node is considered reachable.
+             *
+             * Values:
+             *
+             * - `true` - node is reachable; operations targeting this node will be performed, but first
+             * communication failure would mark it as unreachable.
+             *
+             * - `false` - node is unreachable; operations targeting this node will be rejected, without
+             * an attempt to communicate with it. Any message received from the node (e.g. unsolicited
+             * report) will make it reachable again.
+             *
+             * - `null` - reachability is ignored for this node. Communication will always be attempted
+             * (note that continuous attempts to communicate with an unreachable node may cause some
+             * lag within the Z-Wave network).
+             *
+             */
+            reachable?: boolean | null;
+            /**
+             * The unique ID identifying the manufacturer of the device.
+             *
+             */
+            manufacturerId?: number;
+            /**
+             * The name of manufacturer of this device.
+             *
+             * `null` if manufacturer of this device is unknown.
+             *
+             */
+            manufacturerName?: string | null;
+            /**
+             * The unique ID identifying the actual product type.
+             */
+            productTypeId?: number;
+            /**
+             * The unique ID identifying the actual product.
+             *
+             * A specific product ID must be defined by the manufacturer for each
+             * product of a given product type. Thus, the same product ID value
+             * may appear for different product type ID values.
+             *
+             */
+            productId?: number;
+            /**
+             * Device ID
+             *
+             * Together with Manufacturer ID globally identifies a single device.
+             *
+             * This might be either of:
+             *
+             * * UTF-8 string
+             * * binary data, formatted with h' prefix (e.g. `[0x30, 0x31, 0x32, 0x33]`
+             * will be formatted as `h'30313233`)
+             *
+             */
+            deviceId?: string;
+            /**
+             * Device ID type
+             *
+             * Determines the actual meaning of Device ID.
+             *
+             * Refer to SDS13782.
+             *
+             */
+            deviceIdType?: number;
+            /**
+             * The Z-Wave Protocol Library Type used by the node.
+             */
+            zwaveProtocolLibraryType?: number;
+            /**
+             * The Z-Wave protocol version used by the node.
+             */
+            zwaveProtocolVersion?: string;
+            /**
+             * A value which is unique to this particular version of the product.
+             *
+             * The value is updated to a new value every time the hardware is modified for
+             * a given product.
+             *
+             */
+            hardwareVersion?: number;
+            /**
+             * The SDK version used for building the Z-Wave chip software components for the node.
+             *
+             */
+            sdkVersion?: string;
+            /**
+             * The Z-Wave Application Framework API version used by the node.
+             *
+             */
+            zwaveApplicationFrameworkVersion?: string;
+            /**
+             * The version of the Serial API exposed to a host CPU or a second Chip.
+             *
+             */
+            hostInterfaceVersion?: string;
+            /**
+             * The version of application software used by the node on its Z-Wave chip.
+             *
+             */
+            applicationVersion?: string;
+            /**
+             * The version of "firmware0" dedicated to the Z-Wave chip.
+             *
+             */
+            firmware0Version?: number;
+            /**
+             * This node uses a wake up mechanism to allow communicating with it.
+             */
+            hasWakeUp?: boolean;
+            /**
+             * Security classes exchanged with this device.
+             */
+            grantedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+            /**
+             * A list of endpoints present on this node.
+             *
+             */
+            endpoints?: Array<{
+                /**
+                 * Endpoint Address
+                 *
+                 * Depending on the type of endpoint following formats are possible:
+                 *
+                 * - individual endpoint `<node_id>.<endpoint_id>`
+                 * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+                 *
+                 */
+                addr?: string;
+                /**
+                 * Indicates if this endpoint is dynamic.
+                 */
+                isDynamic?: boolean;
+                /**
+                 * Indicates if this endpoint is aggregated.
+                 */
+                isAggregated?: boolean;
+                /**
+                 * A list of individual endpoint identifiers aggregated on this endpoint.
+                 */
+                aggregatedMembers?: Array<string> | null;
+                /**
+                 * Whether this endpoint issues notifications.
+                 */
+                hasNotifications?: boolean;
+                /**
+                 * Whether this endpoint has association groups.
+                 */
+                hasAssociationGroups?: boolean;
+                /**
+                 * Whether this endpoint can perform firmware update.
+                 */
+                hasFirmwareUpdate?: boolean;
+                /**
+                 * Whether this endpoint is identifiable.
+                 */
+                isIdentifiable?: boolean;
+                resources?: Array<{
+                    type?: 'AlarmSensor';
+                    sensorType?: number;
+                    sensorName?: string;
+                } | {
+                    type?: 'AllSwitch';
+                } | {
+                    type?: 'Basic';
+                } | {
+                    type?: 'Battery';
+                } | {
+                    type?: 'BinarySensor';
+                    sensorType?: number;
+                    sensorName?: string;
+                } | {
+                    type?: 'BinarySwitch';
+                } | {
+                    type?: 'CentralScene';
+                } | {
+                    type?: 'ColorSwitch';
+                    componentNumber?: number;
+                    componentName?: string;
+                } | {
+                    type?: 'DoorLock';
+                } | {
+                    type?: 'Indicator';
+                    indicatorId?: number;
+                    indicatorName?: string;
+                } | {
+                    type?: 'Meter';
+                } | {
+                    type?: 'MultilevelSensor';
+                    sensorType?: number;
+                    sensorName?: string;
+                } | {
+                    type?: 'MultilevelSwitch';
+                } | {
+                    type?: 'SoundSwitch';
+                } | {
+                    type?: 'Thermostat';
+                }>;
+            }>;
+        }>;
+    };
+};
+
+export type GetZwaveNodesResponse = GetZwaveNodesResponses[keyof GetZwaveNodesResponses];
+
+export type DeleteZwaveNodesByNodeIdData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}';
+};
+
+export type DeleteZwaveNodesByNodeIdResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetZwaveNodesByNodeIdData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}';
+};
+
+export type GetZwaveNodesByNodeIdResponses = {
+    /**
+     * OK
+     */
+    200: {
+        nodeId: number;
+        /**
+         * Whether this node is considered a failed node at protocol level.
+         *
+         * This flag is based upon node reachability during last communication
+         * with it.
+         *
+         */
+        protocolFailing?: boolean;
+        /**
+         * Whether this node is considered reachable.
+         *
+         * Values:
+         *
+         * - `true` - node is reachable; operations targeting this node will be performed, but first
+         * communication failure would mark it as unreachable.
+         *
+         * - `false` - node is unreachable; operations targeting this node will be rejected, without
+         * an attempt to communicate with it. Any message received from the node (e.g. unsolicited
+         * report) will make it reachable again.
+         *
+         * - `null` - reachability is ignored for this node. Communication will always be attempted
+         * (note that continuous attempts to communicate with an unreachable node may cause some
+         * lag within the Z-Wave network).
+         *
+         */
+        reachable?: boolean | null;
+        /**
+         * The unique ID identifying the manufacturer of the device.
+         *
+         */
+        manufacturerId?: number;
+        /**
+         * The name of manufacturer of this device.
+         *
+         * `null` if manufacturer of this device is unknown.
+         *
+         */
+        manufacturerName?: string | null;
+        /**
+         * The unique ID identifying the actual product type.
+         */
+        productTypeId?: number;
+        /**
+         * The unique ID identifying the actual product.
+         *
+         * A specific product ID must be defined by the manufacturer for each
+         * product of a given product type. Thus, the same product ID value
+         * may appear for different product type ID values.
+         *
+         */
+        productId?: number;
+        /**
+         * Device ID
+         *
+         * Together with Manufacturer ID globally identifies a single device.
+         *
+         * This might be either of:
+         *
+         * * UTF-8 string
+         * * binary data, formatted with h' prefix (e.g. `[0x30, 0x31, 0x32, 0x33]`
+         * will be formatted as `h'30313233`)
+         *
+         */
+        deviceId?: string;
+        /**
+         * Device ID type
+         *
+         * Determines the actual meaning of Device ID.
+         *
+         * Refer to SDS13782.
+         *
+         */
+        deviceIdType?: number;
+        /**
+         * The Z-Wave Protocol Library Type used by the node.
+         */
+        zwaveProtocolLibraryType?: number;
+        /**
+         * The Z-Wave protocol version used by the node.
+         */
+        zwaveProtocolVersion?: string;
+        /**
+         * A value which is unique to this particular version of the product.
+         *
+         * The value is updated to a new value every time the hardware is modified for
+         * a given product.
+         *
+         */
+        hardwareVersion?: number;
+        /**
+         * The SDK version used for building the Z-Wave chip software components for the node.
+         *
+         */
+        sdkVersion?: string;
+        /**
+         * The Z-Wave Application Framework API version used by the node.
+         *
+         */
+        zwaveApplicationFrameworkVersion?: string;
+        /**
+         * The version of the Serial API exposed to a host CPU or a second Chip.
+         *
+         */
+        hostInterfaceVersion?: string;
+        /**
+         * The version of application software used by the node on its Z-Wave chip.
+         *
+         */
+        applicationVersion?: string;
+        /**
+         * The version of "firmware0" dedicated to the Z-Wave chip.
+         *
+         */
+        firmware0Version?: number;
+        /**
+         * This node uses a wake up mechanism to allow communicating with it.
+         */
+        hasWakeUp?: boolean;
+        /**
+         * Security classes exchanged with this device.
+         */
+        grantedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        /**
+         * A list of endpoints present on this node.
+         *
+         */
+        endpoints?: Array<{
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+            /**
+             * Indicates if this endpoint is dynamic.
+             */
+            isDynamic?: boolean;
+            /**
+             * Indicates if this endpoint is aggregated.
+             */
+            isAggregated?: boolean;
+            /**
+             * A list of individual endpoint identifiers aggregated on this endpoint.
+             */
+            aggregatedMembers?: Array<string> | null;
+            /**
+             * Whether this endpoint issues notifications.
+             */
+            hasNotifications?: boolean;
+            /**
+             * Whether this endpoint has association groups.
+             */
+            hasAssociationGroups?: boolean;
+            /**
+             * Whether this endpoint can perform firmware update.
+             */
+            hasFirmwareUpdate?: boolean;
+            /**
+             * Whether this endpoint is identifiable.
+             */
+            isIdentifiable?: boolean;
+            resources?: Array<{
+                type?: 'AlarmSensor';
+                sensorType?: number;
+                sensorName?: string;
+            } | {
+                type?: 'AllSwitch';
+            } | {
+                type?: 'Basic';
+            } | {
+                type?: 'Battery';
+            } | {
+                type?: 'BinarySensor';
+                sensorType?: number;
+                sensorName?: string;
+            } | {
+                type?: 'BinarySwitch';
+            } | {
+                type?: 'CentralScene';
+            } | {
+                type?: 'ColorSwitch';
+                componentNumber?: number;
+                componentName?: string;
+            } | {
+                type?: 'DoorLock';
+            } | {
+                type?: 'Indicator';
+                indicatorId?: number;
+                indicatorName?: string;
+            } | {
+                type?: 'Meter';
+            } | {
+                type?: 'MultilevelSensor';
+                sensorType?: number;
+                sensorName?: string;
+            } | {
+                type?: 'MultilevelSwitch';
+            } | {
+                type?: 'SoundSwitch';
+            } | {
+                type?: 'Thermostat';
+            }>;
+        }>;
+    };
+};
+
+export type GetZwaveNodesByNodeIdResponse = GetZwaveNodesByNodeIdResponses[keyof GetZwaveNodesByNodeIdResponses];
+
+export type GetZwaveNodesByNodeIdInterviewData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: {
+        /**
+         * Fetch journal entries along with status. The journal will only be actually returned if current `status` is past `pending`.
+         *
+         */
+        with_journal?: boolean;
+    };
+    url: '/zwave/nodes/{node_id}/interview';
+};
+
+export type GetZwaveNodesByNodeIdInterviewResponses = {
+    /**
+     * InterviewState
+     *
+     * Interview state
+     */
+    200: {
+        /**
+         * Status of interview process
+         */
+        status?: 'done' | 'failed' | 'interrupted' | 'waitingForWakeUp';
+        /**
+         * The number of all steps currently known.
+         *
+         * NOTE: This number grows during interview as interviewing some resources
+         * may produce more steps (e.g. interviewing association group command class
+         * create separate step to interview each group).
+         *
+         */
+        stepCount?: number;
+        /**
+         * The number of already processed steps.
+         */
+        doneCount?: number;
+        journal?: Array<{
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+            /**
+             * Together with optional `index` field forms a name for this step.
+             *
+             * Examples:
+             *
+             * * `node-version` - interviewing node version
+             * * `association-group 3` - interviewing 3rd association group:
+             * * `multilevel-sensor 2` - interviewing sensor of type 2 from multilevel sensor:
+             * * `command-class 128` - interviewing battery command-class
+             * * `endpoint-info 2` - fetching 2nd end-point info (note that multi-channel is interviewed on root end-point)
+             *
+             * `kind` field determines whether `index` field is included or not.
+             *
+             * Description of each variant:
+             * FIXME: the list is incomplete
+             *
+             * * `command-class X` - Interview the given command class.
+             * * `command-class-version X` - Interview the version of given command class.
+             * * `endpoint-info X` - Interview device class and list of supported classes of given end-point.
+             * * `multilevel-sensor X` - Interview multi-level sensor of given type.
+             * * `manufacturer-specific` - Interview _Manufacturer Specific_ (preliminary - performs only _Manufacturer Specific Get_).
+             * * `node-version` - Interview _Version_ (preliminary - performs only _Version Get_).
+             * * `list-classes-for-version` - Synthetic step to create operations for interviewing command-class versions.
+             * * `wake-up-setup` - Set up wake-up interval and destination.
+             * * `association-group X` - Interview associations in group of given ID using _Association_/_Multi Channel Association Command Class_.
+             * * `association-group-info X` - Interview an association group of given ID using _Association Group Info Command Class_.
+             *
+             * The above list is not exhaustive. This list is going to grow in future and clients must be prepared for that.
+             *
+             */
+            kind: 'command-class' | 'command-class-version' | 'endpoint-info' | 'multilevel-sensor' | 'manufacturer-specific' | 'node-version' | 'list-classes-for-version' | 'wake-up-setup' | 'association-group' | 'association-group-info';
+            /**
+             * See `kind` field.
+             */
+            index?: number;
+            /**
+             * Status of interviewing this single resource.
+             *
+             * `null` means not processed yet (not pending, because the interview
+             * might be interrupted).
+             *
+             */
+            status: 'done' | 'failed' | 'notSupported' | 'reportTimeout' | 'waitingForWakeUp';
+        }>;
+    };
+};
+
+export type GetZwaveNodesByNodeIdInterviewResponse = GetZwaveNodesByNodeIdInterviewResponses[keyof GetZwaveNodesByNodeIdInterviewResponses];
+
+export type PostZwaveNodesByNodeIdInterviewData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: {
+        /**
+         * Fetch journal entries along with status. The journal will only be actually returned if current `status` is past `pending`.
+         *
+         */
+        with_journal?: boolean;
+    };
+    url: '/zwave/nodes/{node_id}/interview';
+};
+
+export type PostZwaveNodesByNodeIdInterviewErrors = {
+    /**
+     * NetworkManagementBusy
+     *
+     * Busy doing other network management operation.
+     *
+     * Z-Wave service allows only single network management operation at the time.
+     * Network management operations include:
+     *
+     * * node inclusion/exclusion/learn mode
+     * * neighbor discovery
+     * * firmware update
+     * * node interview
+     *
+     */
+    503: {
+        /**
+         * Error URI reference.
+         */
+        type?: 'http://fibaro.com/api/zwave/errors/NetworkManagementBusyError';
+        /**
+         * Service is busy with another process.
+         */
+        title?: string;
+        /**
+         * There is another process that is waiting for completion.
+         */
+        detail?: string;
+        /**
+         * Temporarily unable to handle the request.
+         */
+        status?: number;
+        /**
+         * ID number of the currently running process.
+         */
+        processId?: number;
+        /**
+         * The name of the currently running process.
+         */
+        processName?: 'inclusion' | 'exclusion' | 'learnMode' | 'firmwareUpdate';
+    };
+};
+
+export type PostZwaveNodesByNodeIdInterviewError = PostZwaveNodesByNodeIdInterviewErrors[keyof PostZwaveNodesByNodeIdInterviewErrors];
+
+export type PostZwaveNodesByNodeIdInterviewResponses = {
+    /**
+     * InterviewState
+     *
+     * Interview state
+     */
+    200: {
+        /**
+         * Status of interview process
+         */
+        status?: 'done' | 'failed' | 'interrupted' | 'waitingForWakeUp';
+        /**
+         * The number of all steps currently known.
+         *
+         * NOTE: This number grows during interview as interviewing some resources
+         * may produce more steps (e.g. interviewing association group command class
+         * create separate step to interview each group).
+         *
+         */
+        stepCount?: number;
+        /**
+         * The number of already processed steps.
+         */
+        doneCount?: number;
+        journal?: Array<{
+            /**
+             * Endpoint Address
+             *
+             * Depending on the type of endpoint following formats are possible:
+             *
+             * - individual endpoint `<node_id>.<endpoint_id>`
+             * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+             *
+             */
+            addr?: string;
+            /**
+             * Together with optional `index` field forms a name for this step.
+             *
+             * Examples:
+             *
+             * * `node-version` - interviewing node version
+             * * `association-group 3` - interviewing 3rd association group:
+             * * `multilevel-sensor 2` - interviewing sensor of type 2 from multilevel sensor:
+             * * `command-class 128` - interviewing battery command-class
+             * * `endpoint-info 2` - fetching 2nd end-point info (note that multi-channel is interviewed on root end-point)
+             *
+             * `kind` field determines whether `index` field is included or not.
+             *
+             * Description of each variant:
+             * FIXME: the list is incomplete
+             *
+             * * `command-class X` - Interview the given command class.
+             * * `command-class-version X` - Interview the version of given command class.
+             * * `endpoint-info X` - Interview device class and list of supported classes of given end-point.
+             * * `multilevel-sensor X` - Interview multi-level sensor of given type.
+             * * `manufacturer-specific` - Interview _Manufacturer Specific_ (preliminary - performs only _Manufacturer Specific Get_).
+             * * `node-version` - Interview _Version_ (preliminary - performs only _Version Get_).
+             * * `list-classes-for-version` - Synthetic step to create operations for interviewing command-class versions.
+             * * `wake-up-setup` - Set up wake-up interval and destination.
+             * * `association-group X` - Interview associations in group of given ID using _Association_/_Multi Channel Association Command Class_.
+             * * `association-group-info X` - Interview an association group of given ID using _Association Group Info Command Class_.
+             *
+             * The above list is not exhaustive. This list is going to grow in future and clients must be prepared for that.
+             *
+             */
+            kind: 'command-class' | 'command-class-version' | 'endpoint-info' | 'multilevel-sensor' | 'manufacturer-specific' | 'node-version' | 'list-classes-for-version' | 'wake-up-setup' | 'association-group' | 'association-group-info';
+            /**
+             * See `kind` field.
+             */
+            index?: number;
+            /**
+             * Status of interviewing this single resource.
+             *
+             * `null` means not processed yet (not pending, because the interview
+             * might be interrupted).
+             *
+             */
+            status: 'done' | 'failed' | 'notSupported' | 'reportTimeout' | 'waitingForWakeUp';
+        }>;
+    };
+};
+
+export type PostZwaveNodesByNodeIdInterviewResponse = PostZwaveNodesByNodeIdInterviewResponses[keyof PostZwaveNodesByNodeIdInterviewResponses];
+
+export type PutZwaveNodesByNodeIdInterviewCancellationData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}/interview/cancellation';
+};
+
+export type PutZwaveNodesByNodeIdInterviewCancellationResponses = {
+    /**
+     * Cancellation requested. Poll interview state until it's completed.
+     *
+     */
+    200: unknown;
+};
+
+export type PostZwaveNodesByNodeIdPingData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}/ping';
+};
+
+export type PostZwaveNodesByNodeIdPingResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetZwaveNodesByNodeIdNeighborsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}/neighbors';
+};
+
+export type GetZwaveNodesByNodeIdNeighborsResponses = {
+    /**
+     * List of neighbors of the node.
+     */
+    200: {
+        items?: Array<number>;
+    };
+};
+
+export type GetZwaveNodesByNodeIdNeighborsResponse = GetZwaveNodesByNodeIdNeighborsResponses[keyof GetZwaveNodesByNodeIdNeighborsResponses];
+
+export type GetZwaveNodesByNodeIdLastWorkingRouteData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}/last_working_route';
+};
+
+export type GetZwaveNodesByNodeIdLastWorkingRouteResponses = {
+    /**
+     * Last working route of the node.
+     */
+    200: {
+        items?: Array<number>;
+    };
+};
+
+export type GetZwaveNodesByNodeIdLastWorkingRouteResponse = GetZwaveNodesByNodeIdLastWorkingRouteResponses[keyof GetZwaveNodesByNodeIdLastWorkingRouteResponses];
+
+export type PostZwaveNodesByNodeIdNeighborsUpdateData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}/neighbors/update';
+};
+
+export type PostZwaveNodesByNodeIdNeighborsUpdateResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PostZwaveNodesByNodeIdNeighborsUpdateResponse = PostZwaveNodesByNodeIdNeighborsUpdateResponses[keyof PostZwaveNodesByNodeIdNeighborsUpdateResponses];
+
+export type PostZwaveNodesByNodeIdReachabilityData = {
+    body?: {
+        kind: 'markAsReachable';
+    } | {
+        kind: 'ignore';
+        value: boolean;
+    };
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}/reachability';
+};
+
+export type PostZwaveNodesByNodeIdReachabilityResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type DeleteZwaveNodesDiagnosticsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/nodes/diagnostics';
+};
+
+export type DeleteZwaveNodesDiagnosticsResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type DeleteZwaveNodesDiagnosticsResponse = DeleteZwaveNodesDiagnosticsResponses[keyof DeleteZwaveNodesDiagnosticsResponses];
+
+export type DeleteZwaveNodesDiagnosticsByNodeIdData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/diagnostics/{node_id}';
+};
+
+export type DeleteZwaveNodesDiagnosticsByNodeIdResponses = {
+    /**
+     * No Content
+     */
+    204: void;
+};
+
+export type DeleteZwaveNodesDiagnosticsByNodeIdResponse = DeleteZwaveNodesDiagnosticsByNodeIdResponses[keyof DeleteZwaveNodesDiagnosticsByNodeIdResponses];
+
+export type GetZwaveNodesDiagnosticsTransmissionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/nodes/diagnostics/transmissions';
+};
+
+export type GetZwaveNodesDiagnosticsTransmissionsResponses = {
+    /**
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * Node Address
+             *
+             */
+            nodeId?: number;
+            /**
+             * Total incoming requests to the gateway.
+             */
+            incomingTotal?: number;
+            /**
+             * Some incorrect requests incoming to the gateway, such as command parsing errors,
+             * invalid security scheme or not supported command.
+             *
+             */
+            incomingFailedUndefined?: number;
+            /**
+             * Some incorrect requests incoming to the gateway, such as problems with CRC 16 CC.
+             */
+            incomingFailedCrc?: number;
+            /**
+             * Some incorrect requests incoming to the gateway, such as problems with Security CC.
+             */
+            incomingFailedS0?: number;
+            /**
+             * Some incorrect requests incoming to the gateway, such as problems with Security 2 CC.
+             */
+            incomingFailedS2?: number;
+            /**
+             * Some incorrect requests incoming to the gateway, such as problems with Transport Service CC.
+             */
+            incomingFailedTransportService?: number;
+            /**
+             * Some incorrect requests incoming to the gateway, such as problems with Multi Channel CC.
+             */
+            incomingFailedMultiChannel?: number;
+            /**
+             * Incoming Nonce Get requests to the gateway (S0+S2).
+             */
+            incomingNonceGet?: number;
+            /**
+             * Incoming Nonce Report requests to the gateway (S0+S2).
+             */
+            incomingNonceReport?: number;
+            /**
+             * Total outgoing requests from the gateway.
+             */
+            outgoingTotal?: number;
+            /**
+             * Outgoing failed requests from the gateway.
+             */
+            outgoingFailed?: number;
+            /**
+             * Outgoing Nonce Get requests from the gateway (S0+S2).
+             */
+            outgoingNonceGet?: number;
+            /**
+             * Outgoing Nonce Report requests from the gateway (S0+S2).
+             */
+            outgoingNonceReport?: number;
+        }>;
+        /**
+         * Diagnostic resource creation time.
+         * It is the timestamp value with milliseconds included.
+         *
+         */
+        since?: number;
+        /**
+         * Diagnostic resource query time.
+         * It is the timestamp value with milliseconds included.
+         *
+         */
+        until?: number;
+    };
+};
+
+export type GetZwaveNodesDiagnosticsTransmissionsResponse = GetZwaveNodesDiagnosticsTransmissionsResponses[keyof GetZwaveNodesDiagnosticsTransmissionsResponses];
+
+export type PostZwavePollingFailedNodesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/polling/failed_nodes';
+};
+
+export type PostZwavePollingFailedNodesResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetZwaveFactoryResetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/factory_reset';
+};
+
+export type GetZwaveFactoryResetResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * True if role is not SIS or there are no nodes in network.
+         */
+        isSafe?: boolean;
+        /**
+         * Warning message.
+         */
+        confirmationDescription?: string;
+    };
+};
+
+export type GetZwaveFactoryResetResponse = GetZwaveFactoryResetResponses[keyof GetZwaveFactoryResetResponses];
+
+export type PostZwaveFactoryResetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/factory_reset';
+};
+
+export type PostZwaveFactoryResetResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetOwnNodeInfoData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/own_node';
+};
+
+export type GetOwnNodeInfoResponses = {
+    /**
+     * OK
+     */
+    200: {
+        nodeId?: number;
+        /**
+         * Security classes exchanged with this device.
+         */
+        grantedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+        lifelineDestination?: {
+            node?: number;
+            endpoint?: number | null;
+        } | null;
+    };
+};
+
+export type GetOwnNodeInfoResponse = GetOwnNodeInfoResponses[keyof GetOwnNodeInfoResponses];
+
+export type NodeInfoData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/own_node/node_info';
+};
+
+export type NodeInfoResponses = {
+    /**
+     * Accepted
+     */
+    202: unknown;
+};
+
+export type StartLearnModeData = {
+    body?: {
+        /**
+         * Allow routed requests for inclusion.
+         */
+        networkWide?: boolean;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    };
+    path?: never;
+    query?: never;
+    url: '/zwave/own_node/learn_mode';
+};
+
+export type StartLearnModeErrors = {
+    /**
+     * NetworkManagementBusy
+     *
+     * Busy doing other network management operation.
+     *
+     * Z-Wave service allows only single network management operation at the time.
+     * Network management operations include:
+     *
+     * * node inclusion/exclusion/learn mode
+     * * neighbor discovery
+     * * firmware update
+     * * node interview
+     *
+     */
+    503: {
+        /**
+         * Error URI reference.
+         */
+        type?: 'http://fibaro.com/api/zwave/errors/NetworkManagementBusyError';
+        /**
+         * Service is busy with another process.
+         */
+        title?: string;
+        /**
+         * There is another process that is waiting for completion.
+         */
+        detail?: string;
+        /**
+         * Temporarily unable to handle the request.
+         */
+        status?: number;
+        /**
+         * ID number of the currently running process.
+         */
+        processId?: number;
+        /**
+         * The name of the currently running process.
+         */
+        processName?: 'inclusion' | 'exclusion' | 'learnMode' | 'firmwareUpdate';
+    };
+};
+
+export type StartLearnModeError = StartLearnModeErrors[keyof StartLearnModeErrors];
+
+export type StartLearnModeResponses = {
+    /**
+     * Created learn mode process
+     */
+    201: {
+        /**
+         * Learn mode id
+         */
+        id?: number;
+        /**
+         * Status of learn mode process
+         */
+        status?: 'NO_CHANGE' | 'DONE' | 'FAILED' | 'FAILED_BUSY';
+        /**
+         * New Node ID assigned to controller.
+         */
+        nodeId?: number | null;
+        /**
+         * KEX Fail Type as specified by SDS13783 (inclusion only).
+         */
+        kexFailType?: number;
+        /**
+         * Description of KEX Fail Type.
+         *
+         * This text is translated and can be displayed to user.
+         *
+         */
+        kexFailName?: string | null;
+        /**
+         * Security classes granted to controller.
+         */
+        grantedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+    } & {
+        /**
+         * Allow routed requests for inclusion.
+         */
+        networkWide?: boolean;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    };
+};
+
+export type StartLearnModeResponse = StartLearnModeResponses[keyof StartLearnModeResponses];
+
+export type GetZwaveOwnNodeLearnModeByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/own_node/learn_mode/{id}';
+};
+
+export type GetZwaveOwnNodeLearnModeByIdResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Learn mode id
+         */
+        id?: number;
+        /**
+         * Status of learn mode process
+         */
+        status?: 'NO_CHANGE' | 'DONE' | 'FAILED' | 'FAILED_BUSY';
+        /**
+         * New Node ID assigned to controller.
+         */
+        nodeId?: number | null;
+        /**
+         * KEX Fail Type as specified by SDS13783 (inclusion only).
+         */
+        kexFailType?: number;
+        /**
+         * Description of KEX Fail Type.
+         *
+         * This text is translated and can be displayed to user.
+         *
+         */
+        kexFailName?: string | null;
+        /**
+         * Security classes granted to controller.
+         */
+        grantedKeys?: Array<'S0' | 'S2Unauthenticated' | 'S2Authenticated' | 'S2AccessControl'>;
+    } & {
+        /**
+         * Allow routed requests for inclusion.
+         */
+        networkWide?: boolean;
+        /**
+         * Enable heartbeat protocol.
+         *
+         * When heartbeat protocol is enabled, a client must poll the process
+         * at least every 10 seconds (lower interval should be selected).
+         *
+         * If a GET request is not received in required interval, the process
+         * is automatically stopped.
+         *
+         */
+        heartbeat?: boolean;
+    };
+};
+
+export type GetZwaveOwnNodeLearnModeByIdResponse = GetZwaveOwnNodeLearnModeByIdResponses[keyof GetZwaveOwnNodeLearnModeByIdResponses];
+
+export type PostZwaveOwnNodeLearnModeByIdCancelData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/own_node/learn_mode/{id}/cancel';
+};
+
+export type PostZwaveOwnNodeLearnModeByIdCancelResponses = {
+    /**
+     * Ok. The client must poll learn mode state till its status is non-null. The controller may still enter/leave network due to race condition between cancellation and learn mode.
+     *
+     */
+    200: unknown;
+};
+
+export type GetEndpointData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/endpoints/{addr}';
+};
+
+export type GetEndpointResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Endpoint Address
+         *
+         * Depending on the type of endpoint following formats are possible:
+         *
+         * - individual endpoint `<node_id>.<endpoint_id>`
+         * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+         *
+         */
+        addr?: string;
+        /**
+         * Indicates if this endpoint is dynamic.
+         */
+        isDynamic?: boolean;
+        /**
+         * Indicates if this endpoint is aggregated.
+         */
+        isAggregated?: boolean;
+        /**
+         * A list of individual endpoint identifiers aggregated on this endpoint.
+         */
+        aggregatedMembers?: Array<string> | null;
+        /**
+         * Whether this endpoint issues notifications.
+         */
+        hasNotifications?: boolean;
+        /**
+         * Whether this endpoint has association groups.
+         */
+        hasAssociationGroups?: boolean;
+        /**
+         * Whether this endpoint can perform firmware update.
+         */
+        hasFirmwareUpdate?: boolean;
+        /**
+         * Whether this endpoint is identifiable.
+         */
+        isIdentifiable?: boolean;
+        resources?: Array<{
+            type?: 'AlarmSensor';
+            sensorType?: number;
+            sensorName?: string;
+        } | {
+            type?: 'AllSwitch';
+        } | {
+            type?: 'Basic';
+        } | {
+            type?: 'Battery';
+        } | {
+            type?: 'BinarySensor';
+            sensorType?: number;
+            sensorName?: string;
+        } | {
+            type?: 'BinarySwitch';
+        } | {
+            type?: 'CentralScene';
+        } | {
+            type?: 'ColorSwitch';
+            componentNumber?: number;
+            componentName?: string;
+        } | {
+            type?: 'DoorLock';
+        } | {
+            type?: 'Indicator';
+            indicatorId?: number;
+            indicatorName?: string;
+        } | {
+            type?: 'Meter';
+        } | {
+            type?: 'MultilevelSensor';
+            sensorType?: number;
+            sensorName?: string;
+        } | {
+            type?: 'MultilevelSwitch';
+        } | {
+            type?: 'SoundSwitch';
+        } | {
+            type?: 'Thermostat';
+        }>;
+    };
+};
+
+export type GetEndpointResponse = GetEndpointResponses[keyof GetEndpointResponses];
+
+export type TriggerIdentifyData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/endpoints/{addr}/identify';
+};
+
+export type TriggerIdentifyResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type TriggerIdentifyResponse = TriggerIdentifyResponses[keyof TriggerIdentifyResponses];
+
+export type GetZwaveWakeUpsByNodeIdData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/wake_ups/{node_id}';
+};
+
+export type GetZwaveWakeUpsByNodeIdResponses = {
+    /**
+     * OK
+     */
+    200: {
+        addr?: number;
+        /**
+         * The last wake-up time of this node.
+         */
+        lastTime?: string;
+        /**
+         * The expected time of next wake-up for this node.
+         *
+         * Note that this is only an estimate:
+         *
+         * * the value is a result of heuristic
+         * * the device may wake up by manual activation sooner
+         *
+         */
+        expectedNextTime?: string | null;
+        configuration?: {
+            /**
+             * Configured wake-up interval in seconds.
+             */
+            interval?: number;
+            /**
+             * Wake-up destination.
+             *
+             * This may be outside of valid node ID range if wake-up destination is not configured
+             * or wake-up interval is set to *manual activation*.
+             *
+             */
+            destination?: number;
+        };
+        intervalDefinition?: {
+            /**
+             * Configured wake-up interval in seconds.
+             */
+            min?: number;
+            /**
+             * Configured wake-up interval in seconds.
+             */
+            max?: number;
+            /**
+             * Configured wake-up interval in seconds.
+             */
+            step?: number;
+            /**
+             * Configured wake-up interval in seconds.
+             */
+            default?: number;
+        };
+    };
+};
+
+export type GetZwaveWakeUpsByNodeIdResponse = GetZwaveWakeUpsByNodeIdResponses[keyof GetZwaveWakeUpsByNodeIdResponses];
+
+export type PutZwaveWakeUpsByNodeIdConfigurationData = {
+    /**
+     * WakeUpConfiguration
+     */
+    body?: {
+        /**
+         * Configured wake-up interval in seconds.
+         */
+        interval?: number;
+        /**
+         * Wake-up destination.
+         * It means Node Id where Wake Up Notification frame will be sent.
+         *
+         */
+        destination?: number;
+    };
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/wake_ups/{node_id}/configuration';
+};
+
+export type PutZwaveWakeUpsByNodeIdConfigurationResponses = {
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PutZwaveWakeUpsByNodeIdConfigurationResponse = PutZwaveWakeUpsByNodeIdConfigurationResponses[keyof PutZwaveWakeUpsByNodeIdConfigurationResponses];
+
+export type PostZwavePollingWakeUpsByNodeIdData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/polling/wake_ups/{node_id}';
+};
+
+export type PostZwavePollingWakeUpsByNodeIdResponses = {
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PostZwavePollingWakeUpsByNodeIdResponse = PostZwavePollingWakeUpsByNodeIdResponses[keyof PostZwavePollingWakeUpsByNodeIdResponses];
+
+export type GetWakeUpActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/mailbox/{node_id}/wake_ups';
+};
+
+export type GetWakeUpActionsResponses = {
+    /**
+     * WakeUpActions
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'setConfiguration';
+            /**
+             * Configured wake-up interval in seconds.
+             */
+            interval?: number;
+            /**
+             * Wake-up destination.
+             * It means Node Id where Wake Up Notification frame will be sent.
+             *
+             */
+            destination?: number;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'pollConfiguration';
+        }>;
+    };
+};
+
+export type GetWakeUpActionsResponse = GetWakeUpActionsResponses[keyof GetWakeUpActionsResponses];
+
+export type ClearWakeUpActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/mailbox/{node_id}/wake_ups/clear';
+};
+
+export type ClearWakeUpActionsResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetZwaveBgPollingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/zwave/bg_polling';
+};
+
+export type GetZwaveBgPollingResponses = {
+    /**
+     * ListBackgroundPolling
+     *
+     * OK
+     */
+    200: Array<{
+        /**
+         * Unique ID of this poll entry.
+         */
+        id?: number;
+        /**
+         * Address of the associated resource.
+         */
+        node_id?: number;
+        resource_kind?: 'all-switch' | 'association-group' | 'battery' | 'binary-switch' | 'central-scene' | 'indicator' | 'multilevel-sensor' | 'multilevel-switch' | 'wake-up';
+        resource_id?: number;
+        /**
+         * The time of last report (last update of state from origin device).
+         */
+        last_sync_time?: string;
+        /**
+         * The time of last polling issued by background polling.
+         *
+         * `null` if not polled yet.
+         *
+         */
+        last_poll_time?: string | null;
+        /**
+         * The status of last issued polling.
+         */
+        last_poll_status?: 'ok' | 'failed' | 'report-timeout' | 'node-unreachable';
+        /**
+         * The total number of times we issued polling.
+         */
+        poll_count?: number;
+    }>;
+};
+
+export type GetZwaveBgPollingResponse = GetZwaveBgPollingResponses[keyof GetZwaveBgPollingResponses];
+
+export type GetZwaveNodesByNodeIdBgPollingData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/nodes/{node_id}/bg_polling';
+};
+
+export type GetZwaveNodesByNodeIdBgPollingResponses = {
+    /**
+     * ListBackgroundPollingByNode
+     *
+     * OK
+     */
+    200: Array<{
+        /**
+         * Unique ID of this poll entry.
+         */
+        id?: number;
+        /**
+         * Address of the associated resource.
+         */
+        node_id?: number;
+        resource_kind?: 'all-switch' | 'association-group' | 'battery' | 'binary-switch' | 'central-scene' | 'indicator' | 'multilevel-sensor' | 'multilevel-switch' | 'wake-up';
+        resource_id?: number;
+        /**
+         * The time of last report (last update of state from origin device).
+         */
+        last_sync_time?: string;
+        /**
+         * The time of last polling issued by background polling.
+         *
+         * `null` if not polled yet.
+         *
+         */
+        last_poll_time?: string | null;
+        /**
+         * The status of last issued polling.
+         */
+        last_poll_status?: 'ok' | 'failed' | 'report-timeout' | 'node-unreachable';
+        /**
+         * The total number of times we issued polling.
+         */
+        poll_count?: number;
+    }>;
+};
+
+export type GetZwaveNodesByNodeIdBgPollingResponse = GetZwaveNodesByNodeIdBgPollingResponses[keyof GetZwaveNodesByNodeIdBgPollingResponses];
+
+export type RemovePendingActionData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/zwave/pending_actions/{id}/';
+};
+
+export type RemovePendingActionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetProtectionData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/protection/{addr}';
+};
+
+export type GetProtectionResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The value of Local Protection State.
+         */
+        localState?: number;
+        /**
+         * The name of Local Protection State.
+         */
+        localStateName?: string;
+        /**
+         * The list of available local states.
+         */
+        localStateSelection?: Array<{
+            value: string | number;
+            title?: string;
+            disabled?: boolean;
+        }>;
+        /**
+         * The value of RF Protection State.
+         */
+        rfState?: number;
+        /**
+         * The name of RF Protection State.
+         */
+        rfStateName?: string;
+        /**
+         * The list of available RF states.
+         */
+        rfStateSelection?: Array<{
+            value: string | number;
+            title?: string;
+            disabled?: boolean;
+        }>;
+        /**
+         * Whether the device supports exclusive control.
+         */
+        supportsExclusiveControl?: boolean;
+        /**
+         * The NodeID that has exclusive control can override the RF
+         * protection state of the device and can control it regardless
+         * of the protection state.
+         *
+         */
+        exclusiveControlNodeId?: number;
+        /**
+         * Whether the device supports timeout for protection mode.
+         *
+         */
+        supportsTimeout?: boolean;
+        /**
+         * The timeout describes the time that a device MUST remain
+         * in RF Protection mode.
+         *
+         */
+        timeout?: number;
+    };
+};
+
+export type GetProtectionResponse = GetProtectionResponses[keyof GetProtectionResponses];
+
+export type SetProtectionData = {
+    /**
+     * SetProtection
+     */
+    body?: {
+        /**
+         * The value of Local Protection State.
+         */
+        localState: number;
+        /**
+         * The value of RF Protection State.
+         */
+        rfState?: number;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/protection/{addr}';
+};
+
+export type SetProtectionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetProtectionResponse = SetProtectionResponses[keyof SetProtectionResponses];
+
+export type ConfigureExclusiveControlData = {
+    /**
+     * NodeID
+     */
+    body?: {
+        /**
+         * The NodeID that has exclusive control can override
+         * the RF protection state of the device and can control
+         * it regardless of the protection state.
+         *
+         */
+        nodeId?: number;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/protection/{addr}/exclusive_control';
+};
+
+export type ConfigureExclusiveControlResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ConfigureExclusiveControlResponse = ConfigureExclusiveControlResponses[keyof ConfigureExclusiveControlResponses];
+
+export type PollProtectionData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/protection/{addr}';
+};
+
+export type PollProtectionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollProtectionResponse = PollProtectionResponses[keyof PollProtectionResponses];
+
+export type PollProtectionExclusiveControlData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/protection/{addr}/exclusive_control';
+};
+
+export type PollProtectionExclusiveControlResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollProtectionExclusiveControlResponse = PollProtectionExclusiveControlResponses[keyof PollProtectionExclusiveControlResponses];
+
+export type PollProtectionTimeoutData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/protection/{addr}/timeout';
+};
+
+export type PollProtectionTimeoutResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollProtectionTimeoutResponse = PollProtectionTimeoutResponses[keyof PollProtectionTimeoutResponses];
+
+export type GetSoundSwitchData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/sound_switches/{addr}';
+};
+
+export type GetSoundSwitchResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The `Tone identifier` of the currently playing sound.
+         */
+        currentTone?: number;
+        configuration?: {
+            /**
+             * Default volume
+             */
+            defaultVolume?: number;
+            /**
+             * Default `tone identifier` which the node will play.
+             */
+            defaultTone?: number;
+        };
+        /**
+         * List of supported tones
+         */
+        supportedTones?: Array<{
+            /**
+             * Tone identifier.
+             */
+            toneId?: number;
+            /**
+             * Duration of the sound.
+             */
+            duration?: number;
+            /**
+             * Name or label of the actual tone identifier.
+             */
+            name?: string;
+        }>;
+    };
+};
+
+export type GetSoundSwitchResponse = GetSoundSwitchResponses[keyof GetSoundSwitchResponses];
+
+export type PlayToneSoundSwitchData = {
+    /**
+     * PlayTone
+     */
+    body?: {
+        /**
+         * Specify the tone that the receiving node will play.
+         *
+         * An acceptable value (Ref.: SDS13781, table 132):
+         * - 0 - A supporting node will stop playing any tone.
+         * - 1 - 254 - A supporting node will play the specified `toneIdentifier` using the configured volume setting.
+         *
+         * A node receiving a non-supported `toneIdentifier` (eg. higher than the Total number of supported tones) will play the default tone using the configured volume setting.
+         * - 255 - The supporting node will play the default tone using the configured volume setting.
+         *
+         */
+        toneIdentifier?: number;
+        /**
+         * Specify the volume for the actual `Play Command`.
+         *
+         * An acceptable value (Ref.: SDS13781, table 133):
+         * - 0 - A supporting node will play tone with the configured current volume.
+         * - 1 - 100 - Indicate the actual volume setting from respectively 1 % to 100 %.
+         * - 255:
+         * - Indicate to use most recent non-zero volume setting if the current volume is muted.
+         * - If the current configured volume is not muted, this value indicate to use the configured current volume at the node.
+         * - This value should be used only for critical application (e.g. security alarm) where it is important to have the sound played even when the device is muted.
+         *
+         */
+        toneVolume?: number | null;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/sound_switches/{addr}';
+};
+
+export type PlayToneSoundSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PlayToneSoundSwitchResponse = PlayToneSoundSwitchResponses[keyof PlayToneSoundSwitchResponses];
+
+export type ConfigureSoundSwitchData = {
+    /**
+     * ConfigureSoundSwitch
+     */
+    body?: {
+        /**
+         * Used to specify the Default Tone. This Tone will be played if receiving the `Sound Switch Tone Play Set Command`.
+         */
+        defaultTone?: number;
+        /**
+         * Specify the volume at which the node will play tones.
+         *
+         * An acceptable value (Ref.: SDS13781, table 131):
+         * - 0 - Indicate an Off/Mute volume setting (0%).
+         * - 1 - 100 - Indicate the actual volume setting from respectively 1 % to 100 %.
+         * - 255 - Indicate to restore most recent non-zero volume setting. This value will be ignored if the current volume is not zero. This value may be used to set the `Default Tone Identifier` and do not modify the volume setting.
+         *
+         */
+        defaultVolume?: number;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/sound_switches/{addr}/configuration';
+};
+
+export type ConfigureSoundSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ConfigureSoundSwitchResponse = ConfigureSoundSwitchResponses[keyof ConfigureSoundSwitchResponses];
+
+export type PollSoundSwitchData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/sound_switches/{addr}';
+};
+
+export type PollSoundSwitchResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollSoundSwitchResponse = PollSoundSwitchResponses[keyof PollSoundSwitchResponses];
+
+export type PollSoundSwitchConfigurationData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/sound_switches/{addr}/configuration';
+};
+
+export type PollSoundSwitchConfigurationResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollSoundSwitchConfigurationResponse = PollSoundSwitchConfigurationResponses[keyof PollSoundSwitchConfigurationResponses];
+
+export type GetThermostatData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: {
+        /**
+         * Selects the type of temperature unit in response
+         */
+        unit?: 'metric' | 'imperial';
+    };
+    url: '/zwave/thermostats/{addr}';
+};
+
+export type GetThermostatResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The thermostat mode.
+         */
+        mode?: number | null;
+        /**
+         * The name of thermostat mode.
+         */
+        modeName?: string | null;
+        modeSelection?: Array<{
+            value: string | number;
+            title?: string;
+            disabled?: boolean;
+        }>;
+        /**
+         * The operating state as defined by SDS13781 (table 139).
+         */
+        operatingState?: number | null;
+        /**
+         * The name of operating state.
+         */
+        operatingStateName?: string | null;
+        /**
+         * The list of available setpoints.
+         */
+        setpoints?: Array<{
+            /**
+             * Setpoint type as defined by SDS13781.
+             */
+            setpointType: number;
+            /**
+             * The name of setpoint.
+             */
+            setpointName: string;
+            /**
+             * The actual setpoint value.
+             */
+            value?: number | null;
+            /**
+             * The temperature scale used for the setpoint value.
+             */
+            scale: number;
+            /**
+             * The symbol of used temperature unit.
+             */
+            unitSymbol: string;
+            valueDefinition: {
+                /**
+                 * Minimum value.
+                 */
+                min?: number;
+                /**
+                 * Maximum value.
+                 */
+                max?: number;
+                /**
+                 * Step value.
+                 */
+                step?: number;
+                /**
+                 * Default Value.
+                 */
+                default?: number;
+            };
+        }>;
+        fan?: {
+            /**
+             * The mode of this fan.
+             */
+            fanMode?: number;
+            /**
+             * The name of fan mode.
+             */
+            fanModeName?: string;
+            /**
+             * Whether fan is off.
+             */
+            off?: boolean;
+            fanSupportedModes?: Array<{
+                value: string | number;
+                title?: string;
+                disabled?: boolean;
+            }>;
+            /**
+             * Whether fan supports the off functionality.
+             */
+            supportsOff?: boolean;
+            /**
+             * The state of this fan.
+             */
+            fanState?: number;
+            /**
+             * The name of fan state.
+             */
+            fanStateName?: string;
+        } | null;
+    };
+};
+
+export type GetThermostatResponse = GetThermostatResponses[keyof GetThermostatResponses];
+
+export type SetThermostatModeData = {
+    body?: {
+        /**
+         * The thermostat mode.
+         */
+        mode: number;
+        /**
+         * Manufacturer data - only available in Manufacturer Specific mode.
+         */
+        manufacturerData?: Array<number>;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/thermostats/{addr}';
+};
+
+export type SetThermostatModeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetThermostatModeResponse = SetThermostatModeResponses[keyof SetThermostatModeResponses];
+
+export type SetThermostatFanModeData = {
+    /**
+     * SetThermostatFanMode
+     */
+    body?: {
+        /**
+         * One of modes supported by this fan.
+         */
+        fanMode: number;
+        /**
+         * Whether to switch the fan fully OFF regardless of what fan mode has been set.
+         *
+         */
+        off?: boolean;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/thermostats/{addr}/fan';
+};
+
+export type SetThermostatFanModeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetThermostatFanModeResponse = SetThermostatFanModeResponses[keyof SetThermostatFanModeResponses];
+
+export type GetThermostatSetpointsData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The type of Setpoint.
+         */
+        setpoint_type: number;
+    };
+    query?: never;
+    url: '/zwave/thermostat_setpoints/{addr}/{setpoint_type}';
+};
+
+export type GetThermostatSetpointsResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Setpoint type as defined by SDS13781.
+         */
+        setpointType: number;
+        /**
+         * The name of setpoint.
+         */
+        setpointName: string;
+        /**
+         * The actual setpoint value.
+         */
+        value?: number | null;
+        /**
+         * The temperature scale used for the setpoint value.
+         */
+        scale: number;
+        /**
+         * The symbol of used temperature unit.
+         */
+        unitSymbol: string;
+        valueDefinition: {
+            /**
+             * Minimum value.
+             */
+            min?: number;
+            /**
+             * Maximum value.
+             */
+            max?: number;
+            /**
+             * Step value.
+             */
+            step?: number;
+            /**
+             * Default Value.
+             */
+            default?: number;
+        };
+    };
+};
+
+export type GetThermostatSetpointsResponse = GetThermostatSetpointsResponses[keyof GetThermostatSetpointsResponses];
+
+export type EditThermostatSetpointData = {
+    body?: {
+        /**
+         * The setpoint value.
+         */
+        value: number;
+        /**
+         * The temperature scale used for the setpoint value.
+         */
+        scale: number;
+    };
+    path: {
+        addr: string;
+        /**
+         * The type of Setpoint.
+         */
+        setpoint_type: number;
+    };
+    query?: never;
+    url: '/zwave/thermostat_setpoints/{addr}/{setpoint_type}';
+};
+
+export type EditThermostatSetpointResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type EditThermostatSetpointResponse = EditThermostatSetpointResponses[keyof EditThermostatSetpointResponses];
+
+export type PollThermostatModeData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/thermostats/{addr}/mode';
+};
+
+export type PollThermostatModeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollThermostatModeResponse = PollThermostatModeResponses[keyof PollThermostatModeResponses];
+
+export type PollThermostatOperatingStateData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/thermostats/{addr}/operating_state';
+};
+
+export type PollThermostatOperatingStateResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollThermostatOperatingStateResponse = PollThermostatOperatingStateResponses[keyof PollThermostatOperatingStateResponses];
+
+export type PollThermostatSetpointData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * The type of Setpoint.
+         */
+        setpoint_type: number;
+    };
+    query?: never;
+    url: '/zwave/polling/thermostat_setpoints/{addr}/{setpoint_type}';
+};
+
+export type PollThermostatSetpointResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollThermostatSetpointResponse = PollThermostatSetpointResponses[keyof PollThermostatSetpointResponses];
+
+export type PollFanModeData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/thermostats/{addr}/fan/mode';
+};
+
+export type PollFanModeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollFanModeResponse = PollFanModeResponses[keyof PollFanModeResponses];
+
+export type PollFanStateData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/thermostats/{addr}/fan/state';
+};
+
+export type PollFanStateResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollFanStateResponse = PollFanStateResponses[keyof PollFanStateResponses];
+
+export type GetAllScheduleBlockData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/schedule_block/{addr}';
+};
+
+export type GetAllScheduleBlockResponses = {
+    /**
+     * OK
+     */
+    200: Array<{
+        /**
+         * Schedule block ID
+         */
+        blockId?: number;
+        /**
+         * The number of supported Command Classes.
+         */
+        numberOfSupportedScheduleIds?: number;
+        /**
+         * The start time options supported for regular schedules by a node (specified by SDS13781).
+         */
+        startTimeSupport?: {
+            /**
+             * Immediate start of schedule.
+             */
+            startNow?: boolean;
+            /**
+             * Start the schedule at a specific time of the day.
+             */
+            startHourAndMinute?: boolean;
+            /**
+             * Start of the schedule on a specific date.
+             */
+            startCalendarTime?: boolean;
+            /**
+             * Start of the schedule on specific days of the week.
+             */
+            startWeekday?: boolean;
+        };
+        /**
+         * The support of the Fall Back Schedule.
+         */
+        fallbackSupport?: boolean;
+        /**
+         * The support for enabling/disabling schedules.
+         */
+        enableDisableSupport?: boolean;
+        /**
+         * The support for the Override Schedule.
+         */
+        overrideSupport?: boolean;
+        /**
+         * Supported Override Schedule duration types.
+         */
+        supportedOverrideTypes?: Array<number>;
+        /**
+         * List of supported command classes and command groups.
+         */
+        supportedCcs?: Array<{
+            /**
+             * Command Class that can be scheduled.
+             */
+            supportedCc?: number;
+            /**
+             * The supported commands for the actual command class entry.
+             *
+             * An acceptable value (Ref.: SDS13781, table 107):
+             * - 0 - both Set and Get commands are supported
+             * - 1 - only Set commands are supported
+             * - 2 - only Get commands are supported
+             *
+             */
+            supportedCmd?: number;
+        }>;
+    }>;
+};
+
+export type GetAllScheduleBlockResponse = GetAllScheduleBlockResponses[keyof GetAllScheduleBlockResponses];
+
+export type GetScheduleBlockData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Schedule block ID
+         */
+        block_id: number;
+    };
+    query?: never;
+    url: '/zwave/schedule_block/{addr}/{block_id}';
+};
+
+export type GetScheduleBlockResponses = {
+    /**
+     * Supported capabilities for schedules in a block.
+     */
+    200: {
+        /**
+         * Schedule block ID
+         */
+        blockId?: number;
+        /**
+         * The number of supported Command Classes.
+         */
+        numberOfSupportedScheduleIds?: number;
+        /**
+         * The start time options supported for regular schedules by a node (specified by SDS13781).
+         */
+        startTimeSupport?: {
+            /**
+             * Immediate start of schedule.
+             */
+            startNow?: boolean;
+            /**
+             * Start the schedule at a specific time of the day.
+             */
+            startHourAndMinute?: boolean;
+            /**
+             * Start of the schedule on a specific date.
+             */
+            startCalendarTime?: boolean;
+            /**
+             * Start of the schedule on specific days of the week.
+             */
+            startWeekday?: boolean;
+        };
+        /**
+         * The support of the Fall Back Schedule.
+         */
+        fallbackSupport?: boolean;
+        /**
+         * The support for enabling/disabling schedules.
+         */
+        enableDisableSupport?: boolean;
+        /**
+         * The support for the Override Schedule.
+         */
+        overrideSupport?: boolean;
+        /**
+         * Supported Override Schedule duration types.
+         */
+        supportedOverrideTypes?: Array<number>;
+        /**
+         * List of supported command classes and command groups.
+         */
+        supportedCcs?: Array<{
+            /**
+             * Command Class that can be scheduled.
+             */
+            supportedCc?: number;
+            /**
+             * The supported commands for the actual command class entry.
+             *
+             * An acceptable value (Ref.: SDS13781, table 107):
+             * - 0 - both Set and Get commands are supported
+             * - 1 - only Set commands are supported
+             * - 2 - only Get commands are supported
+             *
+             */
+            supportedCmd?: number;
+        }>;
+    };
+};
+
+export type GetScheduleBlockResponse = GetScheduleBlockResponses[keyof GetScheduleBlockResponses];
+
+export type RemoveAllSchedulesData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/schedule/{addr}';
+};
+
+export type RemoveAllSchedulesResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type RemoveAllSchedulesResponse = RemoveAllSchedulesResponses[keyof RemoveAllSchedulesResponses];
+
+export type GetAllSchedulesData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/schedule/{addr}';
+};
+
+export type GetAllSchedulesResponses = {
+    /**
+     * OK
+     */
+    200: Array<{
+        /**
+         * Schedule block ID
+         */
+        blockId?: number;
+        schedules?: Array<{
+            /**
+             * Schedule ID
+             */
+            scheduleId?: number;
+            /**
+             * Schedule start time configuration. If no option is set the schedule will run in Start Now mode.
+             */
+            startTime?: Array<{
+                hour: number;
+                minute: number;
+            } | {
+                day: number;
+                month?: number;
+                year?: number;
+            } | {
+                monday: boolean;
+                tuesday: boolean;
+                wednesday: boolean;
+                thursday: boolean;
+                friday: boolean;
+                saturday: boolean;
+                sunday: boolean;
+            }>;
+            /**
+             * This field is used to indicate how to interpret the duration field (specified by SDS13781).
+             *
+             * Table 110 of SDS13781 specifies the values for this field:
+             * - 0 - the duration field is expressed in minutes
+             * - 1 - the duration field is expressed in hours
+             * - 2 - the duration field is expressed in days
+             * - 3 - the duration field is indicating the Override Type
+             *
+             */
+            durationType?: number;
+            /**
+             * Duration of the schedule being set (specified by SDS13781).
+             *
+             * If the Duration Type field is not set to Override, this field indicate the duration of the actual schedule.
+             *
+             * If the Duration Type field is set to Override, this field can take one of two values:
+             * - 1 - Advanced. The override schedule run until the start of the next regular schedule.
+             * - 2 - Run forever: The override schedule run until it is removed.
+             *
+             */
+            duration?: number;
+            /**
+             * The commands to be executed during the actual Schedule. Some other operations can be also specified as a desired scheduled task.
+             */
+            scheduledCmds?: Array<{
+                type?: 'rawCommand';
+                cmdBytes?: Array<number>;
+            } | {
+                type?: 'editThermostatSetpoint';
+                /**
+                 * Setpoint type as defined by SDS13781.
+                 */
+                setpointType?: number;
+                /**
+                 * The setpoint value.
+                 */
+                value?: number;
+                /**
+                 * The temperature scale used for the setpoint value.
+                 */
+                scale?: number;
+            } | {
+                type?: 'setThermostatMode';
+                /**
+                 * The thermostat mode.
+                 */
+                mode: number;
+                /**
+                 * Manufacturer data - only available in Manufacturer Specific mode.
+                 */
+                manufacturerData?: Array<number>;
+            }>;
+        }>;
+    }>;
+};
+
+export type GetAllSchedulesResponse = GetAllSchedulesResponses[keyof GetAllSchedulesResponses];
+
+export type RemoveBlockSchedulesData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Schedule block ID
+         */
+        block_id: number;
+    };
+    query?: never;
+    url: '/zwave/schedule/{addr}/{block_id}';
+};
+
+export type RemoveBlockSchedulesResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type RemoveBlockSchedulesResponse = RemoveBlockSchedulesResponses[keyof RemoveBlockSchedulesResponses];
+
+export type GetBlockSchedulesData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Schedule block ID
+         */
+        block_id: number;
+    };
+    query?: never;
+    url: '/zwave/schedule/{addr}/{block_id}';
+};
+
+export type GetBlockSchedulesResponses = {
+    /**
+     * OK
+     */
+    200: Array<{
+        /**
+         * Schedule ID
+         */
+        scheduleId?: number;
+        /**
+         * Schedule start time configuration. If no option is set the schedule will run in Start Now mode.
+         */
+        startTime?: Array<{
+            hour: number;
+            minute: number;
+        } | {
+            day: number;
+            month?: number;
+            year?: number;
+        } | {
+            monday: boolean;
+            tuesday: boolean;
+            wednesday: boolean;
+            thursday: boolean;
+            friday: boolean;
+            saturday: boolean;
+            sunday: boolean;
+        }>;
+        /**
+         * This field is used to indicate how to interpret the duration field (specified by SDS13781).
+         *
+         * Table 110 of SDS13781 specifies the values for this field:
+         * - 0 - the duration field is expressed in minutes
+         * - 1 - the duration field is expressed in hours
+         * - 2 - the duration field is expressed in days
+         * - 3 - the duration field is indicating the Override Type
+         *
+         */
+        durationType?: number;
+        /**
+         * Duration of the schedule being set (specified by SDS13781).
+         *
+         * If the Duration Type field is not set to Override, this field indicate the duration of the actual schedule.
+         *
+         * If the Duration Type field is set to Override, this field can take one of two values:
+         * - 1 - Advanced. The override schedule run until the start of the next regular schedule.
+         * - 2 - Run forever: The override schedule run until it is removed.
+         *
+         */
+        duration?: number;
+        /**
+         * The commands to be executed during the actual Schedule. Some other operations can be also specified as a desired scheduled task.
+         */
+        scheduledCmds?: Array<{
+            type?: 'rawCommand';
+            cmdBytes?: Array<number>;
+        } | {
+            type?: 'editThermostatSetpoint';
+            /**
+             * Setpoint type as defined by SDS13781.
+             */
+            setpointType?: number;
+            /**
+             * The setpoint value.
+             */
+            value?: number;
+            /**
+             * The temperature scale used for the setpoint value.
+             */
+            scale?: number;
+        } | {
+            type?: 'setThermostatMode';
+            /**
+             * The thermostat mode.
+             */
+            mode: number;
+            /**
+             * Manufacturer data - only available in Manufacturer Specific mode.
+             */
+            manufacturerData?: Array<number>;
+        }>;
+    }>;
+};
+
+export type GetBlockSchedulesResponse = GetBlockSchedulesResponses[keyof GetBlockSchedulesResponses];
+
+export type DeleteScheduleData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Schedule block ID
+         */
+        block_id: number;
+        /**
+         * Schedule ID
+         */
+        schedule_id: number;
+    };
+    query?: never;
+    url: '/zwave/schedule/{addr}/{block_id}/{schedule_id}';
+};
+
+export type DeleteScheduleResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type DeleteScheduleResponse = DeleteScheduleResponses[keyof DeleteScheduleResponses];
+
+export type GetScheduleData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Schedule block ID
+         */
+        block_id: number;
+        /**
+         * Schedule ID
+         */
+        schedule_id: number;
+    };
+    query?: never;
+    url: '/zwave/schedule/{addr}/{block_id}/{schedule_id}';
+};
+
+export type GetScheduleResponses = {
+    /**
+     * A schedule is a delayed execution of one or more commands for a given duration.
+     *
+     */
+    200: {
+        /**
+         * Schedule ID
+         */
+        scheduleId?: number;
+        /**
+         * Schedule start time configuration. If no option is set the schedule will run in Start Now mode.
+         */
+        startTime?: Array<{
+            hour: number;
+            minute: number;
+        } | {
+            day: number;
+            month?: number;
+            year?: number;
+        } | {
+            monday: boolean;
+            tuesday: boolean;
+            wednesday: boolean;
+            thursday: boolean;
+            friday: boolean;
+            saturday: boolean;
+            sunday: boolean;
+        }>;
+        /**
+         * This field is used to indicate how to interpret the duration field (specified by SDS13781).
+         *
+         * Table 110 of SDS13781 specifies the values for this field:
+         * - 0 - the duration field is expressed in minutes
+         * - 1 - the duration field is expressed in hours
+         * - 2 - the duration field is expressed in days
+         * - 3 - the duration field is indicating the Override Type
+         *
+         */
+        durationType?: number;
+        /**
+         * Duration of the schedule being set (specified by SDS13781).
+         *
+         * If the Duration Type field is not set to Override, this field indicate the duration of the actual schedule.
+         *
+         * If the Duration Type field is set to Override, this field can take one of two values:
+         * - 1 - Advanced. The override schedule run until the start of the next regular schedule.
+         * - 2 - Run forever: The override schedule run until it is removed.
+         *
+         */
+        duration?: number;
+        /**
+         * The commands to be executed during the actual Schedule. Some other operations can be also specified as a desired scheduled task.
+         */
+        scheduledCmds?: Array<{
+            type?: 'rawCommand';
+            cmdBytes?: Array<number>;
+        } | {
+            type?: 'editThermostatSetpoint';
+            /**
+             * Setpoint type as defined by SDS13781.
+             */
+            setpointType?: number;
+            /**
+             * The setpoint value.
+             */
+            value?: number;
+            /**
+             * The temperature scale used for the setpoint value.
+             */
+            scale?: number;
+        } | {
+            type?: 'setThermostatMode';
+            /**
+             * The thermostat mode.
+             */
+            mode: number;
+            /**
+             * Manufacturer data - only available in Manufacturer Specific mode.
+             */
+            manufacturerData?: Array<number>;
+        }>;
+    };
+};
+
+export type GetScheduleResponse = GetScheduleResponses[keyof GetScheduleResponses];
+
+export type SetScheduleData = {
+    /**
+     * Settings for schedule
+     */
+    body?: {
+        /**
+         * Schedule start time configuration. If no option is set the schedule will run in Start Now mode.
+         */
+        startTime?: Array<{
+            hour: number;
+            minute: number;
+        } | {
+            day: number;
+            month?: number;
+            year?: number;
+        } | {
+            monday: boolean;
+            tuesday: boolean;
+            wednesday: boolean;
+            thursday: boolean;
+            friday: boolean;
+            saturday: boolean;
+            sunday: boolean;
+        }>;
+        /**
+         * This field is used to indicate how to interpret the duration field (specified by SDS13781).
+         *
+         * Table 110 of SDS13781 specifies the values for this field:
+         * - 0 - the duration field is expressed in minutes
+         * - 1 - the duration field is expressed in hours
+         * - 2 - the duration field is expressed in days
+         * - 3 - the duration field is indicating the Override Type
+         *
+         */
+        durationType?: number;
+        /**
+         * Duration of the schedule being set (specified by SDS13781).
+         *
+         * If the Duration Type field is not set to Override, this field indicate the duration of the actual schedule.
+         *
+         * If the Duration Type field is set to Override, this field can take one of two values:
+         * - 1 - Advanced. The override schedule run until the start of the next regular schedule.
+         * - 2 - Run forever: The override schedule run until it is removed.
+         *
+         */
+        duration?: number;
+        /**
+         * The commands to be executed during the actual Schedule. Some other operations can be also specified as a desired scheduled task.
+         */
+        scheduledCmds?: Array<{
+            type?: 'rawCommand';
+            cmdBytes?: Array<number>;
+        } | {
+            type?: 'editThermostatSetpoint';
+            /**
+             * Setpoint type as defined by SDS13781.
+             */
+            setpointType?: number;
+            /**
+             * The setpoint value.
+             */
+            value?: number;
+            /**
+             * The temperature scale used for the setpoint value.
+             */
+            scale?: number;
+        } | {
+            type?: 'setThermostatMode';
+            /**
+             * The thermostat mode.
+             */
+            mode: number;
+            /**
+             * Manufacturer data - only available in Manufacturer Specific mode.
+             */
+            manufacturerData?: Array<number>;
+        }>;
+    };
+    path: {
+        addr: string;
+        /**
+         * Schedule block ID
+         */
+        block_id: number;
+        /**
+         * Schedule ID
+         */
+        schedule_id: number;
+    };
+    query?: never;
+    url: '/zwave/schedule/{addr}/{block_id}/{schedule_id}';
+};
+
+export type SetScheduleResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetScheduleResponse = SetScheduleResponses[keyof SetScheduleResponses];
+
+export type SetScheduleStateData = {
+    body?: {
+        state: boolean;
+    };
+    path: {
+        addr: string;
+        /**
+         * Schedule block ID
+         */
+        block_id: number;
+        /**
+         * Schedule ID including all schedules option (where schedule_id == 0)
+         */
+        schedule_id: number;
+    };
+    query?: never;
+    url: '/zwave/schedule/{addr}/{block_id}/{schedule_id}/state';
+};
+
+export type SetScheduleStateResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetScheduleStateResponse = SetScheduleStateResponses[keyof SetScheduleStateResponses];
+
+export type PollSingleScheduleData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Schedule block ID
+         */
+        block_id: number;
+        /**
+         * Schedule ID
+         */
+        schedule_id: number;
+    };
+    query?: never;
+    url: '/zwave/polling/schedule/{addr}/{block_id}/{schedule_id}';
+};
+
+export type PollSingleScheduleResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollSingleScheduleResponse = PollSingleScheduleResponses[keyof PollSingleScheduleResponses];
+
+export type GetUserCodesInfoData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}';
+};
+
+export type GetUserCodesInfoResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Number of supported user codes.
+         */
+        numberOfUsers?: number;
+        /**
+         * Whether Master Code is supported.
+         */
+        masterCodeSupport?: boolean;
+        /**
+         * Whether Master Code can be de-activated.
+         */
+        masterCodeDeactivationSupport?: boolean;
+        /**
+         * Whether User Code Checksum is supported.
+         */
+        userCodeChecksumSupport?: boolean;
+        /**
+         * Whether device accepts multiple user codes in a single request
+         * (support for such requests is not implemented yet).
+         *
+         */
+        multipleUserCodeSetSupport?: boolean;
+        /**
+         * Whether device can report multiple user codes in a single command.
+         */
+        multipleUserCodeReportSupport?: boolean;
+        /**
+         * Currently set master code.
+         */
+        masterCode?: Array<number> | null;
+        /**
+         * Currently set keypad mode.
+         */
+        keypadMode?: number | null;
+        /**
+         * Checksum of the current set of user codes.
+         */
+        checksum?: number | null;
+        /**
+         * A set of known user codes.
+         */
+        codes?: Array<{
+            /**
+             * Specifies a user identifier of a user code slot.
+             */
+            userIdentifier?: number;
+            /**
+             * Status of the user identifier as defined in Z-Wave Application Command Class
+             * Specification.
+             *
+             */
+            userIdStatus?: number;
+            /**
+             * A user code for given user identifier.
+             */
+            userCode?: Array<number>;
+        }>;
+        capabilities?: {
+            /**
+             * The list of supported user code statuses as defined in Z-Wave Application
+             * Command Class Specification.
+             *
+             */
+            supportedStatuses?: Array<{
+                value: string | number;
+                title?: string;
+                disabled?: boolean;
+            }>;
+            /**
+             * The list of supported keypad modes as defined in Z-Wave Application Command
+             * Class Specification.
+             *
+             */
+            supportedKeypadModes?: Array<{
+                value: string | number;
+                title?: string;
+                disabled?: boolean;
+            }>;
+            /**
+             * The list of ASCII codes of keys that can be input on the keypad by end users that
+             * can be a part of user codes.
+             *
+             */
+            supportedKeys?: Array<{
+                value: string | number;
+                title?: string;
+                disabled?: boolean;
+            }>;
+        };
+    };
+};
+
+export type GetUserCodesInfoResponse = GetUserCodesInfoResponses[keyof GetUserCodesInfoResponses];
+
+export type GetUserCodesData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}/codes';
+};
+
+export type GetUserCodesResponses = {
+    /**
+     * A set of known user codes.
+     */
+    200: Array<{
+        /**
+         * Specifies a user identifier of a user code slot.
+         */
+        userIdentifier?: number;
+        /**
+         * Status of the user identifier as defined in Z-Wave Application Command Class
+         * Specification.
+         *
+         */
+        userIdStatus?: number;
+        /**
+         * A user code for given user identifier.
+         */
+        userCode?: Array<number>;
+    }>;
+};
+
+export type GetUserCodesResponse = GetUserCodesResponses[keyof GetUserCodesResponses];
+
+export type GetUserCodeData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * User Identifier.
+         */
+        user_identifier: number;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}/codes/{user_identifier}';
+};
+
+export type GetUserCodeResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * Specifies a user identifier of a user code slot.
+         */
+        userIdentifier?: number;
+        /**
+         * Status of the user identifier as defined in Z-Wave Application Command Class
+         * Specification.
+         *
+         */
+        userIdStatus?: number;
+        /**
+         * A user code for given user identifier.
+         */
+        userCode?: Array<number>;
+    };
+};
+
+export type GetUserCodeResponse = GetUserCodeResponses[keyof GetUserCodeResponses];
+
+export type EditUserCodeData = {
+    body?: {
+        /**
+         * Status of the user identifier as defined in Z-Wave Application Command Class
+         * Specification.
+         *
+         */
+        userIdStatus: number;
+        userCode: Array<number>;
+    };
+    path: {
+        addr: string;
+        /**
+         * User Identifier.
+         */
+        user_identifier: number;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}/codes/{user_identifier}';
+};
+
+export type EditUserCodeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type EditUserCodeResponse = EditUserCodeResponses[keyof EditUserCodeResponses];
+
+export type ClearUserCodeData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * User Identifier.
+         */
+        user_identifier: number;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}/codes/{user_identifier}/clear';
+};
+
+export type ClearUserCodeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ClearUserCodeResponse = ClearUserCodeResponses[keyof ClearUserCodeResponses];
+
+export type ClearAllUserCodesData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}/clear_all_codes';
+};
+
+export type ClearAllUserCodesResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type ClearAllUserCodesResponse = ClearAllUserCodesResponses[keyof ClearAllUserCodesResponses];
+
+export type SynchronizeAllUserCodesData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}/synchronize';
+};
+
+export type SynchronizeAllUserCodesResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SynchronizeAllUserCodesResponse = SynchronizeAllUserCodesResponses[keyof SynchronizeAllUserCodesResponses];
+
+export type EditMasterCodeData = {
+    body?: {
+        masterCode: Array<number>;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}/master_code';
+};
+
+export type EditMasterCodeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type EditMasterCodeResponse = EditMasterCodeResponses[keyof EditMasterCodeResponses];
+
+export type SetKeypadModeData = {
+    body?: {
+        /**
+         * One of keypad modes supported by this device.
+         */
+        keypadMode: number;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/user_codes/{addr}/keypad_mode';
+};
+
+export type SetKeypadModeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type SetKeypadModeResponse = SetKeypadModeResponses[keyof SetKeypadModeResponses];
+
+export type PollKeypadModeData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/user_codes/{addr}/keypad_mode';
+};
+
+export type PollKeypadModeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollKeypadModeResponse = PollKeypadModeResponses[keyof PollKeypadModeResponses];
+
+export type PollMasterCodeData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/user_codes/{addr}/master_code';
+};
+
+export type PollMasterCodeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollMasterCodeResponse = PollMasterCodeResponses[keyof PollMasterCodeResponses];
+
+export type PollUserCodeData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * User Identifier.
+         */
+        user_identifier: number;
+    };
+    query?: never;
+    url: '/zwave/polling/user_codes/{addr}/codes/{user_identifier}';
+};
+
+export type PollUserCodeResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollUserCodeResponse = PollUserCodeResponses[keyof PollUserCodeResponses];
+
+export type PollUserCodeChecksumData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/polling/user_codes/{addr}/checksum';
+};
+
+export type PollUserCodeChecksumResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollUserCodeChecksumResponse = PollUserCodeChecksumResponses[keyof PollUserCodeChecksumResponses];
+
+export type GetUserCodeActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/mailbox/{node_id}/user_codes';
+};
+
+export type GetUserCodeActionsResponses = {
+    /**
+     * UserCodeActions
+     *
+     * OK
+     */
+    200: {
+        items?: Array<{
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'clearAllUserCodes';
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'clearUserCode';
+            /**
+             * Specifies a user identifier of a user code slot.
+             */
+            userIdentifier?: number;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'setKeypadMode';
+            /**
+             * One of keypad modes supported by this device.
+             */
+            keypadMode?: number;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'setMasterCode';
+            masterCode?: Array<number>;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'setUserCode';
+            /**
+             * Specifies a user identifier of a user code slot.
+             */
+            userIdentifier?: number;
+            /**
+             * Status of the user identifier as defined in Z-Wave Application Command Class
+             * Specification.
+             *
+             */
+            userIdStatus?: number;
+            userCode?: Array<number>;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'pollKeypadMode';
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'pollMasterCode';
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'pollUserCode';
+            /**
+             * Specifies a user identifier of a user code slot.
+             */
+            userIdentifier?: number;
+        } | {
+            /**
+             * PendingActionId
+             *
+             * Pending Action ID.
+             *
+             * Can be used to identify action to be removed.
+             *
+             */
+            actionId?: number;
+            type?: 'pollChecksum';
+        }>;
+    };
+};
+
+export type GetUserCodeActionsResponse = GetUserCodeActionsResponses[keyof GetUserCodeActionsResponses];
+
+export type ClearUserCodeActionsData = {
+    body?: never;
+    path: {
+        /**
+         * Node ID.
+         */
+        node_id: number;
+    };
+    query?: never;
+    url: '/zwave/mailbox/{node_id}/user_codes/clear';
+};
+
+export type ClearUserCodeActionsResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
+export type GetWindowCoveringParametersData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/window_covering/{addr}/parameters';
+};
+
+export type GetWindowCoveringParametersResponses = {
+    /**
+     * A set of known Window Covering parameters.
+     */
+    200: Array<{
+        /**
+         * The parameter identifier defined in the Z-Wave Application Command Class Specification.
+         */
+        parameterId?: number;
+        /**
+         * Current value (only for position parameters)
+         */
+        currentValue?: number | null;
+        /**
+         * Target value (only for position parameters)
+         */
+        targetValue?: number | null;
+        /**
+         * The time when device is expected to reach a target value.
+         *
+         * This field may indicate the past if transition has already been completed.
+         * Used only for position parameters.
+         *
+         */
+        targetAfter?: string | null;
+    }>;
+};
+
+export type GetWindowCoveringParametersResponse = GetWindowCoveringParametersResponses[keyof GetWindowCoveringParametersResponses];
+
+export type EditWindowCoveringParametersData = {
+    body?: {
+        /**
+         * A set of Window Covering parameters to set.
+         */
+        parameters?: Array<{
+            /**
+             * The parameter identifier defined in the Z-Wave Application Command Class Specification.
+             */
+            parameterId?: number;
+            /**
+             * Value (only for position parameters)
+             */
+            value?: number;
+        }>;
+        /**
+         * Requested transition duration.
+         */
+        duration?: {
+            seconds?: number;
+            minutes?: number;
+            factoryDefault?: boolean;
+        } | null;
+    };
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/window_covering/{addr}/parameters';
+};
+
+export type EditWindowCoveringParametersResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type EditWindowCoveringParametersResponse = EditWindowCoveringParametersResponses[keyof EditWindowCoveringParametersResponses];
+
+export type GetWindowCoveringParameterData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Parameter Identifier
+         */
+        parameter_id: number;
+    };
+    query?: never;
+    url: '/zwave/window_covering/{addr}/parameters/{parameter_id}';
+};
+
+export type GetWindowCoveringParameterResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * The parameter identifier defined in the Z-Wave Application Command Class Specification.
+         */
+        parameterId?: number;
+        /**
+         * Current value (only for position parameters)
+         */
+        currentValue?: number | null;
+        /**
+         * Target value (only for position parameters)
+         */
+        targetValue?: number | null;
+        /**
+         * The time when device is expected to reach a target value.
+         *
+         * This field may indicate the past if transition has already been completed.
+         * Used only for position parameters.
+         *
+         */
+        targetAfter?: string | null;
+    };
+};
+
+export type GetWindowCoveringParameterResponse = GetWindowCoveringParameterResponses[keyof GetWindowCoveringParameterResponses];
+
+export type StartWindowCoveringTransitionData = {
+    /**
+     * StartWindowCoveringTransition
+     */
+    body?: {
+        backward: boolean;
+        /**
+         * Requested transition duration.
+         */
+        duration?: {
+            seconds?: number;
+            minutes?: number;
+            factoryDefault?: boolean;
+        } | null;
+    };
+    path: {
+        addr: string;
+        /**
+         * Parameter Identifier
+         */
+        parameter_id: number;
+    };
+    query?: never;
+    url: '/zwave/window_covering/{addr}/parameters/{parameter_id}/start_transition';
+};
+
+export type StartWindowCoveringTransitionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type StartWindowCoveringTransitionResponse = StartWindowCoveringTransitionResponses[keyof StartWindowCoveringTransitionResponses];
+
+export type StopWindowCoveringTransitionData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Parameter Identifier
+         */
+        parameter_id: number;
+    };
+    query?: never;
+    url: '/zwave/window_covering/{addr}/parameters/{parameter_id}/stop_transition';
+};
+
+export type StopWindowCoveringTransitionResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type StopWindowCoveringTransitionResponse = StopWindowCoveringTransitionResponses[keyof StopWindowCoveringTransitionResponses];
+
+export type PollWindowCoveringParameterData = {
+    body?: never;
+    path: {
+        addr: string;
+        /**
+         * Parameter Identifier
+         */
+        parameter_id: number;
+    };
+    query?: never;
+    url: '/zwave/polling/window_covering/{addr}/parameters/{parameter_id}';
+};
+
+export type PollWindowCoveringParameterResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+    /**
+     * AddedToMailbox
+     *
+     * Target node is a sleeping device which means that communication with it must be postponed
+     * until it awakens. Request has been added to mailbox and will be processed when possible.
+     *
+     */
+    202: {
+        /**
+         * PendingActionId
+         *
+         * Pending Action ID.
+         *
+         * Can be used to identify action to be removed.
+         *
+         */
+        actionId?: number;
+    };
+};
+
+export type PollWindowCoveringParameterResponse = PollWindowCoveringParameterResponses[keyof PollWindowCoveringParameterResponses];
+
+export type GetHcMappingData = {
+    body?: never;
+    path: {
+        addr: string;
+    };
+    query?: never;
+    url: '/zwave/hc/devices/{addr}';
+};
+
+export type GetHcMappingResponses = {
+    /**
+     * OK
+     */
+    200: {
+        /**
+         * HC Device id connected to Node from given addr.
+         */
+        parentDeviceId?: number;
+        /**
+         * Endpoint Address
+         *
+         * Depending on the type of endpoint following formats are possible:
+         *
+         * - individual endpoint `<node_id>.<endpoint_id>`
+         * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+         *
+         */
+        addr?: string;
+        /**
+         * HC Device ids that are connected to EpAddr.
+         */
+        deviceIds?: Array<number>;
+    };
+};
+
+export type GetHcMappingResponse = GetHcMappingResponses[keyof GetHcMappingResponses];
+
+export type GetHcToZwaveMappingData = {
+    body?: never;
+    path: {
+        /**
+         * Device ID.
+         */
+        device_id: number;
+    };
+    query?: never;
+    url: '/zwave/hc/addr/{device_id}';
+};
+
+export type GetHcToZwaveMappingResponses = {
+    /**
+     * Missing field `addr` means that the given `device_id` is `main device`.
+     */
+    200: {
+        /**
+         * Node Address
+         *
+         */
+        nodeId?: number;
+        /**
+         * Endpoint Address
+         *
+         * Depending on the type of endpoint following formats are possible:
+         *
+         * - individual endpoint `<node_id>.<endpoint_id>`
+         * - aggregated endpoint `<node_id>.@<aggregated_endpoint_offset>`
+         *
+         */
+        addr?: string;
+    };
+};
+
+export type GetHcToZwaveMappingResponse = GetHcToZwaveMappingResponses[keyof GetHcToZwaveMappingResponses];

@@ -5,10 +5,13 @@
   "description": "Downloads Fibaro HC3 swagger JSON files for TypeScript generation.",
   "scripts": {
     "download:swagger": "node ./scripts/download-swagger.js",
+    "pregenerate:merge": "node ./scripts/premerge.js",
     "generate:merge": "openapi-merge-cli --config openapi-merge.json",
     "generate:sdk": "openapi-ts",
     "generate": "npm run generate:merge && npm run generate:sdk",
-    "example:get-devices": "tsx ./examples/get-devices.ts"
+    "example:get-devices": "tsx ./examples/get-devices.ts",
+    "test": "tsx --test ./tests/**/*.test.ts",
+    "test:nodes-neighbors": "tsx --test ./tests/nodes-neighbors.test.ts"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.94.5",

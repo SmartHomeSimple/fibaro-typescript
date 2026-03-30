@@ -1,59 +1,188 @@
 {
   "inputs": [
-    { "inputFile": "./swagger/additionalInterfaces.json" },
-    { "inputFile": "./swagger/alarms/devices.json" },
-    { "inputFile": "./swagger/alarms/history.json" },
-    { "inputFile": "./swagger/alarms/partitions.json" },
-    { "inputFile": "./swagger/categories.json" },
-    { "inputFile": "./swagger/consumption.json" },
-    { "inputFile": "./swagger/debugMessages.json" },
-    { "inputFile": "./swagger/deviceNotifications.json" },
-    { "inputFile": "./swagger/devices.json" },
-    { "inputFile": "./swagger/diagnostics.json" },
-    { "inputFile": "./swagger/energy.json" },
-    { "inputFile": "./swagger/events/history.json" },
-    { "inputFile": "./swagger/events/publishEvent/specificEvents.json" },
-    { "inputFile": "./swagger/favoriteColors.json" },
-    { "inputFile": "./swagger/favoriteColorsV2.json" },
-    { "inputFile": "./swagger/fibaro/json.json" },
-    { "inputFile": "./swagger/gatewayConnection.json" },
-    { "inputFile": "./swagger/home.json" },
-    { "inputFile": "./swagger/icons.json" },
-    { "inputFile": "./swagger/iosDevices.json" },
-    { "inputFile": "./swagger/linkedDevices.json" },
-    { "inputFile": "./swagger/loginStatus.json" },
-    { "inputFile": "./swagger/networkDiscovery.json" },
-    { "inputFile": "./swagger/notificationCenter.json" },
-    { "inputFile": "./swagger/panelService.json" },
-    { "inputFile": "./swagger/panels/climate.json" },
-    { "inputFile": "./swagger/panels/customEvents.json" },
-    { "inputFile": "./swagger/panels/family.json" },
-    { "inputFile": "./swagger/panels/globalVariables.json" },
-    { "inputFile": "./swagger/panels/humidity.json" },
-    { "inputFile": "./swagger/panels/location.json" },
-    { "inputFile": "./swagger/panels/notifications.json" },
-    { "inputFile": "./swagger/panels/sprinklers.json" },
-    { "inputFile": "./swagger/passwordForgotten.json" },
-    { "inputFile": "./swagger/profiles.json" },
-    { "inputFile": "./swagger/reboot.json" },
-    { "inputFile": "./swagger/refreshStates.json" },
-    { "inputFile": "./swagger/resetZigbee.json" },
-    { "inputFile": "./swagger/RGBPrograms.json" },
-    { "inputFile": "./swagger/rooms.json" },
-    { "inputFile": "./swagger/scenes.json" },
-    { "inputFile": "./swagger/sections.json" },
-    { "inputFile": "./swagger/service/actions.json" },
-    { "inputFile": "./swagger/service/backups.json" },
-    { "inputFile": "./swagger/service/update.json" },
-    { "inputFile": "./swagger/settings/info.json" },
-    { "inputFile": "./swagger/settings/led.json" },
-    { "inputFile": "./swagger/settings/location.json" },
-    { "inputFile": "./swagger/settings/network.json" },
-    { "inputFile": "./swagger/sortOrder.json" },
-    { "inputFile": "./swagger/systemStatus.json" },
-    { "inputFile": "./swagger/userActivity.json" },
-    { "inputFile": "./swagger/users.json" },
-    { "inputFile": "./swagger/weather.json" }
+    {
+      "inputFile": "./swagger/hc/additionalInterfaces.json"
+    },
+    {
+      "inputFile": "./swagger/hc/alarms/devices.json"
+    },
+    {
+      "inputFile": "./swagger/hc/alarms/history.json"
+    },
+    {
+      "inputFile": "./swagger/hc/alarms/partitions.json"
+    },
+    {
+      "inputFile": "./swagger/hc/analytics.json"
+    },
+    {
+      "inputFile": "./swagger/hc/apps/zwave-associations.json"
+    },
+    {
+      "inputFile": "./swagger/hc/categories.json"
+    },
+    {
+      "inputFile": "./swagger/hc/consumption.json"
+    },
+    {
+      "inputFile": "./swagger/hc/debugMessages.json"
+    },
+    {
+      "inputFile": "./swagger/hc/deviceNotifications.json"
+    },
+    {
+      "inputFile": "./swagger/hc/devices.json"
+    },
+    {
+      "inputFile": "./swagger/hc/diagnostics.json"
+    },
+    {
+      "inputFile": "./swagger/hc/energy.json"
+    },
+    {
+      "inputFile": "./swagger/hc/events/history.json"
+    },
+    {
+      "inputFile": "./swagger/hc/events/publishEvent/specificEvents.json"
+    },
+    {
+      "inputFile": "./swagger/hc/favoriteColors.json"
+    },
+    {
+      "inputFile": "./swagger/hc/favoriteColorsV2.json"
+    },
+    {
+      "inputFile": "./swagger/hc/fibaro/json.json"
+    },
+    {
+      "inputFile": "./swagger/hc/fti.json"
+    },
+    {
+      "inputFile": "./swagger/hc/gatewayConnection.json"
+    },
+    {
+      "inputFile": "./swagger/hc/home.json"
+    },
+    {
+      "inputFile": "./swagger/hc/icons.json"
+    },
+    {
+      "inputFile": "./swagger/hc/installer/installer.json"
+    },
+    {
+      "inputFile": "./swagger/hc/iosDevices.json"
+    },
+    {
+      "inputFile": "./swagger/hc/linkedDevices.json"
+    },
+    {
+      "inputFile": "./swagger/hc/loginStatus.json"
+    },
+    {
+      "inputFile": "./swagger/hc/networkDiscovery.json"
+    },
+    {
+      "inputFile": "./swagger/hc/notificationCenter.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panels/climate.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panels/customEvents.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panels/family.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panels/globalVariables.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panels/humidity.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panels/location.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panels/notifications.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panels/sprinklers.json"
+    },
+    {
+      "inputFile": "./swagger/hc/panelService.json"
+    },
+    {
+      "inputFile": "./swagger/hc/passwordForgotten.json"
+    },
+    {
+      "inputFile": "./swagger/hc/profiles.json"
+    },
+    {
+      "inputFile": "./swagger/hc/reboot.json"
+    },
+    {
+      "inputFile": "./swagger/hc/refreshStates.json"
+    },
+    {
+      "inputFile": "./swagger/hc/resetZigbee.json",
+      "pathModification": {
+        "prepend": "/service"
+      }
+    },
+    {
+      "inputFile": "./swagger/hc/RGBPrograms.json"
+    },
+    {
+      "inputFile": "./swagger/hc/rooms.json"
+    },
+    {
+      "inputFile": "./swagger/hc/scenes.json"
+    },
+    {
+      "inputFile": "./swagger/hc/sections.json"
+    },
+    {
+      "inputFile": "./swagger/hc/service/actions.json"
+    },
+    {
+      "inputFile": "./swagger/hc/service/backups.json"
+    },
+    {
+      "inputFile": "./swagger/hc/service/update.json"
+    },
+    {
+      "inputFile": "./swagger/hc/settings/info.json"
+    },
+    {
+      "inputFile": "./swagger/hc/settings/led.json"
+    },
+    {
+      "inputFile": "./swagger/hc/settings/location.json"
+    },
+    {
+      "inputFile": "./swagger/hc/settings/network.json"
+    },
+    {
+      "inputFile": "./swagger/hc/sortOrder.json"
+    },
+    {
+      "inputFile": "./swagger/hc/systemStatus.json"
+    },
+    {
+      "inputFile": "./swagger/hc/userActivity.json"
+    },
+    {
+      "inputFile": "./swagger/hc/users.json"
+    },
+    {
+      "inputFile": "./swagger/hc/weather.json"
+    },
+    {
+      "inputFile": "./swagger/zwave3/api.json",
+      "pathModification": {
+        "prepend": "/zwave"
+      }
+    }
   ],
   "output": "./swagger/merged.json"
 }
