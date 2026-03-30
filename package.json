@@ -1,0 +1,23 @@
+{
+  "name": "fibaro-typescript",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Downloads Fibaro HC3 swagger JSON files for TypeScript generation.",
+  "scripts": {
+    "download:swagger": "node ./scripts/download-swagger.js",
+    "generate:merge": "openapi-merge-cli --config openapi-merge.json",
+    "generate:sdk": "openapi-ts",
+    "generate": "npm run generate:merge && npm run generate:sdk",
+    "example:get-devices": "tsx ./examples/get-devices.ts"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.94.5",
+    "openapi-merge-cli": "^1.3.2",
+    "openapi-typescript": "^7.13.0",
+    "tsx": "^4.21.0"
+  },
+  "dependencies": {
+    "@hey-api/client-fetch": "^0.13.1",
+    "dotenv": "^17.3.1"
+  }
+}
