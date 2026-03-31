@@ -1,0 +1,224 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Location API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/settings/location": {
+      "get": {
+        "tags": ["location settings"],
+        "summary": "Get current location",
+        "operationId": "getLocation",
+        "responses": {
+          "200": {
+            "description": "Returns location data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationSettings"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["location settings"],
+        "summary": "Modify current location.",
+        "operationId": "modifyLocation",
+        "parameters": [
+          {
+            "name": "reboot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified location object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationSettings"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LocationSettingsDate": {
+        "type": "object",
+        "description": "Current date on your device",
+        "properties": {
+          "day": {
+            "type": "integer",
+            "description": "Day",
+            "example": 12
+          },
+          "month": {
+            "type": "integer",
+            "description": "Month",
+            "example": 10
+          },
+          "year": {
+            "type": "integer",
+            "description": "Year",
+            "example": 2020
+          }
+        },
+        "example": {
+          "day": 24,
+          "month": 12,
+          "year": 2021
+        }
+      },
+      "LocationSettingsTime": {
+        "type": "object",
+        "description": "Current time on your device",
+        "properties": {
+          "hour": {
+            "type": "integer",
+            "description": "Hour, format depends on timeFormat",
+            "example": 17
+          },
+          "minute": {
+            "type": "integer",
+            "description": "Minute, format mm",
+            "example": 54
+          }
+        },
+        "example": {
+          "hour": 14,
+          "minute": 30
+        }
+      },
+      "LocationSettings": {
+        "type": "object",
+        "properties": {
+          "houseNumber": {
+            "description": "Your location house number",
+            "type": "integer",
+            "example": 12
+          },
+          "timezone": {
+            "description": "Your location time zone",
+            "type": "string",
+            "example": "WET"
+          },
+          "timezoneOffset": {
+            "description": "Time zone difference, in minutes, from current locale (host system settings) to UTC",
+            "type": "integer",
+            "example": 7200
+          },
+          "ntp": {
+            "type": "boolean",
+            "description": "Is NTP enabled",
+            "example": true
+          },
+          "ntpServer": {
+            "type": "string",
+            "description": "Network Time Protocol Server address",
+            "example": "0.pl.pool.ntp.org"
+          },
+          "date": {
+            "$ref": "#/components/schemas/LocationSettingsDate"
+          },
+          "time": {
+            "$ref": "#/components/schemas/LocationSettingsTime"
+          },
+          "longitude": {
+            "type": "number",
+            "description": "The longitude of the location in EPSG:4326 coordinate system",
+            "example": "16.7915329"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "The latitude of the location in EPSG:4326 coordinate system",
+            "example": "52.404958"
+          },
+          "city": {
+            "type": "string",
+            "description": "City",
+            "example": "New York"
+          },
+          "temperatureUnit": {
+            "type": "string",
+            "description": "Temperature Unit: Celsius (C) or Fahrenheit(F)",
+            "example": "C"
+          },
+          "windUnit": {
+            "type": "string",
+            "description": "Wind unit",
+            "example": "km/h"
+          },
+          "timeFormat": {
+            "type": "integer",
+            "description": "Time format: 12 or 24",
+            "example": "12"
+          },
+          "dateFormat": {
+            "type": "string",
+            "description": "Date format",
+            "example": "dd.mm.yy"
+          },
+          "decimalMark": {
+            "type": "string",
+            "description": "Decimal mark",
+            "example": "."
+          }
+        },
+        "example": {
+          "date": {
+            "month": 12,
+            "year": 2020,
+            "day": 10
+          },
+          "city": "New York",
+          "dateFormat": "dd.mm.yy",
+          "timezone": "EST",
+          "latitude": 40.73061,
+          "longitude": -73.935242,
+          "houseNumber": 23,
+          "ntp": true,
+          "windUnit": "km/h",
+          "timezoneOffset": 6,
+          "temperatureUnit": "F",
+          "timeFormat": 24,
+          "time": {
+            "hour": 21,
+            "minute": 31
+          },
+          "decimalMark": ".",
+          "ntpServer": "ntp.server.org"
+        }
+      }
+    }
+  }
+}

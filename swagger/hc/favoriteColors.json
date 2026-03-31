@@ -1,0 +1,228 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Favorite Colors API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/panels/favoriteColors": {
+      "get": {
+        "tags": ["favoriteColors"],
+        "summary": "Get favorite colors",
+        "operationId": "getFavoriteColors",
+        "responses": {
+          "200": {
+            "description": "Returns favorite colors data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FavoriteColor"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["favoriteColors"],
+        "summary": "Create favorite colors object",
+        "operationId": "newFavoriteColor",
+        "requestBody": {
+          "description": "Favorite color body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewFavoriteColor"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Returns added favorite color data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoriteColor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/panels/favoriteColors/{favoriteColorID}": {
+      "put": {
+        "tags": ["favoriteColors"],
+        "summary": "Modify favorite colors object",
+        "operationId": "modifyFavoriteColor",
+        "parameters": [
+          {
+            "name": "favoriteColorID",
+            "in": "path",
+            "description": "ID of an existing favorite colors object",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Favorite colors body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoriteColor"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns modified favorite color data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoriteColor"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["favoriteColors"],
+        "summary": "Delete favorite colors",
+        "operationId": "deleteFavoriteColor",
+        "parameters": [
+          {
+            "name": "favoriteColorID",
+            "in": "path",
+            "description": "ID of an existing favorite colors object",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FavoriteColor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "r": {
+            "type": "integer"
+          },
+          "g": {
+            "type": "integer"
+          },
+          "b": {
+            "type": "integer"
+          },
+          "w": {
+            "type": "integer"
+          },
+          "brightness": {
+            "type": "integer"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "r": 6,
+          "b": 5,
+          "created": 2,
+          "g": 1,
+          "w": 5,
+          "brightness": 99,
+          "modified": 7,
+          "id": 0
+        }
+      },
+      "NewFavoriteColor": {
+        "type": "object",
+        "properties": {
+          "r": {
+            "type": "integer"
+          },
+          "g": {
+            "type": "integer"
+          },
+          "b": {
+            "type": "integer"
+          },
+          "w": {
+            "type": "integer"
+          },
+          "brightness": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "r": 0,
+          "b": 1,
+          "g": 6,
+          "w": 5,
+          "brightness": 99
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,249 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Notifications API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/panels/notifications": {
+      "get": {
+        "tags": ["notification panel"],
+        "summary": "Get a list of all available notifications",
+        "operationId": "getPanelsNotifications",
+        "responses": {
+          "200": {
+            "description": "Returns notifications data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notifications"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["notification panel"],
+        "summary": "Create notification",
+        "description": "Notification body",
+        "operationId": "newPanelsNotification",
+        "requestBody": {
+          "description": "new notification body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/inline_object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Returns notification data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/panels/notifications/{notificationID}": {
+      "get": {
+        "tags": ["notification panel"],
+        "summary": "Get notification",
+        "operationId": "getPanelsNotification",
+        "parameters": [
+          {
+            "name": "notificationID",
+            "in": "path",
+            "description": "ID of an existing notification",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns notification data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["notification panel"],
+        "summary": "Modify notification",
+        "operationId": "modifyPanelsNotificationById",
+        "parameters": [
+          {
+            "name": "notificationID",
+            "in": "path",
+            "description": "ID of an existing notification",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified notification body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["notification panel"],
+        "summary": "Delete notification",
+        "operationId": "deletePanelsNotification",
+        "parameters": [
+          {
+            "name": "notificationID",
+            "in": "path",
+            "description": "ID of an existing notification",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Notifications": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "id": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sms": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "push": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "created": 6,
+          "name": "name",
+          "sms": "sms",
+          "modified": 1,
+          "id": 0,
+          "email": "email",
+          "push": "push"
+        }
+      },
+      "inline_object": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

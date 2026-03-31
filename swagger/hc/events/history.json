@@ -1,0 +1,325 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "History Events API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/events/history": {
+      "get": {
+        "tags": ["historyEvent"],
+        "summary": "Retrieves list of events that match filters",
+        "operationId": "getHistoryEvents",
+        "parameters": [
+          {
+            "name": "eventType",
+            "in": "query",
+            "description": "event type",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "time from",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "time to",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sourceType",
+            "in": "query",
+            "description": "event source object type",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/SourceType"
+            }
+          },
+          {
+            "name": "sourceId",
+            "in": "query",
+            "description": "event source object id",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "objectType",
+            "in": "query",
+            "description": "event related object type",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/SourceType"
+            }
+          },
+          {
+            "name": "objectId",
+            "in": "query",
+            "description": "event related object id",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "lastId",
+            "in": "query",
+            "description": "requests with id<=lastId will be skipped (only more recent entries then lastId will be returned)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "numberOfRecords",
+            "in": "query",
+            "description": "response will be limited to numberOfRecords entries",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "roomId",
+            "in": "query",
+            "description": "response will be filtered to objects having roomId",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "query",
+            "description": "response will be filtered to objects having sectionId",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "response will be filtered to objects having category",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["historyEvent"],
+        "summary": "deletes events that fulfill conditions",
+        "operationId": "deleteHistoryEvents",
+        "parameters": [
+          {
+            "name": "eventType",
+            "in": "query",
+            "description": "event type",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "timestamp",
+            "in": "query",
+            "description": "affects events before timestamp",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "shrink",
+            "in": "query",
+            "description": "deletes oldest events limiting number of events left to this value",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "objectType",
+            "in": "query",
+            "description": "event related object type",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/SourceType"
+            }
+          },
+          {
+            "name": "objectId",
+            "in": "query",
+            "description": "event related object id",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/dump": {
+      "get": {
+        "tags": ["historyEvent"],
+        "summary": "Dumps file containing all history events stored in database on Home Center",
+        "operationId": "dumpHistoryEvents",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "7zip file containing events.csv file",
+            "content": {
+              "application/x-7z-compressed": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SourceType": {
+        "type": "string",
+        "enum": ["scene", "device", "system", "user", "profile", "unknown"]
+      },
+      "EventDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "sourceType": {
+            "$ref": "#/components/schemas/SourceType"
+          },
+          "sourceId": {
+            "type": "integer"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "objects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "$ref": "#/components/schemas/SourceType"
+                },
+                "id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

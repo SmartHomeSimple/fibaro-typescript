@@ -1,0 +1,377 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Backups API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/service/canCreateBackups": {
+      "get": {
+        "tags": ["backups"],
+        "summary": "Checks if backups are possible",
+        "operationId": "canCreateBackups",
+        "responses": {
+          "200": {
+            "description": "Returns information if backups are possible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupsPossible"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/getLocalBackupsStatus": {
+      "get": {
+        "tags": ["backups"],
+        "summary": "Checks if local backups create and restore are possible",
+        "operationId": "getLocalBackupsStatus",
+        "responses": {
+          "200": {
+            "description": "Returns information if backups create and restore are possible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupsStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/getRemoteBackupsStatus": {
+      "get": {
+        "tags": ["backups"],
+        "summary": "Checks if remote backups create and restore are possible",
+        "operationId": "getRemoteBackupsStatus",
+        "responses": {
+          "200": {
+            "description": "Returns information if backups create and restore are possible",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupsStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/backups": {
+      "get": {
+        "tags": ["backups"],
+        "summary": "Get current backup settings",
+        "operationId": "getBackup",
+        "responses": {
+          "200": {
+            "description": "Returns backups data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllBackups"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["backups"],
+        "summary": "Create backup",
+        "operationId": "createBackup",
+        "requestBody": {
+          "description": "Action and parameters for new backup",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackupDto"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackupDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "202": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["backups"],
+        "summary": "Removes backup",
+        "description": "removes selected backup type",
+        "operationId": "removeBackup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "backup id returned by get endpoint",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "backup type",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["local", "remote", "remoteOld"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/service/backups/{id}": {
+      "delete": {
+        "tags": ["backups"],
+        "summary": "Removes backup",
+        "description": "removes selected backup type",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "backup id returned by get endpoint",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "backup type",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["local", "remote", "remoteOld"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BackupsPossible": {
+        "type": "object",
+        "properties": {
+          "canCreateCloudBackup": {
+            "type": "boolean"
+          },
+          "canCreateLocalBackup": {
+            "type": "boolean"
+          }
+        }
+      },
+      "BackupsStatus": {
+        "type": "object",
+        "properties": {
+          "canCreateAutoBackup": {
+            "type": "boolean"
+          },
+          "canCreateManualBackup": {
+            "type": "boolean"
+          },
+          "canRestoreBackup": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AllBackups": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      "Backup": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "compatible": {
+            "type": "boolean"
+          },
+          "automatic": {
+            "type": "boolean"
+          },
+          "devices": {
+            "type": "integer"
+          },
+          "rooms": {
+            "type": "integer"
+          },
+          "scenes": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "softVersion": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "slavesBackups": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "zwaveEngineVersion": {
+            "$ref": "#/components/schemas/ZwaveEngineVersion"
+          }
+        }
+      },
+      "LocalBackups": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "localBackupPath": {
+            "type": "string"
+          },
+          "automaticCount": {
+            "type": "integer"
+          },
+          "automaticLimit": {
+            "type": "integer"
+          },
+          "manualCount": {
+            "type": "integer"
+          },
+          "manualLimit": {
+            "type": "integer"
+          },
+          "uploadedBackup": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Backup"
+            }
+          }
+        }
+      },
+      "RemoteBackups": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "totalSpace": {
+            "type": "string"
+          },
+          "usedSpace": {
+            "type": "string"
+          },
+          "usedSpacePercentage": {
+            "type": "string"
+          },
+          "automaticCount": {
+            "type": "integer"
+          },
+          "automaticLimit": {
+            "type": "integer"
+          },
+          "manualCount": {
+            "type": "integer"
+          },
+          "manualLimit": {
+            "type": "integer"
+          },
+          "backups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Backup"
+            }
+          }
+        }
+      },
+      "ServiceBackupsParams": {
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "used for create"
+          },
+          "id": {
+            "type": "string",
+            "description": "used for restre action"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["local", "remote"]
+          },
+          "version": {
+            "type": "string",
+            "description": "used for create action"
+          }
+        }
+      },
+      "CreateBackupDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["create", "restore"]
+          },
+          "params": {
+            "$ref": "#/components/schemas/ServiceBackupsParams"
+          }
+        }
+      }
+    }
+  }
+}

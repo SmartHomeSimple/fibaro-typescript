@@ -1,0 +1,1466 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Associations API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/apps/com.fibaro.zwave/nodes/{nodeId}/associationGroupInfo": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Returns static information about association groups for given nodeId.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of groups information from all endpoints.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EndpointAssociationGroupInfo"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node was not found or it does not handle AGI.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/associationGroupInfo": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Use proxy to returns static information about association groups for given nodeId.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of groups information from all endpoints.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EndpointAssociationGroupInfo"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node was not found or it does not handle AGI.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/com.fibaro.zwave/nodes/{nodeId}/endpoints/{endpointId}/associationGroupInfo": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Returns static information about association groups for given {nodeId, endpointId}",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "endpointId",
+            "description": "Id of existing endpoint",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EndpointId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of endpoint's groups information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssociationGroupInfo"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or endpoint was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/endpoints/{endpointId}/associationGroupInfo": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Use proxy to return static information about association groups for given {nodeId, endpointId}",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "endpointId",
+            "description": "Id of existing endpoint",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EndpointId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of endpoint's groups information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssociationGroupInfo"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or endpoint was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/com.fibaro.zwave/nodes/{nodeId}/associations": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Returns all associations for given nodeId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all endpoints association groups.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EndpointAssociationGroups"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/associations": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Use proxy to return all associations for given nodeId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all endpoints association groups.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EndpointAssociationGroups"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/com.fibaro.zwave/nodes/{nodeId}/endpoints/{endpointId}/associations": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Returns all associations for given {nodeId, endpointId}",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "endpointId",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EndpointId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of endpoint's association groups.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssociationGroup"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or endpoint was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/endpoints/{endpointId}/associations": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Use proxy to return all associations for given {nodeId, endpointId}",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "endpointId",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/EndpointId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of endpoint's association groups.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssociationGroup"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or endpoint was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/com.fibaro.zwave/nodes/{nodeId}/actions": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Returns information for whole actions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status of requested action.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionStatusResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or Action was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["zwave associations"],
+        "summary": "Performs action for given nodeId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/AssociationSetAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationSetAllAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationClearAllAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationClearAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationAddAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationRemoveAction"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Action for request was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateActionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/actions": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Returns information for whole proxy actions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status of requested action.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionStatusResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or Action was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["zwave associations"],
+        "summary": "Performs proxy action for given nodeId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/AssociationSetAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationSetAllAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationClearAllAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationClearAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationAddAction"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AssociationRemoveAction"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Action for request was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateActionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/com.fibaro.zwave/nodes/{nodeId}/actions/{actionId}": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Returns information for given action",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "actionId",
+            "description": "id of existing action",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status of requested action.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or Action was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["zwave associations"],
+        "summary": "Removes (cancels) given action",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "actionId",
+            "description": "Id of existing action",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "It's not allowed to delete action, e.g. action is in progress.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or Action was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/slave/{uuid}/api/apps/com.fibaro.zwave/nodes/{nodeId}/actions/{actionId}": {
+      "get": {
+        "tags": ["zwave associations"],
+        "summary": "Returns information for given proxy action",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "actionId",
+            "description": "id of existing action",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status of requested action.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or Action was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["zwave associations"],
+        "summary": "Removes (cancels) given proxy action",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "nodeId",
+            "description": "Id of existing node",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/NodeId"
+            }
+          },
+          {
+            "in": "path",
+            "name": "actionId",
+            "description": "Id of existing action",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success."
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "It's not allowed to delete action, e.g. action is in progress.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Node or Action was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Type of error message",
+            "example": "Sample type"
+          }
+        },
+        "example": {
+          "message": "Sample type"
+        }
+      },
+      "ActionStatus": {
+        "type": "string",
+        "enum": ["pending", "running", "done", "failed"]
+      },
+      "CreateActionResponse": {
+        "type": "object",
+        "required": ["actionId", "status"],
+        "properties": {
+          "actionId": {
+            "type": "integer",
+            "description": "Association action id",
+            "minimum": 1,
+            "example": 5
+          },
+          "status": {
+            "$ref": "#/components/schemas/ActionStatus"
+          }
+        },
+        "example": {
+          "actionId": 5,
+          "status": "pending"
+        }
+      },
+      "ActionStatusResponse": {
+        "type": "object",
+        "description": "Response status",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Association action id",
+            "example": 5
+          },
+          "status": {
+            "$ref": "#/components/schemas/ActionStatus"
+          },
+          "request": {
+            "type": "object",
+            "description": "The original request that served to create the action."
+          }
+        },
+        "example": {
+          "id": 5,
+          "status": "failed",
+          "request": {
+            "endpointId": 0,
+            "groupId": 1,
+            "name": "associationAdd",
+            "target": 3
+          }
+        }
+      },
+      "NodeId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 232,
+        "description": "Node id of device",
+        "example": 3
+      },
+      "GroupId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 255,
+        "description": "Group id of device",
+        "example": 1
+      },
+      "EndpointId": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 127,
+        "description": "Endpoint id of device",
+        "example": 0
+      },
+      "Command": {
+        "type": "object",
+        "required": ["command", "commandClass"],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Command name",
+            "example": "Switch Binary Report"
+          },
+          "commandClass": {
+            "type": "string",
+            "description": "Name of command class",
+            "example": "Command Class Switch Binary"
+          }
+        }
+      },
+      "AssociationGroupInfo": {
+        "type": "object",
+        "required": ["groupId", "multichannel", "maxTargets"],
+        "properties": {
+          "groupId": {
+            "$ref": "#/components/schemas/GroupId"
+          },
+          "name": {
+            "type": "string",
+            "description": "Group name",
+            "example": "Lifeline"
+          },
+          "profile": {
+            "description": "Group's Profile, e.g. Lifeline",
+            "type": "string",
+            "example": "Lifeline"
+          },
+          "multichannel": {
+            "description": "Does group support Multichannel Associations",
+            "type": "boolean",
+            "example": true
+          },
+          "maxTargets": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 1
+          },
+          "commands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Command"
+            }
+          }
+        },
+        "example": {
+          "groupId": 1,
+          "name": "Lifeline",
+          "profile": "General: Lifeline",
+          "multichannel": true,
+          "maxTargets": 1,
+          "commands": {
+            "command": "Switch Binary Report",
+            "commandClass": "Command Class Switch Binary"
+          }
+        }
+      },
+      "EndpointAssociationGroupInfo": {
+        "type": "object",
+        "required": ["endpointId", "groups"],
+        "properties": {
+          "endpointId": {
+            "$ref": "#/components/schemas/EndpointId"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssociationGroupInfo"
+            }
+          }
+        },
+        "example": {
+          "endpointId": 1,
+          "groups": [
+            {
+              "commands": [
+                {
+                  "command": "Switch Binary Report",
+                  "commandClass": "Command Class Switch Binary"
+                },
+                {
+                  "command": "Device Reset Locally Notification",
+                  "commandClass": "Command Class Device Reset Locally"
+                },
+                {
+                  "command": "Meter Report",
+                  "commandClass": "Command Class Meter"
+                }
+              ],
+              "groupId": 1,
+              "maxTargets": 1,
+              "multichannel": true,
+              "name": "Lifeline",
+              "profile": "General: Lifeline"
+            }
+          ]
+        }
+      },
+      "AssociationGroup": {
+        "type": "object",
+        "required": ["groupId", "targets"],
+        "properties": {
+          "groupId": {
+            "$ref": "#/components/schemas/GroupId"
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "description": "nodeId or [nodeId endpointId]",
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/NodeId"
+                },
+                {
+                  "type": "array",
+                  "minLength": 2,
+                  "maxLength": 2,
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "EndpointAddress"
+                }
+              ]
+            }
+          }
+        },
+        "example": {
+          "groupId": 1,
+          "targets": [2, [5, 1]]
+        }
+      },
+      "EndpointAssociationGroups": {
+        "type": "object",
+        "required": ["endpointId", "groups"],
+        "properties": {
+          "endpointId": {
+            "$ref": "#/components/schemas/EndpointId"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssociationGroup"
+            }
+          }
+        },
+        "example": {
+          "endpointId": 0,
+          "groups": [
+            {
+              "groupId": 1,
+              "targets": [2]
+            }
+          ]
+        }
+      },
+      "AssociationSetAction": {
+        "type": "object",
+        "required": ["name", "groupId", "endpointId", "targets"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["associationSet"],
+            "example": "associationSet"
+          },
+          "groupId": {
+            "$ref": "#/components/schemas/GroupId"
+          },
+          "endpointId": {
+            "$ref": "#/components/schemas/EndpointId"
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/NodeId"
+                },
+                {
+                  "type": "array",
+                  "minLength": 2,
+                  "maxLength": 2,
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "EndpointAddress"
+                }
+              ]
+            }
+          }
+        },
+        "example": {
+          "name": "associationSet",
+          "groupId": 1,
+          "endpointId": 1,
+          "targets": [10]
+        }
+      },
+      "AssociationSetAllAction": {
+        "type": "object",
+        "required": ["name", "endpoints"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["associationSetAll"],
+            "description": "Action name",
+            "example": "associationSetAll"
+          },
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EndpointAssociationGroups"
+            }
+          }
+        },
+        "example": {
+          "name": "associationSetAll",
+          "endpoints": [
+            {
+              "endpointId": 0,
+              "groups": [
+                {
+                  "groupId": 1,
+                  "targets": [2]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "AssociationClearAllAction": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["associationClearAll"],
+            "description": "Action name",
+            "example": "associationClearAll"
+          }
+        }
+      },
+      "AssociationClearAction": {
+        "type": "object",
+        "required": ["name", "groupId", "endpointId"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["associationClear"]
+          },
+          "groupId": {
+            "$ref": "#/components/schemas/GroupId"
+          },
+          "endpointId": {
+            "$ref": "#/components/schemas/EndpointId"
+          }
+        },
+        "example": {
+          "name": "associationClear",
+          "groupId": 1,
+          "endpointId": 0
+        }
+      },
+      "AssociationAddAction": {
+        "type": "object",
+        "required": ["name", "groupId", "endpointId", "target"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["associationAdd"]
+          },
+          "groupId": {
+            "$ref": "#/components/schemas/GroupId"
+          },
+          "endpointId": {
+            "$ref": "#/components/schemas/EndpointId"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NodeId"
+              },
+              {
+                "type": "array",
+                "minLength": 2,
+                "maxLength": 2,
+                "items": {
+                  "type": "integer"
+                },
+                "description": "EndpointAddress"
+              }
+            ]
+          }
+        },
+        "example": {
+          "name": "associationAdd",
+          "groupId": 1,
+          "endpointId": 0,
+          "target": 4
+        }
+      },
+      "AssociationRemoveAction": {
+        "type": "object",
+        "required": ["name", "groupId", "endpointId", "target"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["associationRemove"]
+          },
+          "groupId": {
+            "$ref": "#/components/schemas/GroupId"
+          },
+          "endpointId": {
+            "$ref": "#/components/schemas/EndpointId"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NodeId"
+              },
+              {
+                "type": "array",
+                "minLength": 2,
+                "maxLength": 2,
+                "items": {
+                  "type": "integer"
+                },
+                "description": "EndpointAddress"
+              }
+            ]
+          }
+        },
+        "example": {
+          "name": "associationRemove",
+          "groupId": 1,
+          "endpointId": 0,
+          "target": 4
+        }
+      }
+    }
+  }
+}

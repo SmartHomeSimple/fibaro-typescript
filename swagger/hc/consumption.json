@@ -1,0 +1,712 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Consumption API for temperature and energy",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/energy/{timestampFrom}/{timestampTo}/{dataSet}/{type}/{unit}/{id}": {
+      "get": {
+        "tags": ["consumption"],
+        "summary": "Get energy from/to",
+        "operationId": "getEnergyFromTo",
+        "parameters": [
+          {
+            "name": "timestampFrom",
+            "in": "path",
+            "description": "Timestamp in seconds - from when we want to have data. If from now type: 'now-3600'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timestampTo",
+            "in": "path",
+            "description": "Timestamp in seconds - for when we want to have data. If for now type: 'now'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "dataSet",
+            "in": "path",
+            "description": "Type of set data (summary-graph/compare)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataTypeSummaryOrCompare"
+            }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Type of monitored section (rooms/devices)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataTypeRoomsOrDevices"
+            }
+          },
+          {
+            "name": "unit",
+            "in": "path",
+            "description": "Unit what we want to get (money/power)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID(s) of room(s) or device(s)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns energy data (from/to)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyFromTo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/energy?id={id}": {
+      "get": {
+        "tags": ["consumption"],
+        "summary": "Get energy",
+        "operationId": "getEnergy",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID(s) of device(s)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns energy data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Energy"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coPlot?id={id}&from={timestampFrom}&to={timestampTo}": {
+      "get": {
+        "tags": ["consumption"],
+        "summary": "Get co from/to",
+        "operationId": "getCoFromTo",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID(s) of room(s) or device(s)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timestampFrom",
+            "in": "path",
+            "description": "Timestamp in seconds - from when we want to have data. For last hour type: 'now-3600'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timestampTo",
+            "in": "path",
+            "description": "Timestamp in seconds - for when we want to have data. For now type: 'now'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns co data (from/to)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoFromToArray"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/temperature/{timestampFrom}/{timestampTo}/{dataSet}/{type}/temperature/{id}": {
+      "get": {
+        "tags": ["consumption"],
+        "summary": "Get temperature from/to",
+        "operationId": "getTemperatureFromTo",
+        "parameters": [
+          {
+            "name": "timestampFrom",
+            "in": "path",
+            "description": "Timestamp in seconds - from when we want to have data. For last hour type: 'now-3600'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timestampTo",
+            "in": "path",
+            "description": "Timestamp in seconds - for when we want to have data. For now type: 'now'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "dataSet",
+            "in": "path",
+            "description": "Type of set data (summary-graph/compare)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataTypeSummaryOrCompare"
+            }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Type of monitored section (rooms/devices)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataTypeRoomsOrDevices"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID(s) of room(s) or device(s)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns temperature data (from/to)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemperatureFromTo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/smokeTemperature/{timestampFrom}/{timestampTo}/{dataSet}/{type}/smoke/{id}": {
+      "get": {
+        "tags": ["consumption"],
+        "summary": "Get smoke from/to",
+        "operationId": "getSmokeFromTo",
+        "parameters": [
+          {
+            "name": "timestampFrom",
+            "in": "path",
+            "description": "Timestamp in seconds - from when we want to have data. For last hour type: 'now-3600'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timestampTo",
+            "in": "path",
+            "description": "Timestamp in seconds - for when we want to have data. For now type: 'now'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "dataSet",
+            "in": "path",
+            "description": "Type of set data (summary-graph/compare)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataTypeSummaryOrCompare"
+            }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Type of monitored section (rooms/devices)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataTypeRoomsOrDevices"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID(s) of room(s) or device(s)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns temperature data (from/to)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmokeFromTo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/thermostatTemperature/{timestampFrom}/{timestampTo}/{dataSet}/{type}/thermostat/{id}": {
+      "get": {
+        "tags": ["consumption"],
+        "summary": "Get thermostat from/to",
+        "operationId": "getThermostatFromTo",
+        "parameters": [
+          {
+            "name": "timestampFrom",
+            "in": "path",
+            "description": "Timestamp in seconds - from when we want to have data. For last hour type: 'now-3600'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "timestampTo",
+            "in": "path",
+            "description": "Timestamp in seconds - for when we want to have data. For now type: 'now'",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "dataSet",
+            "in": "path",
+            "description": "Type of set data (summary-graph/compare)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataTypeSummaryOrCompare"
+            }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Type of monitored section (rooms/devices)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "$ref": "#/components/schemas/DataTypeRoomsOrDevices"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID(s) of room(s) or device(s)",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns thermostat data (from/to)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThermostatFromTo"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Energy": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "totalEnergy": {
+            "type": "number"
+          },
+          "current": {
+            "$ref": "#/components/schemas/EnergyData"
+          },
+          "total": {
+            "$ref": "#/components/schemas/EnergyData"
+          }
+        },
+        "example": [
+          {
+            "id": 99,
+            "totalEnergy": 0,
+            "current": {
+              "H": 0,
+              "D": 0,
+              "W": 0,
+              "M": 0,
+              "Y": 0,
+              "costH": 0,
+              "costD": 0,
+              "costW": 0,
+              "costM": 0,
+              "costY": 0
+            },
+            "total": {
+              "H": 0,
+              "D": 0,
+              "W": 0,
+              "M": 0,
+              "Y": 0,
+              "costH": 0,
+              "costD": 0,
+              "costW": 0,
+              "costM": 0,
+              "costY": 0
+            }
+          }
+        ]
+      },
+      "EnergyData": {
+        "type": "object",
+        "properties": {
+          "H": {
+            "type": "number"
+          },
+          "D": {
+            "type": "number"
+          },
+          "W": {
+            "type": "number"
+          },
+          "M": {
+            "type": "number"
+          },
+          "Y": {
+            "type": "number"
+          },
+          "costH": {
+            "type": "number"
+          },
+          "costD": {
+            "type": "number"
+          },
+          "costW": {
+            "type": "number"
+          },
+          "costM": {
+            "type": "number"
+          },
+          "costY": {
+            "type": "number"
+          }
+        }
+      },
+      "Temperature": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "temperatureD": {
+            "type": "number"
+          },
+          "temperatureH": {
+            "type": "number"
+          },
+          "temperatureM": {
+            "type": "number"
+          },
+          "temperatureW": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "temperatureM": 20.96,
+          "temperatureW": 22.63,
+          "id": 0,
+          "temperatureD": 21.02,
+          "temperatureH": 24
+        }
+      },
+      "EnergyFromTo": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "example": [
+          [1559294893000, 0.1],
+          [1559298066000, 0.06],
+          [1559464788000, 0.01]
+        ]
+      },
+      "DataTypeRoomsOrDevices": {
+        "type": "string",
+        "enum": ["rooms", "devices"],
+        "example": "rooms"
+      },
+      "DataTypeSummaryOrCompare": {
+        "type": "string",
+        "enum": ["summary-graph", "compare"],
+        "example": "compare"
+      },
+      "TemperatureFromTo": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "example": [
+          [1559294893000, 77.72],
+          [1559298066000, 79.52],
+          [1559464788000, 32]
+        ]
+      },
+      "CoFromToArray": {
+        "type": "array",
+        "items": {
+          "type": {
+            "$ref": "#/components/schemas/CoFromTo"
+          }
+        }
+      },
+      "CoFromTo": {
+        "type": "object",
+        "required": ["timestamp", "value", "id"],
+        "properties": {
+          "timestamp": {
+            "type": "number"
+          },
+          "value": {
+            "type": "object",
+            "required": ["concentration", "state"],
+            "properties": {
+              "concentration": {
+                "type": "number"
+              },
+              "state": {
+                "type": "number"
+              }
+            }
+          },
+          "id": {
+            "type": "number"
+          }
+        },
+        "example": [
+          { "timestamp": 1589892852, "value": { "concentration": 0, "state": 0 }, "id": 349 },
+          { "timestamp": 1589899106, "value": { "concentration": 0, "state": 0 }, "id": 349 }
+        ]
+      },
+      "SmokeFromTo": {
+        "type": "object",
+        "required": ["smoke", "temperature", "max"],
+        "properties": {
+          "smoke": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "temperature": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "max": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "smoke": [
+            [1586940575000, 0.0],
+            [1587026975000, 0.0]
+          ],
+          "temperature": [
+            [1586940575000, 21.0],
+            [1587026975000, 21.3]
+          ],
+          "max": 0.0
+        }
+      },
+      "ThermostatMode": {
+        "type": "string",
+        "description": "Thermostat mode",
+        "enum": ["Off", "ManufacturerSpecific", "Heat"]
+      },
+      "ThermostatFromTo": {
+        "type": "object",
+        "required": ["targetLevel", "temperature", "min", "max", "thermostatMode"],
+        "properties": {
+          "targetLevel": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "temperature": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "thermostatMode": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ThermostatMode"
+                  }
+                ]
+              }
+            }
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "targetLevel": [
+            [1586940575000, 0.0],
+            [1587026975000, 0.0]
+          ],
+          "temperature": [
+            [1586940575000, 21.0],
+            [1587026975000, 21.3]
+          ],
+          "thermostatMode": [
+            [1586940575000, "Off"],
+            [1587026975000, "ManufacturerSpecific"],
+            [1587027975000, "Heat"]
+          ],
+          "min": 0.0,
+          "max": 0.0
+        }
+      }
+    }
+  }
+}

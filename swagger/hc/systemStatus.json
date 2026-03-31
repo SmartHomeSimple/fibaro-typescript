@@ -1,0 +1,249 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "System Status API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/service/systemStatus": {
+      "get": {
+        "tags": ["systemStatus"],
+        "summary": "System status",
+        "operationId": "systemStatus",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "description": "System status language",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "_",
+            "in": "query",
+            "description": "System status random number",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns data system status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemStatusDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["systemStatus"],
+        "summary": "Set system status",
+        "operationId": "setSystemStatus",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "description": "System status language",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Set system status body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "SetSystemStatus",
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "$ref": "#/components/schemas/SystemStatusAction"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns success",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/service/restartServices": {
+      "post": {
+        "tags": ["systemStatus"],
+        "summary": "Clear error",
+        "operationId": "clearError",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "description": "System status language",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "system satus clear error body",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": ["action"],
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "action name"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns success",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SystemStatusDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "os": {
+            "type": "string"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/SystemStatusStageDto"
+          },
+          "current": {
+            "type": "integer"
+          },
+          "done": {
+            "type": "boolean"
+          },
+          "max": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "update": {
+            "$ref": "#/components/schemas/SystemStatusUpdateDto"
+          },
+          "platform": {
+            "type": "string",
+            "enum": ["HC3", "HC3L", "YH"]
+          },
+          "oemId": {
+            "type": "string",
+            "enum": ["HC3", "HC3L", "YH", "ZB", "WISE", "HEMS", "YHP", "SG"]
+          }
+        },
+        "example": {
+          "current": 1,
+          "os": "os",
+          "stage": {
+            "current": 0,
+            "max": 6,
+            "description": "description",
+            "done": true
+          },
+          "max": 5,
+          "description": "description",
+          "update": {
+            "type": "type",
+            "version": "version"
+          },
+          "title": "title",
+          "done": true,
+          "status": "status",
+          "platform": "HC3",
+          "oemId": "HC3"
+        }
+      },
+      "SystemStatusStageDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "current": {
+            "type": "integer"
+          },
+          "done": {
+            "type": "boolean"
+          },
+          "max": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "current": 0,
+          "max": 6,
+          "description": "description",
+          "done": true
+        }
+      },
+      "SystemStatusUpdateDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "type": "type",
+          "version": "version"
+        }
+      },
+      "SystemStatusAction": {
+        "type": "string",
+        "enum": ["clearError"]
+      }
+    }
+  }
+}

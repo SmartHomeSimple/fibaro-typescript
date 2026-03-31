@@ -1,0 +1,190 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Debug messages API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/debugMessages": {
+      "get": {
+        "tags": ["debugMessages"],
+        "summary": "Get a list of debug messages",
+        "operationId": "getDebugMessages",
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter messages by tags.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "types",
+            "in": "query",
+            "description": "Filter messages by types.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Filter messages younger than or equal to parameter value in timestamp.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Filter messages older than or equal to parameter value in timestamp.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "last",
+            "in": "query",
+            "description": "The identifier of the message that will be returned first. If last is set to 0 then return from the newest message.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of returned messages. -1 means all messages.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebugMessagesDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["debugMessages"],
+        "summary": "Delete debug messages",
+        "operationId": "deleteDebugMessages",
+        "responses": {
+          "204": {
+            "description": "Delete successful",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/debugMessages/tags": {
+      "get": {
+        "tags": ["debugMessages"],
+        "summary": "Get a list of defined debug tags",
+        "operationId": "getDebugMessagesTags",
+        "responses": {
+          "200": {
+            "description": "Returns defined tags",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DebugMessagesDto": {
+        "type": "object",
+        "properties": {
+          "nextLast": {
+            "type": "number"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DebugMessageDto"
+            }
+          }
+        }
+      },
+      "DebugMessageDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["debug", "trace", "warning", "error"]
+          },
+          "tag": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": 1,
+          "timestamp": 0,
+          "type": "debug",
+          "message": "test-debug-message"
+        }
+      }
+    }
+  }
+}

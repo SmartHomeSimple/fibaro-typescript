@@ -1,0 +1,68 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "User Activity API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/userActivity": {
+      "get": {
+        "tags": ["userActivity"],
+        "summary": "Get user activity list",
+        "operationId": "getUserActivity",
+        "responses": {
+          "200": {
+            "description": "Returns data user activity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserActivityDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserActivityDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "lastActivity": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "lastActivity": 0,
+          "type": "type",
+          "user": "user",
+          "userId": 6,
+          "email": "email"
+        }
+      }
+    }
+  }
+}

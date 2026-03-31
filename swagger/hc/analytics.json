@@ -1,0 +1,62 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Analytics Data",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/analytics": {
+      "post": {
+        "tags": ["analytics"],
+        "summary": "Retrieves analytics data",
+        "operationId": "getAnalytics",
+        "requestBody": {
+          "description": "Analytics request data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyticsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Analytics data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnalyticsRequest": {
+        "type": "object",
+        "properties": {
+          "withReconfigurations": {
+            "type": "boolean",
+            "description": "Flag indicating if device reconfiguration data should be included in response"
+          },
+          "withZwaveMigrationLog": {
+            "type": "boolean",
+            "description": "Flag indicating if ZWave migration logs should be included in response"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "LED API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/settings/led": {
+      "get": {
+        "tags": ["led settings"],
+        "summary": "Get Home Center LED brightness",
+        "operationId": "getLedBrightness",
+        "responses": {
+          "200": {
+            "description": "Returns Home Center LED brightness",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["led settings"],
+        "summary": "Modify current Home Center LED brightness",
+        "operationId": "changeLedBrightness",
+        "requestBody": {
+          "description": "Changes Home Center LED brightness",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LedDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Home Center LED brightness level changed",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LedDto": {
+        "type": "object",
+        "properties": {
+          "brightness": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "brightness": 0
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,326 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "API description",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/installer": {
+      "get": {
+        "tags": ["installer"],
+        "summary": "Returns information about installer assigned to this HC gateway",
+        "operationId": "getInstaller",
+        "responses": {
+          "200": {
+            "description": "Returns installer info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Installer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["installer"],
+        "summary": "Assigns installer to HC gateway",
+        "operationId": "postInstaller",
+        "requestBody": {
+          "description": "installer data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstallerCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Installer succesfully assigned to HC"
+          }
+        }
+      },
+      "put": {
+        "tags": ["installer"],
+        "summary": "Grants/revokes remote access from installer",
+        "operationId": "putInstaller",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstallerPutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Operation succesfull"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["installer"],
+        "summary": "Removes installer from this gateway",
+        "operationId": "deleteInstaller",
+        "responses": {
+          "200": {
+            "description": "Operation succesfull"
+          }
+        }
+      }
+    },
+    "/installer/monitoringRequest": {
+      "post": {
+        "tags": ["installer"],
+        "summary": "Initiates processing of insteller's monitoring request",
+        "operationId": "postInstallerMonitoringRequest",
+        "requestBody": {
+          "description": "installer data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstallerMonitoringRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Installer request ok"
+          }
+        }
+      }
+    },
+    "/installer/remoteAccessRequest": {
+      "post": {
+        "tags": ["installer"],
+        "summary": "Initiates processing of insteller's remote access request",
+        "operationId": "postInstallerRemoteAccessRequest",
+        "responses": {
+          "200": {
+            "description": "Installer request ok"
+          }
+        }
+      }
+    },
+    "/installer/mobileDevicesToNotify": {
+      "get": {
+        "tags": ["installer"],
+        "summary": "Returns information about devices to notify",
+        "operationId": "getInstallerMobileDevices",
+        "responses": {
+          "200": {
+            "description": "list of mobile device ids",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MobileDevicesToNotify"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["installer"],
+        "summary": "Updates list of mobile devices that should be notified about installer requests",
+        "operationId": "putInstallerMobileDevices",
+        "requestBody": {
+          "description": "list of mobile device ids",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MobileDevicesToNotify"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Device list updated succesfully"
+          }
+        }
+      }
+    },
+    "/installer/mobileDevicesToNotify/{deviceId}": {
+      "put": {
+        "tags": ["installer"],
+        "summary": "Adds mobile device that should be notified about installer requests",
+        "operationId": "putInstallerMobileDevice",
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "Device id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device added succesfully"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["installer"],
+        "summary": "Removes mobile device from the list of devices to notify",
+        "operationId": "deleteInstallerMobileDevice",
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "Device id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device removed succesfully"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Installer": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "installer's email"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "installer's first name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "installer's last name"
+          },
+          "isCertified": {
+            "type": "boolean",
+            "description": "installer is certified"
+          },
+          "isSynchronized": {
+            "type": "boolean",
+            "description": "installer is synchronized"
+          },
+          "remoteAccess": {
+            "type": "boolean",
+            "description": "indicates whether insteller can use remote acces to gateway"
+          },
+          "monitoring": {
+            "type": "boolean",
+            "description": "indicates whether insteller can monitor gateway"
+          },
+          "remainingTime": {
+            "type": "integer",
+            "description": "remaing time in seconds of remote access (provided only if remoteAccess==true)"
+          }
+        },
+        "required": ["email", "firstName", "lastName", "remoteAccess"],
+        "example": {
+          "email": "installer@installer.com",
+          "firstName": "John",
+          "lastName": "Kowalski",
+          "remoteAccess": false
+        }
+      },
+      "InstallerCreateRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "installer's email"
+          },
+          "remoteAccess": {
+            "type": "boolean",
+            "description": "indicates whether insteller can use remote acces to gateway"
+          }
+        },
+        "example": {
+          "email": "installer@installer.com",
+          "remoteAccess": false
+        }
+      },
+      "InstallerPutRequest": {
+        "type": "object",
+        "properties": {
+          "remoteAccess": {
+            "type": "boolean",
+            "description": "indicates whether insteller can use remote acces to gateway"
+          },
+          "monitoring": {
+            "type": "boolean",
+            "description": "indicates whether insteller can monitor gateway"
+          }
+        },
+        "example": {
+          "remoteAccess": true
+        }
+      },
+      "InstallerMonitoringRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "installer's email"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "installer's first name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "installer's last name"
+          }
+        },
+        "example": {
+          "email": "installer@installer.com",
+          "firstName": "John",
+          "lastName": "Kowalski"
+        }
+      },
+      "MobileDevicesToNotify": {
+        "type": "object",
+        "properties": {
+          "mobileDevicesToNotify": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "description": "id of device"
+            }
+          }
+        },
+        "example": {
+          "mobileDevicesToNotify": [5, 57, 123]
+        }
+      }
+    }
+  }
+}

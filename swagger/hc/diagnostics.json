@@ -1,0 +1,278 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Diagnostics API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/diagnostics": {
+      "get": {
+        "tags": ["diagnostics"],
+        "summary": "Get diagnostics",
+        "operationId": "getDiagnostics",
+        "responses": {
+          "200": {
+            "description": "Returns diagnostics data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Diagnostic"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/com.fibaro.zwave/diagnostics/transmissions": {
+      "get": {
+        "tags": ["diagnostics"],
+        "summary": "Returns information about zwave transmissions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of zwave nodes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticTransmissions"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CpuLoad": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "CPU core name",
+            "example": "cpu0"
+          },
+          "idle": {
+            "type": "number"
+          },
+          "nice": {
+            "type": "number"
+          },
+          "system": {
+            "type": "number"
+          },
+          "user": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "system": 1.4658129805029452,
+          "idle": 0.8008281904610115,
+          "user": 5.962133916683182,
+          "nice": 6.027456183070403
+        }
+      },
+      "Memory": {
+        "type": "object",
+        "properties": {
+          "buffers": {
+            "type": "integer"
+          },
+          "cache": {
+            "type": "integer"
+          },
+          "free": {
+            "type": "integer"
+          },
+          "used": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "cache": 2,
+          "buffers": 5,
+          "used": 9,
+          "free": 7
+        }
+      },
+      "Storage": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "used": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "name": "name",
+          "used": 3
+        }
+      },
+      "Diagnostic": {
+        "type": "object",
+        "properties": {
+          "cpuLoad": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CpuLoad"
+            }
+          },
+          "memory": {
+            "$ref": "#/components/schemas/Memory"
+          },
+          "storage": {
+            "$ref": "#/components/schemas/Diagnostic_storage"
+          }
+        },
+        "example": {
+          "memory": {
+            "cache": 2,
+            "buffers": 5,
+            "used": 9,
+            "free": 7
+          },
+          "cpuLoad": [
+            {
+              "name": "cpu0",
+              "system": 1.4658129805029452,
+              "idle": 0.8008281904610115,
+              "user": 5.962133916683182,
+              "nice": 6.027456183070403
+            },
+            {
+              "name": "cpu1",
+              "system": 1.4658129805029452,
+              "idle": 0.8008281904610115,
+              "user": 5.962133916683182,
+              "nice": 6.027456183070403
+            }
+          ],
+          "storage": {
+            "internal": [
+              {
+                "name": "name",
+                "used": 3
+              },
+              {
+                "name": "name",
+                "used": 3
+              }
+            ]
+          }
+        }
+      },
+      "Diagnostic_storage": {
+        "properties": {
+          "internal": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Storage"
+            }
+          }
+        },
+        "example": {
+          "internal": [
+            {
+              "name": "name",
+              "used": 3
+            },
+            {
+              "name": "name",
+              "used": 3
+            }
+          ]
+        }
+      },
+      "DiagnosticTransmissions": {
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DiagnosticTransmissionsItem"
+            }
+          },
+          "since": {
+            "type": "number"
+          },
+          "until": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "items": [
+            {
+              "incomingFailedCrc": 0,
+              "incomingFailedDecryption": 0,
+              "incomingNonceGet": 0,
+              "incomingNonceReport": 0,
+              "incomingTimedOutNonce": 0,
+              "incomingTotal": 80,
+              "nodeId": 4,
+              "outgoingFailed": 0,
+              "outgoingNonceGet": 0,
+              "outgoingTotal": 112
+            }
+          ],
+          "since": 1679564607287,
+          "until": 1679564761030
+        }
+      },
+      "DiagnosticTransmissionsItem": {
+        "properties": {
+          "incomingFailedCrc": {
+            "type": "number"
+          },
+          "incomingFailedDecryption": {
+            "type": "number"
+          },
+          "incomingNonceGet": {
+            "type": "number"
+          },
+          "incomingNonceReport": {
+            "type": "number"
+          },
+          "incomingTimedOutNonce": {
+            "type": "number"
+          },
+          "incomingTotal": {
+            "type": "number"
+          },
+          "nodeId": {
+            "type": "number"
+          },
+          "outgoingFailed": {
+            "type": "number"
+          },
+          "outgoingNonceGet": {
+            "type": "number"
+          },
+          "outgoingTotal": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "incomingFailedCrc": 0,
+          "incomingFailedDecryption": 0,
+          "incomingNonceGet": 0,
+          "incomingNonceReport": 0,
+          "incomingTimedOutNonce": 0,
+          "incomingTotal": 80,
+          "nodeId": 4,
+          "outgoingFailed": 0,
+          "outgoingNonceGet": 0,
+          "outgoingTotal": 112
+        }
+      }
+    }
+  }
+}

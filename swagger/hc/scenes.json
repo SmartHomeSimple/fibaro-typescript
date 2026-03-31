@@ -1,0 +1,1540 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Scenes API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/scenes": {
+      "get": {
+        "tags": ["scenes"],
+        "summary": "Get a list of all available scenes",
+        "operationId": "getSceneList",
+        "parameters": [
+          {
+            "name": "alexaProhibited",
+            "in": "query",
+            "description": "Scene list filtered by alexa prohibited",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns data of all scenes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SceneDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["scenes"],
+        "summary": "Create scene",
+        "operationId": "createScene",
+        "requestBody": {
+          "description": "Scene body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSceneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Returns data of scene",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSceneResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied. Superuser expected.",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/scenes/hasTriggers": {
+      "post": {
+        "tags": ["scenes"],
+        "summary": "Filter scenes by triggers",
+        "operationId": "filterScenesByTriggers",
+        "requestBody": {
+          "description": "Scene body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilterSceneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns data of scenes which have specific triggers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SceneDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenes/{sceneID}": {
+      "get": {
+        "tags": ["scenes"],
+        "summary": "Get scene object",
+        "operationId": "getScene",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "alexaProhibited",
+            "in": "query",
+            "description": "Get scene by alexaProhibited",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns data of specified scene",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["scenes"],
+        "summary": "Modify scene",
+        "operationId": "modifyScene",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified scene body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSceneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Returns data changed scene",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["scenes"],
+        "summary": "Delete scene",
+        "operationId": "deleteScene",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/scenes/{sceneID}/execute": {
+      "get": {
+        "tags": ["scenes"],
+        "summary": "Executes asynchronously executive part of the scene neglecting conditional part.",
+        "operationId": "executeSceneByGet",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pin",
+            "in": "query",
+            "description": "PIN",
+            "required": false,
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": ["scenes"],
+        "summary": "Executes asynchronously executive part of the scene neglecting conditional part.",
+        "operationId": "executeScene",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Execute extra parameters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteSceneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/scenes/{sceneID}/executeSync": {
+      "get": {
+        "tags": ["scenes"],
+        "summary": "Executes synchronously executive part of the scene neglecting conditional part.",
+        "operationId": "executeSceneSyncByGet",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pin",
+            "in": "query",
+            "description": "PIN",
+            "required": false,
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {}
+          },
+          "405": {
+            "description": "Method Not Allowed.",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": ["scenes"],
+        "summary": "Executes synchronously executive part of the scene neglecting conditional part.",
+        "operationId": "executeSceneSync",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Execute extra parameters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteSceneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "OK",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request.",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {}
+          },
+          "405": {
+            "description": "Method Not Allowed.",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/scenes/{sceneID}/convert": {
+      "post": {
+        "tags": ["scenes"],
+        "summary": "Convert block scene to lua.",
+        "operationId": "convertScene",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of a scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return converted scene.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/scenes/{sceneID}/copy": {
+      "post": {
+        "tags": ["scenes"],
+        "summary": "Create scene copy.",
+        "operationId": "copyScene",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of a scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return copied scene.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/scenes/{sceneID}/copyAndConvert": {
+      "post": {
+        "tags": ["scenes"],
+        "summary": "Copy and convert block scene to lua.",
+        "operationId": "copyAndConvertScene",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of a scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return copied and converted scene.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SceneDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/scenes/{sceneID}/kill": {
+      "get": {
+        "tags": ["scenes"],
+        "summary": "Kill running scene.",
+        "operationId": "killSceneByGet",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pin",
+            "in": "query",
+            "description": "PIN",
+            "required": false,
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": ["scenes"],
+        "summary": "Kill running scene.",
+        "operationId": "killScene",
+        "parameters": [
+          {
+            "name": "sceneID",
+            "in": "path",
+            "description": "ID of an existing scene",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK",
+            "content": {}
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateSceneRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["lua", "json", "magic", "scenario"]
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["automatic", "manual"]
+          },
+          "icon": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "maxRunningInstances": {
+            "type": "integer"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "protectedByPin": {
+            "type": "boolean"
+          },
+          "stopOnAlarm": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "restart": {
+            "type": "boolean",
+            "default": true,
+            "description": "Allow to restart a running scene.",
+            "example": true
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "scenarioData": {
+            "$ref": "#/components/schemas/ScenarioContent"
+          },
+          "roomId": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "hidden": true,
+          "protectedByPin": true,
+          "sceneView": "sceneView",
+          "icon": "icon",
+          "maxRunningInstances": 0,
+          "stopOnAlarm": true,
+          "restart": true,
+          "type": "type",
+          "content": "content",
+          "enabled": true,
+          "mode": "mode",
+          "name": "name",
+          "description": "",
+          "categories": [6, 6],
+          "roomId": 13
+        }
+      },
+      "ExecuteSceneRequest": {
+        "type": "object",
+        "properties": {
+          "alexaProhibited": {
+            "type": "boolean",
+            "description": "Execute scene by alexaProhibited",
+            "example": true
+          },
+          "args": {
+            "type": "object"
+          }
+        },
+        "example": {
+          "alexaProhibited": true,
+          "args": {}
+        }
+      },
+      "FilterSceneRequest": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["type", "property"],
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "property": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "id": {
+              "type": "string"
+            }
+          },
+          "example": {
+            "type": "device",
+            "property": "value",
+            "id": 1
+          }
+        }
+      },
+      "CreateSceneResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "id": 1
+        }
+      },
+      "SceneDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["lua", "json", "magic", "scenario"]
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["automatic", "manual"]
+          },
+          "icon": {
+            "type": "string"
+          },
+          "iconExtension": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "maxRunningInstances": {
+            "type": "integer"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "protectedByPin": {
+            "type": "boolean"
+          },
+          "scenarioData": {
+            "$ref": "#/components/schemas/ScenarioContent"
+          },
+          "stopOnAlarm": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "restart": {
+            "type": "boolean",
+            "default": true,
+            "description": "Allow to restart a running scene.",
+            "example": true
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "created": {
+            "type": "integer"
+          },
+          "updated": {
+            "type": "integer"
+          },
+          "isRunning": {
+            "type": "boolean",
+            "description": "If scene is running return true otherwise false.",
+            "example": true
+          },
+          "isScenarioDataCorrect": {
+            "type": "boolean",
+            "description": "If scene is custom scenario and scenario data is incorrect, e.g. device was deleted"
+          },
+          "started": {
+            "type": "integer",
+            "description": "Timestamp of the scene start.",
+            "example": 1556003393
+          },
+          "roomId": {
+            "type": "integer"
+          },
+          "sortOrder": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "id": 1,
+          "hidden": true,
+          "protectedByPin": true,
+          "icon": "icon",
+          "maxRunningInstances": 6,
+          "stopOnAlarm": true,
+          "type": "lua",
+          "content": "content",
+          "enabled": true,
+          "restart": true,
+          "mode": "automatic",
+          "name": "name",
+          "description": "",
+          "created": 1556003393,
+          "updated": 1556003393,
+          "categories": [1, 2],
+          "isRunning": true,
+          "started": 1556003393,
+          "roomId": 13,
+          "sortOrder": 1
+        }
+      },
+      "UpdateSceneRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["automatic", "manual"]
+          },
+          "maxRunningInstances": {
+            "type": "integer"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "hidden": {
+            "type": "boolean"
+          },
+          "protectedByPin": {
+            "type": "boolean"
+          },
+          "stopOnAlarm": {
+            "type": "boolean"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "restart": {
+            "type": "boolean",
+            "default": true,
+            "description": "Allow to restart a running scene.",
+            "example": true
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "scenarioData": {
+            "$ref": "#/components/schemas/ScenarioContent"
+          },
+          "roomId": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "hidden": true,
+          "protectedByPin": true,
+          "icon": "icon",
+          "maxRunningInstances": 6,
+          "stopOnAlarm": true,
+          "content": "content",
+          "enabled": true,
+          "restart": true,
+          "mode": "automatic",
+          "name": "name",
+          "description": "",
+          "categories": [1, 2],
+          "roomId": 13
+        }
+      },
+      "ScenarioContent": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["morningBlinds", "eveningBlinds", "timeLights", "eveningGateLights", "custom"]
+          },
+          "version": {
+            "type": "integer"
+          },
+          "when": {
+            "$ref": "#/components/schemas/ScenarioContentWhen"
+          },
+          "where": {
+            "$ref": "#/components/schemas/ScenarioContentWhere"
+          },
+          "what": {
+            "$ref": "#/components/schemas/ScenarioContentWhat"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/ScenarioContentWhere"
+          },
+          "turnOffDelay": {
+            "type": "integer"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/deviceAction"
+                },
+                {
+                  "$ref": "#/components/schemas/profileAction"
+                }
+              ]
+            }
+          },
+          "triggers": {
+            "$ref": "#/components/schemas/triggers"
+          },
+          "conditions": {
+            "$ref": "#/components/schemas/conditions"
+          }
+        }
+      },
+      "ScenarioContentWhen": {
+        "type": "object",
+        "properties": {
+          "daysOfWeek": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "exactTime": {
+            "type": "string"
+          },
+          "afterTime": {
+            "type": "string"
+          },
+          "timeOffset": {
+            "type": "integer"
+          },
+          "notEarlierThan": {
+            "type": "string"
+          },
+          "notLaterThan": {
+            "type": "string"
+          }
+        }
+      },
+      "ScenarioContentWhere": {
+        "type": "object",
+        "properties": {
+          "wholeHouse": {
+            "type": "boolean"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "ScenarioContentWhat": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "enum": ["open", "close", "setFavoritePosition", "turnOn", "turnOff", "setValue"]
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "triggers": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/deviceTriggerOrCondition"
+            },
+            {
+              "$ref": "#/components/schemas/profileTriggerOrCondition"
+            },
+            {
+              "$ref": "#/components/schemas/cronTriggerOrCondition"
+            },
+            {
+              "$ref": "#/components/schemas/weatherBasicCondition"
+            },
+            {
+              "$ref": "#/components/schemas/weatherConditionsCondition"
+            },
+            {
+              "$ref": "#/components/schemas/sunEventTrigger"
+            },
+            {
+              "$ref": "#/components/schemas/remoteControllerTrigger"
+            }
+          ]
+        }
+      },
+      "conditions": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/deviceTriggerOrCondition"
+            },
+            {
+              "$ref": "#/components/schemas/profileTriggerOrCondition"
+            },
+            {
+              "$ref": "#/components/schemas/cronTriggerOrCondition"
+            },
+            {
+              "$ref": "#/components/schemas/weatherBasicCondition"
+            },
+            {
+              "$ref": "#/components/schemas/weatherConditionsCondition"
+            },
+            {
+              "$ref": "#/components/schemas/complexConditions"
+            },
+            {
+              "$ref": "#/components/schemas/isDayOrNightCondition"
+            }
+          ]
+        }
+      },
+      "complexConditions": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["complex"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["timeRange", "dateRange"]
+          },
+          "conditions": {
+            "$ref": "#/components/schemas/conditions"
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["any", "all"]
+          }
+        },
+        "required": ["conditions", "operator"]
+      },
+      "deviceTriggerOrCondition": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["device"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["single"]
+          },
+          "id": {
+            "type": "number"
+          },
+          "property": {
+            "type": "string"
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["==", "<", ">"]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "object"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "duration": {
+            "type": "number"
+          }
+        },
+        "required": ["group", "type", "id", "property", "operator", "value"]
+      },
+      "profileTriggerOrCondition": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["panel"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["profiles"]
+          },
+          "value": {
+            "type": "number"
+          },
+          "property": {
+            "type": "string",
+            "enum": ["activeProfile"]
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["=="]
+          },
+          "duration": {
+            "type": "number"
+          }
+        },
+        "required": ["group", "type", "value", "property", "operator"]
+      },
+      "cronTriggerOrCondition": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["time"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["interval", "once", "daysOfWeek", "daysOfMonth", "timeRange", "dateRange", "hour", "month", "daysOfWeekAndTime", "daysOfMonthAndTime"]
+          },
+          "property": {
+            "type": "string",
+            "enum": ["cron"]
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["match", "matchInterval", "match==", "match!=", "match>", "match>=", "match<", "match<="]
+          },
+          "value": {
+            "oneOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 6,
+                "maxItems": 6
+              },
+              {
+                "$ref": "#/components/schemas/interval"
+              }
+            ]
+          }
+        },
+        "required": ["group", "type", "property", "operator", "value"]
+      },
+      "cron": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 6,
+        "maxItems": 6
+      },
+      "interval": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "$ref": "#/components/schemas/cron"
+          },
+          "interval": {
+            "type": "number"
+          }
+        },
+        "required": ["date", "interval"]
+      },
+      "weatherBasicCondition": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["weather"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["temperature", "humidity", "windSpeed"]
+          },
+          "value": {
+            "type": "number"
+          },
+          "property": {
+            "type": "string",
+            "enum": ["temperature", "humidity", "wind"]
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["==", "!=", "<", "<=", ">", ">="]
+          },
+          "duration": {
+            "type": "number"
+          }
+        },
+        "required": ["group", "type", "value", "property", "operator"]
+      },
+      "weatherConditionsCondition": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["weather"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["weatherConditions"]
+          },
+          "value": {
+            "type": "string",
+            "enum": ["cloudy", "partlyCloudy", "rain", "snow", "storm", "clear", "fog"]
+          },
+          "property": {
+            "type": "string",
+            "enum": ["weatherCondition"]
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["==", "!="]
+          },
+          "duration": {
+            "type": "number"
+          }
+        },
+        "required": ["group", "type", "value", "property", "operator"]
+      },
+      "isDayOrNightCondition": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["time"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["isDay"]
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["=="]
+          },
+          "value": {
+            "type": "boolean"
+          },
+          "property": {
+            "type": "string",
+            "enum": ["isDay"]
+          }
+        },
+        "required": ["group", "type", "operator", "value"]
+      },
+      "sunEventTrigger": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["time"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["cosmicEvent"]
+          },
+          "property": {
+            "type": "string",
+            "enum": ["sunrise", "sunset"]
+          },
+          "value": {
+            "type": "number"
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["=="]
+          }
+        },
+        "required": ["group", "type", "property", "value", "operator"]
+      },
+      "deviceAction": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["device"]
+          },
+          "id": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "action": {
+            "type": "string"
+          },
+          "args": {
+            "type": "array",
+            "items": {}
+          },
+          "delay": {
+            "type": "number"
+          }
+        },
+        "required": ["group", "id", "action", "args"]
+      },
+      "profileAction": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["profile"]
+          },
+          "id": {
+            "type": "number"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["activateProfile"]
+          },
+          "delay": {
+            "type": "number"
+          }
+        },
+        "required": ["group", "id", "action"]
+      },
+      "remoteControllerTrigger": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "enum": ["device"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["single"]
+          },
+          "id": {
+            "type": "number"
+          },
+          "property": {
+            "type": "string",
+            "enum": ["centralSceneEvent"]
+          },
+          "value": {
+            "type": "object",
+            "properties": {
+              "keyId": {
+                "type": "number"
+              },
+              "keyAttribute": {
+                "type": "string"
+              }
+            }
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["=="]
+          }
+        },
+        "required": ["group", "type", "id", "property", "value", "operator"]
+      }
+    }
+  }
+}

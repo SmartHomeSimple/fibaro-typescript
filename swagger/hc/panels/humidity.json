@@ -1,0 +1,644 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "API description",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/panels/humidity": {
+      "get": {
+        "tags": ["humidity panel"],
+        "summary": "Get a list of all available humidity objects",
+        "operationId": "getHumidity",
+        "responses": {
+          "200": {
+            "description": "Returns humidity objects data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HumidityZone"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["humidity panel"],
+        "summary": "Create humidity",
+        "operationId": "createHumidity",
+        "requestBody": {
+          "description": "humidity body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/inline_object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/panels/humidity/{humidityID}": {
+      "get": {
+        "tags": ["humidity panel"],
+        "summary": "Get humidity object",
+        "operationId": "getHumidityById",
+        "parameters": [
+          {
+            "name": "humidityID",
+            "in": "path",
+            "description": "ID of an existing humidity object",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HumidityZone"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["humidity panel"],
+        "summary": "Modify humidity",
+        "operationId": "modifyHumidity",
+        "parameters": [
+          {
+            "name": "humidityID",
+            "in": "path",
+            "description": "ID of an existing humidity object",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Humidity object body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HumidityZone"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Humidity object body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HumidityZone"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["humidity panel"],
+        "summary": "Delete humidity",
+        "operationId": "deleteHumidity",
+        "parameters": [
+          {
+            "name": "humidityID",
+            "in": "path",
+            "description": "ID of an existing humidity object",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HumiditySetpoint": {
+        "type": "object",
+        "properties": {
+          "hour": {
+            "type": "integer"
+          },
+          "minute": {
+            "type": "integer"
+          },
+          "humidity": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "hour": 3,
+          "humidity": 455,
+          "minute": 2
+        }
+      },
+      "HumidityScheduleDay": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "$ref": "#/components/schemas/HumiditySetpoint"
+          },
+          "evening": {
+            "$ref": "#/components/schemas/HumiditySetpoint"
+          },
+          "morning": {
+            "$ref": "#/components/schemas/HumiditySetpoint"
+          },
+          "night": {
+            "$ref": "#/components/schemas/HumiditySetpoint"
+          }
+        },
+        "example": {
+          "night": {
+            "hour": 3,
+            "humidity": 4,
+            "minute": 2
+          },
+          "evening": {
+            "hour": 3,
+            "humidity": 4,
+            "minute": 2
+          },
+          "day": {
+            "hour": 3,
+            "humidity": 4,
+            "minute": 2
+          },
+          "morning": {
+            "hour": 3,
+            "humidity": 4,
+            "minute": 2
+          }
+        }
+      },
+      "HumidityScheduleWeek": {
+        "type": "object",
+        "properties": {
+          "currentHumidity": {
+            "type": "number"
+          },
+          "handHumidity": {
+            "type": "number"
+          },
+          "handTimestamp": {
+            "type": "integer"
+          },
+          "vacationHumidity": {
+            "type": "number"
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "monday": {
+            "$ref": "#/components/schemas/HumidityScheduleDay"
+          },
+          "tuesday": {
+            "$ref": "#/components/schemas/HumidityScheduleDay"
+          },
+          "wednesday": {
+            "$ref": "#/components/schemas/HumidityScheduleDay"
+          },
+          "thursday": {
+            "$ref": "#/components/schemas/HumidityScheduleDay"
+          },
+          "friday": {
+            "$ref": "#/components/schemas/HumidityScheduleDay"
+          },
+          "saturday": {
+            "$ref": "#/components/schemas/HumidityScheduleDay"
+          },
+          "sunday": {
+            "$ref": "#/components/schemas/HumidityScheduleDay"
+          }
+        },
+        "example": {
+          "sunday": {
+            "night": {
+              "hour": 3,
+              "humidity": 12,
+              "minute": 2
+            },
+            "evening": {
+              "hour": 3,
+              "humidity": 44,
+              "minute": 2
+            },
+            "day": {
+              "hour": 3,
+              "humidity": 45,
+              "minute": 2
+            },
+            "morning": {
+              "hour": 3,
+              "humidity": 6,
+              "minute": 2
+            }
+          },
+          "rooms": [9, 9],
+          "saturday": {
+            "night": {
+              "hour": 3,
+              "humidity": 9,
+              "minute": 2
+            },
+            "evening": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "day": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "morning": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            }
+          },
+          "handHumidity": 5,
+          "tuesday": {
+            "night": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "evening": {
+              "hour": 3,
+              "humidity": 9,
+              "minute": 2
+            },
+            "day": {
+              "hour": 3,
+              "humidity": 8,
+              "minute": 2
+            },
+            "morning": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            }
+          },
+          "currentHumidity": 5,
+          "wednesday": {
+            "night": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "evening": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "day": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "morning": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            }
+          },
+          "thursday": {
+            "night": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "evening": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "day": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "morning": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            }
+          },
+          "friday": {
+            "night": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "evening": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "day": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "morning": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            }
+          },
+          "vacationHumidity": 7,
+          "handTimestamp": 2,
+          "monday": {
+            "night": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "evening": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "day": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            },
+            "morning": {
+              "hour": 3,
+              "humidity": 4,
+              "minute": 2
+            }
+          }
+        }
+      },
+      "HumidityZone": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "integer"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/HumidityScheduleWeek"
+          }
+        },
+        "example": {
+          "created": 6,
+          "name": "name",
+          "modified": 1,
+          "id": 0,
+          "properties": {
+            "sunday": {
+              "night": {
+                "hour": 3,
+                "humidity": 46,
+                "minute": 2
+              },
+              "evening": {
+                "hour": 3,
+                "humidity": 42,
+                "minute": 2
+              },
+              "day": {
+                "hour": 3,
+                "humidity": 41,
+                "minute": 2
+              },
+              "morning": {
+                "hour": 3,
+                "humidity": 43,
+                "minute": 2
+              }
+            },
+            "rooms": [9, 9],
+            "saturday": {
+              "night": {
+                "hour": 3,
+                "humidity": 48,
+                "minute": 2
+              },
+              "evening": {
+                "hour": 3,
+                "humidity": 46,
+                "minute": 2
+              },
+              "day": {
+                "hour": 3,
+                "humidity": 44,
+                "minute": 2
+              },
+              "morning": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              }
+            },
+            "handHumidity": 5,
+            "tuesday": {
+              "night": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "evening": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "day": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "morning": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              }
+            },
+            "currentHumidity": 5,
+            "wednesday": {
+              "night": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "evening": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "day": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "morning": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              }
+            },
+            "thursday": {
+              "night": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "evening": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "day": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "morning": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              }
+            },
+            "friday": {
+              "night": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "evening": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "day": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "morning": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              }
+            },
+            "vacationHumidity": 7,
+            "handTimestamp": 2,
+            "monday": {
+              "night": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "evening": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "day": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              },
+              "morning": {
+                "hour": 3,
+                "humidity": 4,
+                "minute": 2
+              }
+            }
+          }
+        }
+      },
+      "inline_object": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

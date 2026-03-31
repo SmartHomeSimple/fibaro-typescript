@@ -1,0 +1,307 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Manage device notifications",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/deviceNotifications/v1": {
+      "get": {
+        "tags": ["deviceNotifications"],
+        "summary": "Get information about device notifications settings",
+        "operationId": "getAllDeviceNotificationsSettings",
+        "responses": {
+          "200": {
+            "description": "Return list of device notifications settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceNotificationsSettings"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deviceNotifications/v1/{deviceID}": {
+      "put": {
+        "tags": ["deviceNotifications"],
+        "summary": "Update notifications settings for given device",
+        "operationId": "updateDeviceNotificationsSettings",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Notifications setting for given device",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/NotificationsSettings"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Device notifications settings has been set",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Device not found",
+            "content": {}
+          }
+        }
+      },
+      "get": {
+        "tags": ["deviceNotifications"],
+        "summary": "Get notifications settings for given device",
+        "operationId": "getDeviceNotificationsSettings",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns device notifications settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationsSettings"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Device not found",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["deviceNotifications"],
+        "summary": "Clear notifications settings for given device",
+        "operationId": "deleteNotificationsSettings",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Device notifications setting has been deleted",
+            "content": {}
+          },
+          "404": {
+            "description": "Device not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NotificationType": {
+        "type": "string",
+        "enum": [
+          "Unavailable",
+          "TurningOn",
+          "LowBattery",
+          "TurningOff",
+          "Opening",
+          "Motion",
+          "Smoke",
+          "CO",
+          "Fire",
+          "Flood",
+          "HighTemperature",
+          "LowTemperature",
+          "Rain",
+          "Heat",
+          "Resistance",
+          "Obstacle",
+          "ExternalDeviceNotDetected"
+        ]
+      },
+      "ChannelType": {
+        "type": "string",
+        "enum": ["Email", "Push", "CriticalPush", "Notification"]
+      },
+      "IntervalType": {
+        "type": "string",
+        "enum": ["once", "oncePerMinute", "oncePerHour", "oncePerDay", "oncePerWeek"]
+      },
+      "NotificationsSettings": {
+        "required": ["type", "active", "label", "interval", "channels", "users"],
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/NotificationType"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          },
+          "interval": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "required": ["type"],
+                "$ref": "#/components/schemas/IntervalType"
+              },
+              "hour": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 23
+              },
+              "day": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 7
+              }
+            },
+            "example": {
+              "type": "oncePerWeek",
+              "day": 2,
+              "hour": 20
+            }
+          },
+          "channels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChannelType"
+            },
+            "minItems": 1,
+            "maxItems": 2,
+            "uniqueItems": true
+          },
+          "supportedChannels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChannelType"
+            },
+            "uniqueItems": true
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "supportedInterval": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IntervalType"
+            },
+            "uniqueItems": true
+          },
+          "category": {
+            "type": "string",
+            "enum": ["elero", "nice", "system", "zigbee", "zwave"]
+          }
+        },
+        "example": {
+          "type": "LowBattery",
+          "active": "true",
+          "label": "TXT_LABEL",
+          "interval": {
+            "type": "oncePerDay",
+            "hour": 11
+          },
+          "channels": ["Email", "Push"],
+          "supportedChannels": ["Email", "Push"],
+          "users": [2],
+          "supportedInterval": ["once", "oncePerMinute", "oncePerHour", "oncePerDay", "oncePerWeek"]
+        }
+      },
+      "DeviceNotificationsSettings": {
+        "type": "object",
+        "required": ["deviceId", "notifications"],
+        "properties": {
+          "deviceId": {
+            "type": "integer"
+          },
+          "notifications": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationsSettings"
+            }
+          }
+        },
+        "example": {
+          "deviceId": 5,
+          "notifications": [
+            {
+              "type": "LowBattery",
+              "active": "true",
+              "label": "TXT_LABEL",
+              "interval": {
+                "type": "oncePerDay",
+                "hour": 11
+              },
+              "channels": ["Email", "Push"]
+            },
+            {
+              "type": "Opening",
+              "active": "true",
+              "label": "TXT_LABEL",
+              "interval": {
+                "type": "once"
+              },
+              "channels": ["Push"],
+              "users": [2]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

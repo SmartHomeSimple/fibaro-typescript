@@ -1,0 +1,677 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Notification Center API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/notificationCenter": {
+      "head": {
+        "tags": ["notificationCenter"],
+        "summary": "Get Notifications Amount",
+        "operationId": "headNotificationList",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/wasRead"
+          },
+          {
+            "$ref": "#/components/parameters/priority"
+          },
+          {
+            "$ref": "#/components/parameters/from"
+          },
+          {
+            "$ref": "#/components/parameters/to"
+          },
+          {
+            "$ref": "#/components/parameters/ids"
+          },
+          {
+            "$ref": "#/components/parameters/types"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns notification amount",
+            "headers": {
+              "x-fibaro-count": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Amount of notifications"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["notificationCenter"],
+        "summary": "Notification list",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/wasRead"
+          },
+          {
+            "$ref": "#/components/parameters/priority"
+          },
+          {
+            "$ref": "#/components/parameters/from"
+          },
+          {
+            "$ref": "#/components/parameters/to"
+          },
+          {
+            "$ref": "#/components/parameters/ids"
+          },
+          {
+            "$ref": "#/components/parameters/types"
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "description": "After multiplied by pageSize determines amount of notifications skipped before starting to collect the result set. Default value is 0 if not specified.",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Maximum number of notifications returned in request. Default value is 100 if not specified.",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort notifications  by id either in ascending(default) or descending order.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": ["desc", "asc"]
+            }
+          }
+        ],
+        "operationId": "getNotificationList",
+        "responses": {
+          "200": {
+            "description": "Returns notification list data",
+            "headers": {
+              "x-fibaro-count": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Amount of notifications"
+              },
+              "x-fibaro-order": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["desc", "asc"]
+                },
+                "description": "Used order"
+              },
+              "x-fibaro-pagenumber": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Used pageNumber"
+              },
+              "x-fibaro-pagesize": {
+                "schema": {
+                  "type": "integer"
+                },
+                "description": "Used pageSize"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationCenterDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["notificationCenter"],
+        "summary": "Create notification",
+        "operationId": "createNotification",
+        "requestBody": {
+          "description": "New notification body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationCenterRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Return created notification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationCenterDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["notificationCenter"],
+        "summary": "Delete notifications",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/wasRead"
+          },
+          {
+            "$ref": "#/components/parameters/priority"
+          },
+          {
+            "$ref": "#/components/parameters/from"
+          },
+          {
+            "$ref": "#/components/parameters/to"
+          },
+          {
+            "$ref": "#/components/parameters/ids"
+          },
+          {
+            "$ref": "#/components/parameters/types"
+          }
+        ],
+        "operationId": "deleteNotifications",
+        "responses": {
+          "200": {
+            "description": "List of id of deleted notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notificationCenter/{notificationId}": {
+      "get": {
+        "tags": ["notificationCenter"],
+        "summary": "Notification",
+        "operationId": "getNotification",
+        "parameters": [
+          {
+            "name": "notificationId",
+            "in": "path",
+            "description": "Notification id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns notification data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationCenterDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["notificationCenter"],
+        "summary": "Edit notification",
+        "operationId": "putNotification",
+        "requestBody": {
+          "description": "New notification body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationCenterRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "name": "notificationId",
+            "in": "path",
+            "description": "Notification id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns notification data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationCenterDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["notificationCenter"],
+        "summary": "Delete notification",
+        "operationId": "deleteNotification",
+        "parameters": [
+          {
+            "name": "notificationId",
+            "in": "path",
+            "description": "Notification id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/notificationCenter/markAsRead": {
+      "post": {
+        "tags": ["notificationCenter"],
+        "summary": "Notification list",
+        "operationId": "markNotificationAsRead",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ids"
+          },
+          {
+            "$ref": "#/components/parameters/wasRead"
+          },
+          {
+            "$ref": "#/components/parameters/priority"
+          },
+          {
+            "$ref": "#/components/parameters/from"
+          },
+          {
+            "$ref": "#/components/parameters/to"
+          },
+          {
+            "$ref": "#/components/parameters/types"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/notificationCenter/markAsUnread": {
+      "post": {
+        "tags": ["notificationCenter"],
+        "summary": "Mark notification as unread",
+        "operationId": "markNotificationAsUnread",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ids"
+          },
+          {
+            "$ref": "#/components/parameters/wasRead"
+          },
+          {
+            "$ref": "#/components/parameters/priority"
+          },
+          {
+            "$ref": "#/components/parameters/from"
+          },
+          {
+            "$ref": "#/components/parameters/to"
+          },
+          {
+            "$ref": "#/components/parameters/types"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "wasRead": {
+        "name": "wasRead",
+        "in": "query",
+        "description": "Filters notifications by wasRead flag.",
+        "required": false,
+        "style": "form",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "priority": {
+        "name": "priority",
+        "in": "query",
+        "description": "Filters notifications by priority flags.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/priorityEnum"
+          }
+        }
+      },
+      "from": {
+        "name": "from",
+        "in": "query",
+        "description": "Filters notifications by created date. Date is provided in UTC.",
+        "required": false,
+        "style": "form",
+        "schema": {
+          "type": "string",
+          "example": "2022-05-18T04:31:42"
+        }
+      },
+      "to": {
+        "name": "to",
+        "in": "query",
+        "description": "Filters notifications by created date. Date is provided in UTC.",
+        "required": false,
+        "style": "form",
+        "schema": {
+          "type": "string",
+          "example": "2022-05-18T04:31:42"
+        }
+      },
+      "ids": {
+        "name": "ids",
+        "in": "query",
+        "description": "Filters notifications by ids - a comma separated list",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "types": {
+        "name": "types",
+        "in": "query",
+        "description": "Filters notifications by given types - a comma separated list. GenericSystemNotification can have subtype given in brackets. Example: GenericDeviceNotification,GenericSystemNotification(Generic),FirmwareUpdateNotification",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "schemas": {
+      "priorityEnum": {
+        "type": "string",
+        "enum": ["info", "warning", "alert"]
+      },
+      "NotificationCenterDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Notification unique id",
+            "example": 12
+          },
+          "priority": {
+            "type": "string",
+            "description": "Notification priority: 'info', 'warning' or 'alert'",
+            "example": "info"
+          },
+          "wasRead": {
+            "type": "boolean",
+            "description": "Flag: if true: notification marked as read, if false: notification marked as unread",
+            "example": false
+          },
+          "canBeDeleted": {
+            "type": "boolean",
+            "description": "Flag:if true: notification can be deleted, if false: notification can't be deleted",
+            "example": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SystemMigrationNotification",
+              "FirmwareUpdateNotification",
+              "GenericDeviceNotification",
+              "GenericSceneNotification",
+              "GenericSystemNotification",
+              "ZwaveReconfigurationNotification"
+            ],
+            "description": "Notification type, each type of notification has its own data structure",
+            "example": "GenericSceneNotification"
+          },
+          "created": {
+            "type": "integer",
+            "description": "Timestamp: Date and time of creation",
+            "example": 1562724382
+          },
+          "data": {
+            "$ref": "#/components/schemas/NotificationCenterDataDto"
+          }
+        }
+      },
+      "NotificationCenterRequestDto": {
+        "type": "object",
+        "properties": {
+          "priority": {
+            "type": "string",
+            "description": "Notification priority: 'info', 'warning' or 'alert'",
+            "example": "info"
+          },
+          "wasRead": {
+            "type": "boolean",
+            "description": "Flag: if true: notification marked as read, if false: notification marked as unread",
+            "example": false
+          },
+          "canBeDeleted": {
+            "type": "boolean",
+            "description": "Flag:if true: notification can be deleted, if false: notification can't be deleted",
+            "example": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SystemMigrationNotification",
+              "FirmwareUpdateNotification",
+              "GenericDeviceNotification",
+              "GenericSceneNotification",
+              "GenericSystemNotification",
+              "ZwaveReconfigurationNotification"
+            ],
+            "description": "Notification type, each type of notification has its own data structure",
+            "example": "GenericSceneNotification"
+          },
+          "data": {
+            "$ref": "#/components/schemas/NotificationCenterDataDto"
+          }
+        }
+      },
+      "NotificationCenterDataDto": {
+        "type": "object",
+        "description": "Data describing the characteristics of individual notifications. Data specific to particular types of notifications.",
+        "properties": {
+          "deviceId": {
+            "type": "integer",
+            "description": "Scene id associated with notification. Return SatelConfigurationRequest, FirmwareUpdateRequest and GenericDeviceRequest",
+            "example": 130
+          },
+          "sceneId": {
+            "type": "integer",
+            "description": "Scene id associated with notification. Return for GenericSceneRequest",
+            "example": 12
+          },
+          "taskId": {
+            "type": "integer",
+            "description": "Task id associated with notification. Return for ZwaveReconfigurationNotificationRequest",
+            "example": 2
+          },
+          "title": {
+            "type": "string",
+            "description": "Notification title. Return for GenericDeviceRequest and GenericSceneRequest",
+            "example": "Calibration failed"
+          },
+          "text": {
+            "type": "string",
+            "description": "Text describing the notification, visible in the notification center.Return for GenericDeviceRequest, GenericSceneRequest and GenericSystemNotificationRequest",
+            "example": "Error occured - head calibration failed. Try again...."
+          },
+          "name": {
+            "type": "string",
+            "description": "Notification name. Return for GenericSystemNotificationRequest",
+            "example": "New device added"
+          },
+          "subType": {
+            "type": "string",
+            "description": "Additional type for GenericSystemNotification. Possible options: 'Generic', 'EmailInvalid', 'DeviceNotConfigured', 'DeviceNoTemplate', 'NoFibaroPartitionInAlarm', 'ZwavePollingTime', 'UserNameDuplicated'. Return for GenericSystemNotificationRequest",
+            "example": "DeviceNotConfigured"
+          },
+          "status": {
+            "type": "string",
+            "description": "Notification status for FirmwareUpdateNotification. Possible options: 'Available', 'QueuedForUpdate', 'Downloading', 'WaitingForCommunication', 'Updating', 'UpdateOk', 'UpdateFail', 'UpToDate', 'QueuedForCheck'. Return for GenericSystemNotificationRequest",
+            "example": "Downloading"
+          },
+          "url": {
+            "type": "string",
+            "description": "Notification button url. Return for GenericSystemNotificationRequest",
+            "example": "/app/settings/devices"
+          },
+          "urlText": {
+            "type": "string",
+            "description": "Notification button text. Return for GenericSystemNotificationRequest",
+            "example": "Show devices"
+          },
+          "info": {
+            "type": "string",
+            "description": "Additional info about firmware update. Return for FirmwareUpdateRequest"
+          },
+          "progress": {
+            "type": "integer",
+            "description": "Progress of the operation related to notification (in percent: 0-100). Return for SatelConfigurationRequest and FirmwareUpdateRequest",
+            "example": 75
+          },
+          "icon": {
+            "$ref": "#/components/schemas/NotificationCenterDataIconDto"
+          }
+        }
+      },
+      "NotificationCenterDataIconDto": {
+        "type": "object",
+        "description": "Notification icon. Return for GenericDeviceRequest",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Path to icon file",
+            "example": "fibaro/icons/com.fibaro.FGT001/com.fibaro.FGT001-off.png"
+          },
+          "source": {
+            "type": "string",
+            "description": "Icon source",
+            "example": "HC"
+          }
+        }
+      }
+    }
+  }
+}

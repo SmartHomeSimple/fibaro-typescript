@@ -1,0 +1,207 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Favorite Colors API",
+    "version": "v2"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/panels/favoriteColors/v2": {
+      "get": {
+        "tags": ["favoriteColors"],
+        "summary": "Get favorite colors",
+        "operationId": "getFavoriteColorsV2",
+        "parameters": [
+          {
+            "name": "colorComponents",
+            "in": "query",
+            "description": "Time period for which data is returned",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns favorite colors data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FavoriteColorV2"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["favoriteColors"],
+        "summary": "Create favorite colors object",
+        "operationId": "newFavoriteColorV2",
+        "requestBody": {
+          "description": "Favorite color body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewFavoriteColorV2"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Returns added favorite color data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoriteColorV2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/panels/favoriteColors/v2/{favoriteColorID}": {
+      "put": {
+        "tags": ["favoriteColors"],
+        "summary": "Modify favorite colors object",
+        "operationId": "modifyFavoriteColorV2",
+        "parameters": [
+          {
+            "name": "favoriteColorID",
+            "in": "path",
+            "description": "ID of an existing favorite colors object",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Favorite colors body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoriteColorV2"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns modified favorite color data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoriteColorV2"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FavoriteColorV2": {
+        "type": "object",
+        "required": ["id", "red", "green", "blue", "brightness"],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "red": {
+            "type": "number"
+          },
+          "green": {
+            "type": "number"
+          },
+          "blue": {
+            "type": "number"
+          },
+          "warmWhite": {
+            "type": "number"
+          },
+          "brightness": {
+            "type": "integer"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "id": 1,
+          "red": 120,
+          "green": 60,
+          "blue": 0,
+          "warmWhite": 100,
+          "brightness": 99,
+          "created": 2,
+          "modified": 7
+        }
+      },
+      "NewFavoriteColorV2": {
+        "type": "object",
+        "required": ["colorComponents", "brightness"],
+        "properties": {
+          "colorComponents": {
+            "type": "object"
+          },
+          "brightness": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "colorComponents": {
+            "red": 120,
+            "green": 60,
+            "blue": 0,
+            "warmWhite": 100
+          },
+          "brightness": 99
+        }
+      }
+    }
+  }
+}

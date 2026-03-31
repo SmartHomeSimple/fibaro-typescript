@@ -1,0 +1,317 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Icons API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/icons": {
+      "get": {
+        "tags": ["icons"],
+        "summary": "Get a list of all available icons",
+        "operationId": "getIcons",
+        "parameters": [
+          {
+            "name": "X-Fibaro-Version",
+            "in": "header",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deviceType",
+            "in": "query",
+            "description": "Device type to filter icons",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return icons data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/IconListDto"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DeviceIconDto"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Given deviceType not found in device hierarchy",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": ["icons"],
+        "summary": "Upload icon",
+        "operationId": "uploadIcon",
+        "requestBody": {
+          "description": "upload icon body",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": ["icon", "type"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Icon Type"
+                  },
+                  "icon": {
+                    "type": "string",
+                    "description": "Icon File",
+                    "format": "binary"
+                  },
+                  "fileExtension": {
+                    "type": "string",
+                    "enum": ["png", "svg"],
+                    "description": "Icon image extension (optional)"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "New icon set was created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedIconDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["icons"],
+        "summary": "Delete icon",
+        "operationId": "deleteIcon",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Icon Id",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Icon name",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Icon type",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileExtension",
+            "in": "query",
+            "description": "File extension",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DeviceIconDto": {
+        "type": "object",
+        "properties": {
+          "deviceType": {
+            "type": "string"
+          },
+          "iconSetName": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "fileExtension": {
+            "type": "string",
+            "enum": ["png", "svg"]
+          }
+        },
+        "example": {
+          "deviceType": "deviceType",
+          "iconSetName": "iconSetName",
+          "id": 0
+        }
+      },
+      "RoomIconDto": {
+        "type": "object",
+        "properties": {
+          "iconName": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "fileExtension": {
+            "type": "string",
+            "enum": ["png", "svg"]
+          }
+        },
+        "example": {
+          "iconName": "iconName",
+          "id": 6
+        }
+      },
+      "SceneIconDto": {
+        "type": "object",
+        "properties": {
+          "iconName": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "fileExtension": {
+            "type": "string",
+            "enum": ["png", "svg"]
+          }
+        },
+        "example": {
+          "iconName": "iconName",
+          "id": 1
+        }
+      },
+      "CreatedIconDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "iconSetName": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": 1069,
+          "iconSetName": "User1069"
+        }
+      },
+      "IconListDto": {
+        "type": "object",
+        "properties": {
+          "device": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceIconDto"
+            }
+          },
+          "room": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomIconDto"
+            }
+          },
+          "scene": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SceneIconDto"
+            }
+          }
+        },
+        "example": {
+          "device": [
+            {
+              "deviceType": "deviceType",
+              "iconSetName": "iconSetName",
+              "id": 0
+            },
+            {
+              "deviceType": "deviceType",
+              "iconSetName": "iconSetName",
+              "id": 0
+            }
+          ],
+          "room": [
+            {
+              "iconName": "iconName",
+              "id": 6
+            },
+            {
+              "iconName": "iconName",
+              "id": 6
+            }
+          ],
+          "scene": [
+            {
+              "iconName": "iconName",
+              "id": 1
+            },
+            {
+              "iconName": "iconName",
+              "id": 1
+            }
+          ]
+        }
+      }
+    }
+  }
+}

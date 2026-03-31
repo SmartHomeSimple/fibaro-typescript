@@ -1,0 +1,159 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Refresh States API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/refreshStates": {
+      "get": {
+        "tags": ["refreshStates"],
+        "summary": "Refresh sates",
+        "operationId": "refreshStates",
+        "parameters": [
+          {
+            "name": "last",
+            "in": "query",
+            "description": "Last refresh",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "description": "Language",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rand",
+            "in": "query",
+            "description": "Random number",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "logs",
+            "in": "query",
+            "description": "Return logs if true.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns data refreshState",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshStateDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RefreshStateDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "last": {
+            "type": "integer"
+          },
+          "date": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "logs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DebugMessageDto"
+            },
+            "example": [
+              {
+                "id": 1,
+                "timestamp": 1582224600,
+                "type": "debug",
+                "tag": "zwave",
+                "messages": "Scene started."
+              }
+            ]
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "alarmChanges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        },
+        "example": {
+          "date": "date",
+          "last": 0,
+          "changes": [{}, {}],
+          "logs": [
+            {
+              "tag": "zwave",
+              "messages": [
+                {
+                  "id": 1,
+                  "timestamp": 1582224600,
+                  "type": "debug",
+                  "messages": "Scene started."
+                }
+              ]
+            }
+          ],
+          "events": [{}, {}],
+          "alarmChanges": [{}, {}],
+          "status": "status",
+          "timestamp": 6
+        }
+      }
+    }
+  }
+}

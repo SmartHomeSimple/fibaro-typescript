@@ -1,0 +1,289 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Panel Service API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/panelService/1/action/startUpgrade": {
+      "post": {
+        "tags": ["update"],
+        "summary": "Start upgrade zwave device",
+        "operationId": "startUpgradeZwaveDevice",
+        "requestBody": {
+          "description": "Configuration data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartUpgrade"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns upgrade status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartUpgradeDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/panelService/1/action/abortUpgrade": {
+      "post": {
+        "tags": ["update"],
+        "summary": "Abort upgrade zwave device",
+        "operationId": "abortUpgradeZwaveDevice",
+        "requestBody": {
+          "description": "Configuration data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AbortUpgrade"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns abort upgrade status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AbortUpgradeDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/panelService/1/action/checkUpgradeAvailability": {
+      "post": {
+        "tags": ["update"],
+        "summary": "Check upgrade availability for zwave device",
+        "operationId": "checkUpgradeAvailabilityZwaveDevice",
+        "requestBody": {
+          "description": "Configuration data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckUpgradeAvailability"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns checking upgrade availability status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckUpgradeAvailabilityDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/panelService/1/action/changelog": {
+      "post": {
+        "tags": ["update"],
+        "summary": "Get zwave device changelog",
+        "operationId": "getZwaveDeviceChangelog",
+        "requestBody": {
+          "description": "Configuration data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetChangelog"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns changelog for device",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetChangelogDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "StartUpgradeDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "status": "ok"
+        }
+      },
+      "AbortUpgradeDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "status": "ok"
+        }
+      },
+      "CheckUpgradeAvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "status": "ok"
+        }
+      },
+      "GetChangelogDto": {
+        "type": "object",
+        "properties": {
+          "changelog": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "devId": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "example": {
+          "devId": 123,
+          "warnings": ["warnings"],
+          "changelog": ["changelog"],
+          "status": "ok"
+        }
+      },
+      "StartUpgrade": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "array",
+            "items": {
+              "oneOf": [{ "type": "number" }, { "type": "boolean" }]
+            }
+          }
+        },
+        "example": {
+          "args": [123, true]
+        }
+      },
+      "AbortUpgrade": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "example": {
+          "args": [11, 22]
+        }
+      },
+      "CheckUpgradeAvailability": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "example": {
+          "args": [123]
+        }
+      },
+      "GetChangelog": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "example": {
+          "args": [123]
+        }
+      }
+    }
+  }
+}

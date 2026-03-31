@@ -1,0 +1,3105 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Devices API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/devices": {
+      "get": {
+        "tags": ["devices"],
+        "summary": "Get list of available devices for authenticated user",
+        "operationId": "getDevices",
+        "parameters": [
+          {
+            "name": "roomID",
+            "in": "query",
+            "description": "Device list filtered by roomId",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "interface",
+            "in": "query",
+            "description": "Device list filtered by interface",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Device list filtered by type",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "viewVersion",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "description": "UI view version supported by the client (eg. v2)",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ViewVersionEnum"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns devices data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["devices"],
+        "summary": "Create plugin",
+        "operationId": "create",
+        "requestBody": {
+          "description": "Arguments for Create Plugin",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PluginCreateDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Created plugin device response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - plugin type unknown or device name not given",
+            "content": {}
+          },
+          "403": {
+            "description": "Authenticated user is not allowed to create plugin",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "409": {
+            "description": "Plugin conflict - one instance of given plugin already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/devices/filter": {
+      "post": {
+        "tags": ["devices"],
+        "summary": "Get list of filtered devices available for authenticated user",
+        "operationId": "filterDevices",
+        "parameters": [
+          {
+            "name": "viewVersion",
+            "in": "query",
+            "description": "UI view version supported by the client (eg. v2)",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "$ref": "#/components/schemas/ViewVersionEnum"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Arguments for filter device list",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceListFiltersDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/devices/addInterface": {
+      "post": {
+        "tags": ["devices"],
+        "summary": "Add interfaces to devices",
+        "operationId": "addInterface",
+        "requestBody": {
+          "description": "Arguments for addInterface",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevicesInterfacesDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request - wrong json",
+            "content": {}
+          },
+          "403": {
+            "description": "Authenticated user has no permission to modify given devices",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found if one of device does not exist or one of interfaces is unsupported",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/devices/deleteInterface": {
+      "post": {
+        "tags": ["devices"],
+        "summary": "Delete interfaces from devices",
+        "operationId": "deleteInterface",
+        "requestBody": {
+          "description": "Arguments for deleteInterface",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DevicesInterfacesDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request - wrong json",
+            "content": {}
+          },
+          "403": {
+            "description": "Authenticated user has no permission to modify given devices",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found if one of device does not exist or one of interfaces is unsupported",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/devices?property=[lastLoggedUser,{userId}]": {
+      "get": {
+        "tags": ["devices"],
+        "summary": "Get mobile device list for user with specified id",
+        "operationId": "getMobileDeviceForUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "user id",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns mobile device list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/groupAction/{actionName}": {
+      "post": {
+        "tags": ["devices"],
+        "summary": "Call group action",
+        "operationId": "callGroupAction",
+        "parameters": [
+          {
+            "name": "actionName",
+            "in": "path",
+            "description": "Name of an action",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Arguments and filters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupActionArguments"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Invalid integration pin was given",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/devices/{deviceID}": {
+      "get": {
+        "tags": ["devices"],
+        "summary": "Get device object",
+        "operationId": "getDevice",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "viewVersion",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "description": "UI view version supported by the client (eg. v2)",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ViewVersionEnum"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns device data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Device with given id not found or user has no access granted"
+          }
+        }
+      },
+      "put": {
+        "tags": ["devices"],
+        "summary": "Modify device",
+        "operationId": "modifyDevice",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified device body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns device data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Authenticated user has no permission to modify given device"
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["devices"],
+        "summary": "Delete device",
+        "operationId": "delDevice",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device deleted",
+            "content": {}
+          },
+          "400": {
+            "description": "Given device was not deleted due to protection or other reason"
+          },
+          "403": {
+            "description": "Authenticated user has no permission to delete given device"
+          }
+        }
+      }
+    },
+    "/slave/{uuid}/api/devices/{deviceID}": {
+      "delete": {
+        "tags": ["devices"],
+        "summary": "Delete device using master as a proxy for slave",
+        "operationId": "delDeviceProxy",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device was deleted",
+            "content": {}
+          },
+          "403": {
+            "description": "Authenticated user has no permission to delete given device"
+          }
+        }
+      }
+    },
+    "/devices/{deviceID}/action/{actionName}": {
+      "post": {
+        "tags": ["devices"],
+        "summary": "Call action on given device",
+        "operationId": "callAction",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "actionName",
+            "in": "path",
+            "description": "Name of an action",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Action arguments",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceActionArgumentsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Action was called or delayed successfully",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "User has no permission to given device or action or invalid integration pin was given",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/devices/action/{timestamp}/{id}": {
+      "delete": {
+        "tags": ["devices"],
+        "summary": "Delete delayed action",
+        "operationId": "deleteDelayedAction",
+        "parameters": [
+          {
+            "name": "timestamp",
+            "in": "path",
+            "description": "Timestamp of delayed action",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of delayed action",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Given delayed action was not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/devices/roles/{type}": {
+      "get": {
+        "tags": ["devices"],
+        "summary": "Get array of roles specified for device type",
+        "operationId": "getRoles",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "device type",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns array of roles for specified device type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceRole"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/slave/{uuid}/api/devices/{deviceID}/action/{actionName}": {
+      "post": {
+        "tags": ["devices"],
+        "summary": "Call action using master as a proxy for slave",
+        "operationId": "callActionProxySlave",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "Slave Id on which we call the action",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "actionName",
+            "in": "path",
+            "description": "Name of an action",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Action arguments",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceActionArgumentsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Action was called or delayed successfully",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "User has no permission to given device or action or invalid integration pin was given",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/uiDeviceInfo": {
+      "get": {
+        "tags": ["devices"],
+        "summary": "Get device info",
+        "operationId": "getUIDeviceInfo",
+        "parameters": [
+          {
+            "name": "roomId",
+            "in": "query",
+            "description": "Filter ui device types by room id.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter ui device info by type.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "selectors",
+            "in": "query",
+            "description": "Returns specified fields only.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["properties", "actions", "events"]
+              }
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "description": "Filter ui device info by source.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["scene", "profile", "customscenario"]
+              }
+            }
+          },
+          {
+            "name": "visible",
+            "in": "query",
+            "description": "Filter ui device info by device visibility.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "classification",
+            "in": "query",
+            "description": "Filter ui device info by device classification.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DeviceClassificationDto"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns device info data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceInfoDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/hierarchy": {
+      "get": {
+        "tags": ["devices"],
+        "summary": "Get device type hierarchy",
+        "operationId": "getDeviceTypeHierarchy",
+        "responses": {
+          "200": {
+            "description": "Returns device type hierarchy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceTypeHierarchy"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Icon": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "overlay": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "path": "assets/icon/fibaro/shutter_neutral/shutter_neutral50.png",
+          "source": "HC",
+          "overlay": "/assets/icon/fibaro/transparent/closing.png"
+        }
+      },
+      "BlackBoxDto": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "fileName": "fileName",
+          "state": "Empty",
+          "timestamp": 0
+        }
+      },
+      "DeviceListFiltersDto": {
+        "type": "object",
+        "properties": {
+          "filters": {
+            "description": "Set of device filters that all should be fulfilled",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceListFilterDto"
+            }
+          },
+          "attributes": {
+            "description": "Defines which device attributes will be returned",
+            "type": "object",
+            "properties": {
+              "main": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": ["filters", "attributes"]
+      },
+      "DeviceListFilterDto": {
+        "type": "object",
+        "properties": {
+          "filter": {
+            "type": "string"
+          },
+          "value": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "DeviceListFilterDto"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "DevicesInterfacesDto": {
+        "type": "object",
+        "properties": {
+          "devicesId": {
+            "type": "array",
+            "description": "List of device ids for which we want to add/delete interfaces.",
+            "items": {
+              "type": "integer",
+              "example": 1
+            },
+            "example": [1, 2]
+          },
+          "interfaces": {
+            "type": "array",
+            "description": "List of interfaces which we want to add/delete to/from devices.",
+            "items": {
+              "type": "string",
+              "example": "energy"
+            },
+            "example": ["energy", "inversion"]
+          }
+        },
+        "required": ["devicesId", "interfaces"],
+        "example": {
+          "devicesId": [1, 2],
+          "interfaces": ["energy", "inversion"]
+        }
+      },
+      "RateType": {
+        "type": "string",
+        "enum": ["consumption", "production"]
+      },
+      "ButtonType": {
+        "type": "string",
+        "enum": [
+          "singleMonoStable",
+          "singleBiStable",
+          "doubleMonoStable",
+          "doubleMonoStableUS",
+          "doubleMonoStableEU",
+          "doubleBiStable",
+          "doubleBiStableWithMemoryState",
+          "tripleSwitch",
+          "autoDetection",
+          "none"
+        ]
+      },
+      "DoorLockMode": {
+        "type": "string",
+        "enum": [
+          "Unsecured",
+          "UnsecuredWithTimeout",
+          "UnsecuredFromInside",
+          "UnsecuredFromInsideWithTimeout",
+          "UnsecuredFromOutside",
+          "UnsecuredFromOutsideWithTimeout",
+          "Unknown",
+          "Secured"
+        ]
+      },
+      "DeviceAvailableSceneDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sceneId": {
+            "type": "number"
+          }
+        }
+      },
+      "DevicePropertiesDto": {
+        "type": "object",
+        "properties": {
+          "alarmLevel": {
+            "type": "integer"
+          },
+          "alarmType": {
+            "type": "integer"
+          },
+          "armed": {
+            "type": "boolean"
+          },
+          "autoOffChannel1": {
+            "type": "number"
+          },
+          "autoOffChannel2": {
+            "type": "number"
+          },
+          "zwaveResources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResourceTypeDto"
+            }
+          },
+          "associationMode": {
+            "type": "integer"
+          },
+          "availableDoorLockModes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DoorLockMode"
+            }
+          },
+          "availablePositions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailablePosition"
+            }
+          },
+          "availableScenes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceAvailableSceneDto"
+            }
+          },
+          "batteryLevel": {
+            "type": "integer"
+          },
+          "batteryLowNotification": {
+            "type": "boolean"
+          },
+          "blackBox": {
+            "$ref": "#/components/schemas/BlackBoxDto"
+          },
+          "buttonHold": {
+            "type": "integer"
+          },
+          "buttonsType": {
+            "$ref": "#/components/schemas/ButtonType"
+          },
+          "currentHumidity": {
+            "type": "integer"
+          },
+          "showFreezeAlarm": {
+            "type": "boolean"
+          },
+          "showFireAlarm": {
+            "type": "boolean"
+          },
+          "buttonType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "configurationSourceDeviceId": {
+            "type": "number"
+          },
+          "motorInversion": {
+            "type": "boolean"
+          },
+          "restoreStateAfterPowerShortage": {
+            "type": "boolean"
+          },
+          "voltageMeasurementReport": {
+            "type": "integer"
+          },
+          "steeringInversion": {
+            "type": "boolean"
+          },
+          "movingUpTime": {
+            "type": "integer"
+          },
+          "movingDownTime": {
+            "type": "integer"
+          },
+          "slatsRotationTime": {
+            "type": "integer"
+          },
+          "virtualBottomLimit": {
+            "type": "integer"
+          },
+          "cameraType": {
+            "type": "integer"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "calibrationVariants": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["dimmerCalibrationWithBypass", "dimmerCalibrationWithoutBypass", "rollerShutterCalibration"]
+            },
+            "example": ["dimmerCalibrationWithBypass", "dimmerCalibrationWithoutBypass"]
+          },
+          "calibrated": {
+            "type": "boolean",
+            "example": false
+          },
+          "centralSceneSupport": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CentralScene"
+            }
+          },
+          "channel1": {
+            "type": "string"
+          },
+          "channel2": {
+            "type": "string"
+          },
+          "channel3": {
+            "type": "string"
+          },
+          "channel4": {
+            "type": "string"
+          },
+          "climateZoneHash": {
+            "type": "string"
+          },
+          "climateZoneId": {
+            "type": "integer"
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "dead": {
+            "type": "boolean"
+          },
+          "position": {
+            "type": "string"
+          },
+          "port": {
+            "type": "number"
+          },
+          "strategy": {
+            "type": "string"
+          },
+          "deadReason": {
+            "type": "string"
+          },
+          "defInterval": {
+            "type": "integer"
+          },
+          "defaultPartyTime": {
+            "type": "integer"
+          },
+          "defaultTone": {
+            "type": "integer"
+          },
+          "defaultWateringTime": {
+            "type": "integer"
+          },
+          "deviceControlType": {
+            "type": "integer"
+          },
+          "deviceRole": {
+            "$ref": "#/components/schemas/DeviceRole"
+          },
+          "deviceState": {
+            "type": "string"
+          },
+          "supportedDeviceRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceRole"
+            }
+          },
+          "deviceGroup": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "raStatus": {
+            "type": "string",
+            "enum": ["CONNECTED", "NOT_CONNECTED", "PENDING_INVITATION", "NOT_CONNECTED_CAN_INVITE"]
+          },
+          "deviceGroupMaster": {
+            "type": "integer"
+          },
+          "deviceIcon": {
+            "type": "integer"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "devicesInitializationProcess": {
+            "type": "string"
+          },
+          "DeviceUID": {
+            "type": "string"
+          },
+          "displayOnMainPage": {
+            "type": "integer"
+          },
+          "doorLockMode": {
+            "$ref": "#/components/schemas/DoorLockMode"
+          },
+          "emailNotificationID": {
+            "type": "integer"
+          },
+          "emailNotificationType": {
+            "type": "integer"
+          },
+          "endPointId": {
+            "type": "integer"
+          },
+          "externalSensorConnected": {
+            "type": "boolean"
+          },
+          "favoritePositionsNativeSupport": {
+            "type": "boolean"
+          },
+          "favoritePositions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FavoritePositions"
+            }
+          },
+          "fgrgbwMode": {
+            "type": "string",
+            "enum": ["RGBW", "RGB", "Input/Output"]
+          },
+          "fidUuid": {
+            "type": "string"
+          },
+          "fidLastSynchronizationTimestamp": {
+            "type": "integer"
+          },
+          "fidRole": {
+            "type": "string",
+            "enum": ["USER", "SHARED"]
+          },
+          "firmwareUpdate": {
+            "$ref": "#/components/schemas/DeviceFirmwareUpdateDto"
+          },
+          "gatewayId": {
+            "type": "string"
+          },
+          "humidityThreshold": {
+            "type": "integer"
+          },
+          "httpsEnabled": {
+            "type": "boolean"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/Icon"
+          },
+          "includeInEnergyPanel": {
+            "type": "boolean"
+          },
+          "input1": {
+            "type": ["string", "boolean"]
+          },
+          "input1BinaryId": {
+            "type": "number"
+          },
+          "input2": {
+            "type": ["string", "boolean"]
+          },
+          "input2BinaryId": {
+            "type": "number"
+          },
+          "inputToChannelMap": {
+            "$ref": "#/components/schemas/DeviceInputToChannelMapDto"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "isLight": {
+            "type": "boolean"
+          },
+          "isStepByStep": {
+            "type": "boolean"
+          },
+          "reverseSensorLogic": {
+            "type": "boolean"
+          },
+          "swapOpenClose": {
+            "type": "boolean"
+          },
+          "jpgPath": {
+            "type": "string"
+          },
+          "lastBreached": {
+            "type": "number"
+          },
+          "lastHealthy": {
+            "type": "number"
+          },
+          "lastLoggedUser": {
+            "type": "number"
+          },
+          "lastModerate": {
+            "type": "number"
+          },
+          "liliOffCommand": {
+            "type": "string"
+          },
+          "liliOnCommand": {
+            "type": "string"
+          },
+          "linkedDeviceType": {
+            "type": "string"
+          },
+          "localProtectionEnabledChannel1": {
+            "type": "boolean"
+          },
+          "localProtectionEnabledChannel2": {
+            "type": "boolean"
+          },
+          "localProtectionState": {
+            "type": "integer"
+          },
+          "localProtectionSupport": {
+            "type": "integer"
+          },
+          "log": {
+            "type": "string"
+          },
+          "logTemp": {
+            "type": "string"
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "markAsDead": {
+            "type": "boolean"
+          },
+          "maxInterval": {
+            "type": "integer"
+          },
+          "maxUsers": {
+            "type": "integer"
+          },
+          "maxValue": {
+            "type": "integer"
+          },
+          "maxVoltage": {
+            "type": "integer"
+          },
+          "zwaveMigrationStatus": {
+            "type": "string",
+            "enum": ["failed", "success"]
+          },
+          "minInterval": {
+            "type": "integer"
+          },
+          "minValue": {
+            "type": "integer"
+          },
+          "minVoltage": {
+            "type": "integer"
+          },
+          "mjpgPath": {
+            "type": "string"
+          },
+          "mode": {
+            "type": "number"
+          },
+          "model": {
+            "type": "string"
+          },
+          "moveDownPath": {
+            "type": "string"
+          },
+          "moveLeftPath": {
+            "type": "string"
+          },
+          "moveRightPath": {
+            "type": "string"
+          },
+          "moveStopPath": {
+            "type": "string"
+          },
+          "moveUpPath": {
+            "type": "string"
+          },
+          "networkStatus": {
+            "type": "string"
+          },
+          "niceId": {
+            "type": "integer"
+          },
+          "niceProtocol": {
+            "type": "string"
+          },
+          "nodeId": {
+            "type": "integer"
+          },
+          "numberOfSupportedButtons": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "string"
+          },
+          "overridesSchedule": {
+            "type": "boolean"
+          },
+          "output1Id": {
+            "type": "number"
+          },
+          "output2Id": {
+            "type": "number"
+          },
+          "outputsChannelsConnected": {
+            "type": "boolean"
+          },
+          "panicMode": {
+            "type": "boolean"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DevicePropertiesDto_parameters"
+            }
+          },
+          "parametersTemplate": {
+            "type": "number"
+          },
+          "password": {
+            "type": "string"
+          },
+          "pendingActions": {
+            "type": "boolean"
+          },
+          "pollingDeadDevice": {
+            "type": "boolean"
+          },
+          "pollingInterval": {
+            "type": "number"
+          },
+          "pollingTimeSec": {
+            "type": "string"
+          },
+          "power": {
+            "type": "number"
+          },
+          "productInfo": {
+            "type": "string"
+          },
+          "protectionExclusiveControl": {
+            "type": "number"
+          },
+          "protectionExclusiveControlSupport": {
+            "type": "number"
+          },
+          "protectionState": {
+            "type": "number"
+          },
+          "protectionTimeout": {
+            "type": "number"
+          },
+          "protectionTimeoutSupport": {
+            "type": "boolean"
+          },
+          "pushNotificationID": {
+            "type": "integer"
+          },
+          "pushNotificationType": {
+            "type": "number"
+          },
+          "rateType": {
+            "$ref": "#/components/schemas/RateType"
+          },
+          "refreshTime": {
+            "type": "integer"
+          },
+          "remoteId": {
+            "type": "integer"
+          },
+          "remoteGatewayId": {
+            "type": "integer"
+          },
+          "RFProtectionEnabledChannel1": {
+            "type": "boolean"
+          },
+          "RFProtectionEnabledChannel2": {
+            "type": "boolean"
+          },
+          "RFProtectionState": {
+            "type": "integer"
+          },
+          "RFProtectionSupport": {
+            "type": "integer"
+          },
+          "rtspPath": {
+            "type": "string"
+          },
+          "rtspPort": {
+            "type": "integer"
+          },
+          "saveLogs": {
+            "type": "boolean"
+          },
+          "slatsRange": {
+            "type": "integer"
+          },
+          "slatsRangeMin": {
+            "type": "integer"
+          },
+          "slatsRangeMax": {
+            "type": "integer"
+          },
+          "storeEnergyData": {
+            "type": "boolean"
+          },
+          "saveToEnergyPanel": {
+            "type": "boolean"
+          },
+          "schedules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "securityLevel": {
+            "type": "string",
+            "example": "S2Authenticated"
+          },
+          "securitySchemes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["S2Authenticated", "S2Unauthenticated", "S0"]
+          },
+          "sendStopAfterMove": {
+            "type": "boolean"
+          },
+          "serialNumber": {
+            "type": "string"
+          },
+          "showEnergy": {
+            "type": "boolean"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "energy": {
+            "type": "number"
+          },
+          "sipUserPassword": {
+            "type": "string"
+          },
+          "sipDisplayName": {
+            "type": "string"
+          },
+          "sipUserID": {
+            "type": "string"
+          },
+          "sipUserEnabled": {
+            "type": "boolean"
+          },
+          "smsNotificationID": {
+            "type": "integer"
+          },
+          "smsNotificationType": {
+            "type": "number"
+          },
+          "softwareVersion": {
+            "type": "string"
+          },
+          "stepInterval": {
+            "type": "number"
+          },
+          "supportedThermostatFanModes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supportedThermostatModes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supportedTones": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "toneId": {
+                  "type": "integer"
+                },
+                "duration": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "tamperMode": {
+            "type": "string"
+          },
+          "targetLevel": {
+            "type": "number"
+          },
+          "targetLevelDry": {
+            "type": "number"
+          },
+          "targetLevelHumidify": {
+            "type": "number"
+          },
+          "targetLevelMax": {
+            "type": "number"
+          },
+          "targetLevelMin": {
+            "type": "number"
+          },
+          "targetLevelStep": {
+            "type": "number"
+          },
+          "targetLevelTimestamp": {
+            "type": "number"
+          },
+          "thermostatFanMode": {
+            "type": "string"
+          },
+          "thermostatFanOff": {
+            "type": "boolean"
+          },
+          "thermostatFanState": {
+            "type": "string"
+          },
+          "thermostatMode": {
+            "type": "string"
+          },
+          "thermostatModeFuture": {
+            "type": "string"
+          },
+          "thermostatOperatingState": {
+            "type": "string"
+          },
+          "thermostatModeManufacturerData": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "thermostatState": {
+            "type": "string"
+          },
+          "powerConsumption": {
+            "type": "number"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "tone": {
+            "type": "integer"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "updateVersion": {
+            "type": "string"
+          },
+          "useTemplate": {
+            "type": "boolean"
+          },
+          "userCodes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserCodeDto"
+            }
+          },
+          "userDescription": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "wakeUpTime": {
+            "type": "number"
+          },
+          "zwaveCompany": {
+            "type": "string"
+          },
+          "zwaveInfo": {
+            "type": "string"
+          },
+          "zwaveScheduleClimatePanelCompatibileBlocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "zwaveVersion": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "viewLayout": {
+            "type": "object",
+            "properties": {}
+          },
+          "volume": {
+            "type": "integer"
+          },
+          "mainFunction": {
+            "type": "string"
+          },
+          "uiCallbacks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "eventType": {
+                  "type": "string"
+                },
+                "callback": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "quickAppVariables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["string", "password"]
+                }
+              }
+            }
+          },
+          "colorComponents": {
+            "type": "object"
+          },
+          "walliOperatingMode": {
+            "type": "string"
+          },
+          "ringUpperColor": {
+            "type": "string"
+          },
+          "ringBottomColor": {
+            "type": "string"
+          },
+          "ringBrightness": {
+            "type": "number"
+          },
+          "ringLightMode": {
+            "type": "string"
+          },
+          "ringConfirmingTime": {
+            "type": "number"
+          },
+          "encrypted": {
+            "type": "boolean"
+          },
+          "useUiView": {
+            "type": "boolean"
+          },
+          "uiView": {
+            "type": "object"
+          },
+          "Humidity": {
+            "type": "number"
+          },
+          "Pressure": {
+            "type": "number"
+          },
+          "Temperature": {
+            "type": "number"
+          },
+          "Wind": {
+            "type": "number"
+          },
+          "ConditionCode": {
+            "type": "number"
+          },
+          "WeatherCondition": {
+            "type": "string",
+            "enum": ["unknown", "clear", "rain", "snow", "storm", "cloudy", "partlyCloudy", "fog", "unavailable"]
+          },
+          "levelRangeMinChannel1": {
+            "type": "number"
+          },
+          "levelRangeMaxChannel1": {
+            "type": "number"
+          },
+          "levelRangeMinChannel2": {
+            "type": "number"
+          },
+          "levelRangeMaxChannel2": {
+            "type": "number"
+          },
+          "onOffModeChannel1": {
+            "type": "boolean"
+          },
+          "onOffModeChannel2": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "updateVersion": "updateVersion",
+          "isLight": true,
+          "refreshTime": 0,
+          "defaultPartyTime": 7,
+          "password": "password",
+          "model": "model",
+          "localProtectionState": 9,
+          "ip": "ip",
+          "protectionTimeoutSupport": true,
+          "protectionTimeout": 3.353193347011243,
+          "parametersTemplate": 812,
+          "productInfo": "productInfo",
+          "showFireAlarm": true,
+          "thermostatState": "thermostatState",
+          "zwaveResources": {
+            "name": "MultilevelSensor",
+            "type": 1,
+            "scales": [0, 1, 2]
+          },
+          "log": "log",
+          "showFreezeAlarm": true,
+          "icon": {
+            "path": "path",
+            "source": "source"
+          },
+          "dead": true,
+          "firmwareUpdate": {
+            "updateVersion": "updateVersion",
+            "progress": 5,
+            "info": "info",
+            "status": "status"
+          },
+          "gatewayId": "3d3b7e8d-912e-4846-ad01-157cc720cc5f",
+          "pollingTimeSec": "pollingTimeSec",
+          "manufacturer": "manufacturer",
+          "moveLeftPath": "moveLeftPath",
+          "zwaveInfo": "zwaveInfo",
+          "deadReason": "deadReason",
+          "moveDownPath": "moveDownPath",
+          "emailNotificationID": 7,
+          "protectionState": 6.704019297950036,
+          "alarmLevel": 5,
+          "categories": [""],
+          "RFProtectionState": 6,
+          "targetLevelStep": 5.533258397034986,
+          "zwaveScheduleClimatePanelCompatibileBlocks": ["{}", "{}"],
+          "batteryLevel": 9,
+          "timestamp": 4,
+          "pushNotificationID": 3,
+          "userDescription": "userDescription",
+          "deviceIcon": 1,
+          "logTemp": "logTemp",
+          "protectionExclusiveControl": 6.878052220127876,
+          "maxInterval": 8,
+          "armed": true,
+          "sendStopAfterMove": true,
+          "moveUpPath": "moveUpPath",
+          "deviceGroup": ["{}", "{}"],
+          "RFProtectionSupport": 0,
+          "stepInterval": 7.740351818741173,
+          "defInterval": 4,
+          "zwaveCompany": "zwaveCompany",
+          "showEnergy": true,
+          "moveRightPath": "moveRightPath",
+          "moveStopPath": "moveStopPath",
+          "remoteGatewayId": 7,
+          "mode": 6.438423552598547,
+          "displayOnMainPage": 6,
+          "configured": true,
+          "emailNotificationType": 1,
+          "serialNumber": "serialNumber",
+          "liliOffCommand": "liliOffCommand",
+          "offset": "offset",
+          "httpsEnabled": true,
+          "pollingDeadDevice": true,
+          "deviceGroupMaster": 1,
+          "liliOnCommand": "liliOnCommand",
+          "wakeUpTime": 0.2025324113236393,
+          "unit": "unit",
+          "useTemplate": true,
+          "mjpgPath": "mjpgPath",
+          "nodeId": 2,
+          "parameters": ["{}", "{}"],
+          "saveLogs": true,
+          "saveToEnergyPanel": false,
+          "zwaveVersion": "zwaveVersion",
+          "batteryLowNotification": true,
+          "smsNotificationID": 4,
+          "protectionExclusiveControlSupport": 5.944895607614016,
+          "buttonType": 3,
+          "targetLevelMin": 7.04836565559697,
+          "schedules": ["{}", "{}"],
+          "localProtectionSupport": 6,
+          "endPointId": 4,
+          "targetLevel": 3.0205796992916243,
+          "climateZoneId": 9,
+          "jpgPath": "jpgPath",
+          "cameraType": 2,
+          "markAsDead": true,
+          "deviceControlType": 1,
+          "deviceRole": "Light",
+          "supportedDeviceRoles": ["GarageDoor", "InnerBlind", "Light", "Other", "OuterBlind"],
+          "alarmType": 2,
+          "minInterval": 9,
+          "pushNotificationType": 7.143538047012306,
+          "smsNotificationType": 8.969578798196912,
+          "climateZoneHash": "climateZoneHash",
+          "associationMode": 7,
+          "targetLevelMax": 3.0576100241049344,
+          "username": "username",
+          "viewLayout": {},
+          "uiCallbacks": [],
+          "mainFunction": "",
+          "quickAppVariables": [],
+          "lastBreached": 0,
+          "lastHealthy": 0,
+          "lastModerate": 0,
+          "sipUserPassword": "password",
+          "sipDisplayName": "admin_HC",
+          "sipUserID": "2",
+          "sipUserEnabled": true,
+          "softwareVersion": "1.2.3",
+          "fgrgbwMode": "RGBW",
+          "supportedThermostatFanModes": ["High", "Low"],
+          "supportedThermostatModes": ["Heat", "Cool"],
+          "thermostatFanMode": "High",
+          "thermostatFanOff": false,
+          "thermostatFanState": "Running",
+          "thermostatMode": "Heat",
+          "thermostatModeFuture": "Heat",
+          "thermostatOperatingState": "Heating",
+          "state": true,
+          "value": 1,
+          "niceId": 5,
+          "numberOfSupportedButtons": 8,
+          "buttonHold": 5000,
+          "securityLevel": "S2Authenticated",
+          "securitySchemes": ["S2Authenticated", "S2Unauthenticated", "S0"],
+          "colorComponents": {
+            "blue": 255
+          },
+          "encrypted": false,
+          "pendingActions": false
+        }
+      },
+      "DeviceActionArgumentsDto": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            }
+          },
+          "delay": {
+            "type": "number",
+            "description": "Action delay in seconds",
+            "example": 30
+          },
+          "integrationPin": {
+            "type": "string",
+            "description": "Integration pin to be validated",
+            "example": "1234"
+          }
+        },
+        "example": {
+          "args": ["{}", "{}"],
+          "delay": 30,
+          "integrationPin": "1234"
+        }
+      },
+      "ResourceTypeDto": {
+        "type": "object",
+        "required": ["type", "scales", "name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["MultilevelSensor", "Meter"]
+          },
+          "type": {
+            "type": "number"
+          },
+          "scales": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "rateType": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "name": "MultilevelSensor",
+          "type": 1,
+          "scales": [3],
+          "rateType": 1
+        }
+      },
+      "DeviceInputToChannelMapDto": {
+        "type": "object",
+        "properties": {
+          "close": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "open": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "partialOpen1": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "step": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "stop": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "toggleCh1": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "toggleCh2": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "turnOffCh1": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "turnOffCh2": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "turnOnCh1": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "turnOnCh2": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          },
+          "unsupported": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "example": {
+          "close": [4],
+          "open": [],
+          "partialOpen1": [],
+          "step": [1, 3],
+          "stop": [5]
+        }
+      },
+      "PluginCreateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of device to be created",
+            "type": "string"
+          },
+          "type": {
+            "description": "Plugin device type to be created",
+            "type": "string"
+          },
+          "roomID": {
+            "description": "Room ID to which device will be added; default room when not given",
+            "type": "integer"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/DevicePropertiesDto"
+          }
+        },
+        "required": ["type", "name"],
+        "example": {
+          "name": "name",
+          "type": "type",
+          "roomID": 219
+        }
+      },
+      "DeviceDto": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": "object",
+            "properties": {}
+          },
+          "baseType": {
+            "type": "string"
+          },
+          "configXml": {
+            "type": "boolean"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "hasUIView": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "interfaces": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isPlugin": {
+            "type": "boolean"
+          },
+          "modified": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "number"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/DevicePropertiesDto"
+          },
+          "roomID": {
+            "type": "integer"
+          },
+          "sortOrder": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "viewXml": {
+            "type": "boolean"
+          },
+          "view": {
+            "type": "array",
+            "nullable": false,
+            "items": {
+              "$ref": "#/components/schemas/ViewConfig"
+            }
+          },
+          "visible": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "viewXml": true,
+          "hasUIView": false,
+          "view": [],
+          "interfaces": ["interfaces", "interfaces"],
+          "visible": true,
+          "created": 0,
+          "type": "type",
+          "enabled": true,
+          "parentId": 5.962133916683182,
+          "roomID": 4,
+          "baseType": "baseType",
+          "sortOrder": 1,
+          "name": "name",
+          "configXml": true,
+          "modified": 1,
+          "id": 6,
+          "actions": "{}",
+          "properties": {
+            "updateVersion": "updateVersion",
+            "isLight": true,
+            "refreshTime": 0,
+            "defaultPartyTime": 7,
+            "password": "password",
+            "model": "model",
+            "localProtectionState": 9,
+            "ip": "ip",
+            "protectionTimeoutSupport": true,
+            "protectionTimeout": 3.353193347011243,
+            "parametersTemplate": 812,
+            "productInfo": "productInfo",
+            "showFireAlarm": true,
+            "thermostatState": "thermostatState",
+            "log": "log",
+            "showFreezeAlarm": true,
+            "icon": {
+              "path": "path",
+              "source": "source"
+            },
+            "dead": true,
+            "firmwareUpdate": {
+              "updateVersion": "updateVersion",
+              "progress": 5,
+              "info": "info",
+              "status": "status"
+            },
+            "pollingTimeSec": "pollingTimeSec",
+            "manufacturer": "manufacturer",
+            "moveLeftPath": "moveLeftPath",
+            "zwaveInfo": "zwaveInfo",
+            "deadReason": "deadReason",
+            "moveDownPath": "moveDownPath",
+            "emailNotificationID": 7,
+            "protectionState": 6.704019297950036,
+            "alarmLevel": 5,
+            "categories": ["{}", "{}"],
+            "RFProtectionState": 6,
+            "targetLevelStep": 5.533258397034986,
+            "zwaveScheduleClimatePanelCompatibileBlocks": ["{}", "{}"],
+            "batteryLevel": 9,
+            "timestamp": 4,
+            "pushNotificationID": 3,
+            "userDescription": "userDescription",
+            "deviceIcon": 1,
+            "logTemp": "logTemp",
+            "protectionExclusiveControl": 6.878052220127876,
+            "targetLevelTimestamp": 3.2588565619047607,
+            "maxInterval": 8,
+            "armed": true,
+            "sendStopAfterMove": true,
+            "moveUpPath": "moveUpPath",
+            "deviceGroup": ["{}", "{}"],
+            "RFProtectionSupport": 0,
+            "stepInterval": 7.740351818741173,
+            "defInterval": 4,
+            "zwaveCompany": "zwaveCompany",
+            "showEnergy": true,
+            "moveRightPath": "moveRightPath",
+            "moveStopPath": "moveStopPath",
+            "rateType": "production",
+            "remoteGatewayId": 7,
+            "mode": 6.438423552598547,
+            "displayOnMainPage": 6,
+            "configured": true,
+            "emailNotificationType": 1,
+            "serialNumber": "serialNumber",
+            "liliOffCommand": "liliOffCommand",
+            "offset": "offset",
+            "httpsEnabled": true,
+            "pollingDeadDevice": true,
+            "deviceGroupMaster": 1,
+            "liliOnCommand": "liliOnCommand",
+            "wakeUpTime": 0.2025324113236393,
+            "unit": "unit",
+            "useTemplate": true,
+            "mjpgPath": "mjpgPath",
+            "nodeId": 2,
+            "parameters": ["{}", "{}"],
+            "saveLogs": true,
+            "saveToEnergyPanel": false,
+            "zwaveVersion": "zwaveVersion",
+            "batteryLowNotification": true,
+            "smsNotificationID": 4,
+            "protectionExclusiveControlSupport": 5.944895607614016,
+            "buttonType": 3,
+            "targetLevelMin": 7.04836565559697,
+            "schedules": ["{}", "{}"],
+            "localProtectionSupport": 6,
+            "endPointId": 4,
+            "targetLevel": 3.0205796992916243,
+            "climateZoneId": 9,
+            "jpgPath": "jpgPath",
+            "cameraType": 2,
+            "markAsDead": true,
+            "deviceControlType": 1,
+            "deviceRole": "Light",
+            "supportedDeviceRoles": ["GarageDoor", "InnerBlind", "Light", "Other", "OuterBlind"],
+            "alarmType": 2,
+            "minInterval": 9,
+            "pushNotificationType": 7.143538047012306,
+            "smsNotificationType": 8.969578798196912,
+            "climateZoneHash": "climateZoneHash",
+            "associationMode": 7,
+            "targetLevelMax": 3.0576100241049344,
+            "username": "username",
+            "sipUserPassword": "password",
+            "sipDisplayName": "admin_HC",
+            "sipUserID": "2",
+            "sipUserEnabled": true,
+            "supportedThermostatFanModes": ["High", "Low"],
+            "supportedThermostatModes": ["Heat", "Cool"],
+            "thermostatFanMode": "High",
+            "thermostatFanOff": false,
+            "thermostatFanState": "Running",
+            "thermostatMode": "Heat",
+            "thermostatModeFuture": "Heat",
+            "thermostatOperatingState": "Heating",
+            "securityLevel": "S2Authenticated",
+            "securitySchemes": ["S2Authenticated", "S2Unauthenticated", "S0"]
+          }
+        }
+      },
+      "DeviceInfoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "classification": {
+            "$ref": "#/components/schemas/DeviceClassificationDto"
+          },
+          "roomId": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceInfoPropertyDto"
+            }
+          },
+          "role": {
+            "type": "string"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceInfoPropertyDto"
+            }
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        },
+        "example": {
+          "id": 2,
+          "name": "deviceName",
+          "roomID": 1,
+          "type": "device",
+          "actions": [
+            {
+              "args": ["{}", "{}"],
+              "unit": "unit",
+              "unitPath": "unitPath",
+              "name": "name",
+              "label": "label",
+              "type": "type",
+              "description": "description"
+            },
+            {
+              "args": ["{}", "{}"],
+              "unit": "unit",
+              "unitPath": "unitPath",
+              "name": "name",
+              "label": "label",
+              "type": "type",
+              "description": "description"
+            }
+          ],
+          "properties": [
+            {
+              "args": ["{}", "{}"],
+              "unit": "unit",
+              "unitPath": "unitPath",
+              "name": "name",
+              "label": "label",
+              "type": "type",
+              "description": "description"
+            },
+            {
+              "args": ["{}", "{}"],
+              "unit": "unit",
+              "unitPath": "unitPath",
+              "name": "name",
+              "label": "label",
+              "type": "type",
+              "description": "description"
+            }
+          ],
+          "events": ["{}", "{}"]
+        }
+      },
+      "DeviceClassificationDto": {
+        "type": "string",
+        "enum": [
+          "Light",
+          "Valve",
+          "Drencher",
+          "OtherBinarySwitch",
+          "Blind",
+          "VenetianBlind",
+          "Awning",
+          "Curtain",
+          "Gate",
+          "LifeDangerSensor",
+          "SecuritySensor",
+          "ClimateSensor",
+          "Meter",
+          "OtherSensor",
+          "Thermostat",
+          "RemoteController",
+          "Other",
+          "Sensor",
+          "None"
+        ]
+      },
+      "DeviceInfoPropertyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "type": {
+            "type": "string"
+          },
+          "conditionType": {
+            "type": "array",
+            "items": {
+              "enum": ["trigger", "condition"]
+            }
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["==", "!=", ">", ">=", "<", "<="]
+          },
+          "picker": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "unitPath": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "step": {
+            "type": "number"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceInfoPropertyDto"
+            }
+          },
+          "enumValues": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyEnumValuesDto"
+          },
+          "valueMapping": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValueMappingDto"
+            }
+          },
+          "isUIAction": {
+            "type": "boolean",
+            "example": true
+          },
+          "definedValues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceInfoPropertyDefinedValue"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "colorComponents": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponents"
+          }
+        },
+        "example": {
+          "args": ["{}", "{}"],
+          "unit": "unit",
+          "unitPath": "unitPath",
+          "name": "name",
+          "label": "label",
+          "type": "type",
+          "description": "description",
+          "isUIAction": false
+        }
+      },
+      "DeviceInfoPropertyEnumValuesDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "type": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          }
+        }
+      },
+      "ValueMappingDto": {
+        "type": "object",
+        "required": ["value", "label"],
+        "properties": {
+          "value": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "DeviceFirmwareUpdateDto": {
+        "type": "object",
+        "properties": {
+          "info": {
+            "type": "string"
+          },
+          "progress": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "updateVersion": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "updateVersion": "updateVersion",
+          "progress": 5,
+          "info": "info",
+          "status": "status"
+        }
+      },
+      "GroupActionArguments": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "description": "Action arguments if needed",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "filters": {
+            "description": "Filters definitions for devices",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "integrationPin": {
+            "description": "Cloud integration pin",
+            "type": "string"
+          }
+        },
+        "example": {
+          "args": ["{}", "{}"],
+          "filters": ["{}", "{}"],
+          "integrationPin": "1234"
+        }
+      },
+      "CentralScene": {
+        "type": "object",
+        "properties": {
+          "keyAttributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeyAttribute"
+            }
+          },
+          "keyId": {
+            "type": "number"
+          }
+        }
+      },
+      "KeyAttribute": {
+        "type": "string",
+        "enum": ["Pressed", "Pressed2", "Pressed3", "Released", "HeldDown"]
+      },
+      "NewDevice": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/DevicePropertiesDto"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "DevicePropertiesDto_parameters": {
+        "properties": {
+          "lastReportedValue": {
+            "type": "number"
+          },
+          "size": {
+            "type": "number"
+          },
+          "lastSetValue": {
+            "type": "number"
+          },
+          "id": {
+            "type": "number"
+          },
+          "value": {
+            "type": "number"
+          },
+          "readyOnly": {
+            "type": "boolean"
+          },
+          "setDefault": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "lastReportedValue": 1,
+          "size": 1,
+          "lastSetValue": 2,
+          "id": 3,
+          "value": 4,
+          "readyOnly": false,
+          "setDefault": true
+        }
+      },
+      "UserCodeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "update": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": 0,
+          "name": "User 1",
+          "status": "Occupied",
+          "update": "Ok"
+        }
+      },
+      "ViewConfig": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["json", "ts", "default"]
+          },
+          "assetsPath": {
+            "type": "string"
+          },
+          "translatesPath": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "type": "ts",
+          "jsPath": "/dynamic-components/plugin1",
+          "assetsPath": "/dynamic-components/plugin1/assets",
+          "translatesPath": "/dynamic-components/plugin1/i18n",
+          "name": "plugin1"
+        }
+      },
+      "FavoritePositions": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "slatsAngle": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "name": "favoritePosition1",
+          "label": "Favorite position1",
+          "value": 50
+        }
+      },
+      "AvailablePosition": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "DeviceRole": {
+        "type": "string",
+        "enum": [
+          "AirConditioner",
+          "AlarmAlarm",
+          "AlarmArm",
+          "AlarmState",
+          "Barrier",
+          "BlindsWithDriver",
+          "BlindsWithDriverImpulse",
+          "BlindsWithPositioning",
+          "BlindsWithoutPositioning",
+          "Bracket",
+          "CeilingFan",
+          "Coffee",
+          "Drencher",
+          "GarageDoor",
+          "GarageDoorSectional",
+          "GarageDoorSwing",
+          "GarageDoorTilt",
+          "GardenLamp",
+          "GateDoubleLeaf",
+          "GateSingleLeaf",
+          "GateSliding",
+          "GateWithPositioning",
+          "GateWithoutPositioning",
+          "InOut",
+          "InnerBlind",
+          "Kettle",
+          "Light",
+          "NightLamp",
+          "NotConfigured",
+          "Other",
+          "OuterBlind",
+          "Pin",
+          "Radio",
+          "Rgb",
+          "Rgbw",
+          "RoofWindow",
+          "Toaster",
+          "TvSet",
+          "Valve",
+          "VenetianBlinds",
+          "VideoGateBell",
+          "VideoGateOpen",
+          "Awning",
+          "Curtain",
+          "LamellarCurtain",
+          "PowerSwitch",
+          "Heater",
+          "BinarySensor",
+          "SecuritySensor",
+          "AlarmZone",
+          "MotionSensor",
+          "OpeningSensor",
+          "PositionSensor",
+          "SafetySensor",
+          "RainSensor",
+          "HeatDetector",
+          "GasDetector",
+          "SmokeSensor",
+          "CODetector",
+          "LeakDetector",
+          "FireDetector",
+          "MultilevelSensor",
+          "WindSensor",
+          "TemperatureSensor",
+          "Meter",
+          "WaterMeter",
+          "HeatingMeter",
+          "CoolingMeter",
+          "GasMeter",
+          "ElectricMeter",
+          "PowerMeter",
+          "EnergyMeter",
+          "LightSensor",
+          "HumiditySensor",
+          "VOCSensor",
+          "PressureSensor",
+          "Pergola",
+          "PresenceSensor",
+          "VibrationSensor",
+          "DeviceTemperature"
+        ]
+      },
+      "DeviceTypeHierarchy": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Items are of type DeviceTypeHierarchy"
+          }
+        },
+        "example": {
+          "type": "com.fibaro.device",
+          "children": [
+            {
+              "type": "com.fibaro.zwaveDevice",
+              "children": []
+            },
+            {
+              "type": "com.fibaro.zwaveController",
+              "children": []
+            },
+            {
+              "type": "com.fibaro.zigbeeDevice",
+              "children": []
+            },
+            {
+              "type": "com.fibaro.weather",
+              "children": [
+                {
+                  "type": "com.fibaro.yrWeather",
+                  "children": []
+                },
+                {
+                  "type": "com.fibaro.WeatherProvider",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "DeviceInfoPropertyDefinedValue": {
+        "type": "object",
+        "properties": {
+          "unit": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "$ref": "#/components/schemas/DeviceInfoPropertyDefinedColorComponent"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "DeviceInfoPropertyDefinedColorComponent": {
+        "type": "object",
+        "properties": {
+          "brightness": {
+            "type": "number"
+          },
+          "color": {
+            "type": "string"
+          },
+          "colorComponents": {
+            "type": "object",
+            "properties": {
+              "blue": {
+                "type": "number"
+              },
+              "green": {
+                "type": "number"
+              },
+              "red": {
+                "type": "number"
+              },
+              "warmWhite": {
+                "type": "number"
+              },
+              "coldWhite": {
+                "type": "number"
+              },
+              "amber": {
+                "type": "number"
+              },
+              "cyan": {
+                "type": "number"
+              },
+              "purple": {
+                "type": "number"
+              }
+            }
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "DeviceInfoPropertyColorComponents": {
+        "type": "object",
+        "properties": {
+          "blue": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponentsComponent"
+          },
+          "green": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponentsComponent"
+          },
+          "red": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponentsComponent"
+          },
+          "warmWhite": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponentsComponent"
+          },
+          "coldWhite": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponentsComponent"
+          },
+          "amber": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponentsComponent"
+          },
+          "cyan": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponentsComponent"
+          },
+          "purple": {
+            "$ref": "#/components/schemas/DeviceInfoPropertyColorComponentsComponent"
+          }
+        }
+      },
+      "DeviceInfoPropertyColorComponentsComponent": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          }
+        }
+      },
+      "ViewVersionEnum": {
+        "type": "string",
+        "enum": ["v2", ""]
+      }
+    }
+  }
+}

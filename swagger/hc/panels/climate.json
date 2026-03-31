@@ -1,0 +1,1042 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Climate panel",
+    "description": "API to manage climate zones",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/panels/climate": {
+      "get": {
+        "tags": ["Climate panel"],
+        "summary": "Get a list of all available climate zones",
+        "operationId": "getClimates",
+        "parameters": [
+          {
+            "name": "detailed",
+            "in": "query",
+            "description": "True value returns advanced climate zone model. False value returns basic climate zone model. Default (if 'detailed' not exist) returns basic climate zone model.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns climate objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BasicClimateZone"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Climate panel"],
+        "summary": "Create climate zone",
+        "operationId": "createClimateZone",
+        "requestBody": {
+          "description": "Climate object body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvancedClimateZone"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Returns climate object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvancedClimateZone"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/panels/climate/{climateID}": {
+      "get": {
+        "tags": ["Climate panel"],
+        "summary": "Get specific climate zone",
+        "operationId": "getClimate",
+        "parameters": [
+          {
+            "name": "climateID",
+            "in": "path",
+            "description": "ID of an existing climate zone",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return climate object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvancedClimateZone"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Climate panel"],
+        "summary": "Modify specific climate zone",
+        "operationId": "modifyClimateWithIdInPath",
+        "parameters": [
+          {
+            "name": "climateID",
+            "in": "path",
+            "description": "ID of an existing climate object",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Climate object body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvancedClimateZone"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Return climate object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvancedClimateZone"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["Climate panel"],
+        "summary": "Delete specific climate zone",
+        "operationId": "deleteClimate",
+        "parameters": [
+          {
+            "name": "climateID",
+            "in": "path",
+            "description": "ID of an existing climate object",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/panels/climate/action/createDefaultZones": {
+      "post": {
+        "tags": ["Climate panel"],
+        "summary": "Create climate default zones",
+        "operationId": "createClimateDefaultZones",
+        "responses": {
+          "200": {
+            "description": "Returns climate objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BasicClimateZone"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      }
+    },
+    "/panels/climate/availableDevices": {
+      "get": {
+        "tags": ["Climate panel"],
+        "summary": "Get a list of all available climate devices",
+        "operationId": "getClimateDevices",
+        "responses": {
+          "200": {
+            "description": "Returns climate devices IDs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PanelMode": {
+        "type": "string",
+        "enum": ["Schedule", "Manual", "Vacation"],
+        "description": "Climate panel operation mode (Schedule, Manual or Vacation)",
+        "example": "Schedule"
+      },
+      "CalculationStrategy": {
+        "type": "string",
+        "enum": ["avg", "min", "max", "median"],
+        "description": "Calculation strategy for currentTemperature ('avg' is default)",
+        "example": "avg"
+      },
+      "Mode": {
+        "type": "string",
+        "enum": ["Auto", "Heat", "Cool", "Off"],
+        "description": "Climate panel Heating/Cooling mode (Auto -> control heating and cooling, Heat -> only heating, Cool -> only cooling, Off -> system is turned off)"
+      },
+      "ClimateSetpoint": {
+        "type": "object",
+        "description": "Temperature settings for period of time",
+        "properties": {
+          "hour": {
+            "type": "integer"
+          },
+          "minute": {
+            "type": "integer"
+          },
+          "temperatureHeating": {
+            "type": "number"
+          },
+          "temperatureCooling": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "hour": 5,
+          "minute": 5,
+          "temperatureHeating": 25,
+          "temperatureCooling": 39
+        }
+      },
+      "ClimateScheduleDay": {
+        "type": "object",
+        "description": "Periods of time during the day",
+        "properties": {
+          "morning": {
+            "$ref": "#/components/schemas/ClimateSetpoint"
+          },
+          "day": {
+            "$ref": "#/components/schemas/ClimateSetpoint"
+          },
+          "evening": {
+            "$ref": "#/components/schemas/ClimateSetpoint"
+          },
+          "night": {
+            "$ref": "#/components/schemas/ClimateSetpoint"
+          }
+        },
+        "example": {
+          "night": {
+            "hour": 5,
+            "minute": 5,
+            "temperatureHeating": 25,
+            "temperatureCooling": 39
+          },
+          "evening": {
+            "hour": 5,
+            "minute": 5,
+            "temperatureHeating": 25,
+            "temperatureCooling": 39
+          },
+          "day": {
+            "hour": 5,
+            "minute": 5,
+            "temperatureHeating": 25,
+            "temperatureCooling": 39
+          },
+          "morning": {
+            "hour": 5,
+            "minute": 5,
+            "temperatureHeating": 25,
+            "temperatureCooling": 39
+          }
+        }
+      },
+      "BasicProperties": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "handSetPointHeating": {
+            "type": "number",
+            "description": "Heating temperature for manual mode",
+            "example": 20
+          },
+          "handSetPointCooling": {
+            "type": "number",
+            "description": "Cooling temperature for manual mode",
+            "example": 25
+          },
+          "handTimestamp": {
+            "type": "integer",
+            "description": "End date and time for manual mode (timestamp)",
+            "example": 1563799896
+          },
+          "handMode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "vacationSetPointHeating": {
+            "type": "number",
+            "description": "Heating temperature for vacation mode",
+            "example": 19
+          },
+          "vacationSetPointCooling": {
+            "type": "number",
+            "description": "Cooling temperature for vacation mode",
+            "example": 23
+          },
+          "vacationMode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "vacationStartTime": {
+            "type": "number",
+            "description": "Start date and time for vacation mode (timestamp)",
+            "example": 1563799896
+          },
+          "vacationEndTime": {
+            "type": "number",
+            "description": "End date and time for vacation mode (timestamp)",
+            "example": 1563999896
+          },
+          "currentTemperature": {
+            "type": "number",
+            "description": "Current temperature settings",
+            "example": 20
+          },
+          "currentTemperatureHeating": {
+            "type": "number",
+            "description": "Current temperature settings for heating",
+            "example": 20
+          },
+          "currentTemperatureCooling": {
+            "type": "number",
+            "description": "Current temperature settings for cooling",
+            "example": 20
+          },
+          "currentSetpointTimeStartHour": {
+            "type": "number",
+            "description": "Current hour of range start",
+            "example": 8
+          },
+          "currentSetpointTimeStartMinute": {
+            "type": "number",
+            "description": "Current minute of range start",
+            "example": 15
+          },
+          "currentSetpointTimeEndHour": {
+            "type": "number",
+            "description": "Current hour of range end",
+            "example": 17
+          },
+          "currentSetpointTimeEndMinute": {
+            "type": "number",
+            "description": "Current minute of range end",
+            "example": 0
+          }
+        },
+        "example": {
+          "mode": "Auto",
+          "handSetPointHeating": 25,
+          "handSetPointCooling": 31,
+          "vacationMode": "Heat",
+          "vacationStartTime": 1563799896,
+          "vacationEndTime": 1563899896,
+          "currentTemperature": 28,
+          "handMode": "Off",
+          "currentTemperatureHeating": 15,
+          "currentTemperatureCooling": 19,
+          "handTimestamp": 1
+        }
+      },
+      "AdvancedProperties": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "monday": {
+            "$ref": "#/components/schemas/ClimateScheduleDay"
+          },
+          "tuesday": {
+            "$ref": "#/components/schemas/ClimateScheduleDay"
+          },
+          "wednesday": {
+            "$ref": "#/components/schemas/ClimateScheduleDay"
+          },
+          "thursday": {
+            "$ref": "#/components/schemas/ClimateScheduleDay"
+          },
+          "friday": {
+            "$ref": "#/components/schemas/ClimateScheduleDay"
+          },
+          "saturday": {
+            "$ref": "#/components/schemas/ClimateScheduleDay"
+          },
+          "sunday": {
+            "$ref": "#/components/schemas/ClimateScheduleDay"
+          },
+          "handSetPointHeating": {
+            "type": "number",
+            "description": "Heating temperature for manual mode",
+            "example": 20
+          },
+          "handSetPointCooling": {
+            "type": "number",
+            "description": "Cooling temperature for manual mode",
+            "example": 25
+          },
+          "handTimestamp": {
+            "type": "integer",
+            "description": "End date and time for manual mode (timestamp)",
+            "example": 1563799896
+          },
+          "handMode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "vacationSetPointHeating": {
+            "type": "number",
+            "description": "Heating temperature for vacation mode",
+            "example": 19
+          },
+          "vacationSetPointCooling": {
+            "type": "number",
+            "description": "Cooling temperature for vacation mode",
+            "example": 23
+          },
+          "vacationMode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "vacationStartTime": {
+            "type": "number",
+            "description": "Start date and time for vacation mode (timestamp)",
+            "example": 1563799896
+          },
+          "vacationEndTime": {
+            "type": "number",
+            "description": "End date and time for vacation mode (timestamp)",
+            "example": 1563999896
+          },
+          "currentTemperatureHeating": {
+            "type": "number",
+            "description": "Current temperature settings for heating",
+            "example": 20
+          },
+          "currentTemperatureCooling": {
+            "type": "number",
+            "description": "Current temperature settings for cooling",
+            "example": 20
+          },
+          "currentSetpointTimeStartHour": {
+            "type": "number",
+            "description": "Current hour of range start",
+            "example": 8
+          },
+          "currentSetpointTimeStartMinute": {
+            "type": "number",
+            "description": "Current minute of range start",
+            "example": 15
+          },
+          "currentSetpointTimeEndHour": {
+            "type": "number",
+            "description": "Current hour of range end",
+            "example": 17
+          },
+          "currentSetpointTimeEndMinute": {
+            "type": "number",
+            "description": "Current minute of range end",
+            "example": 0
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "incompatibleDevices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "temperatureSensors": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "List of temperature sensors that will be used in calculatig currentTemperature"
+          },
+          "calculationStrategy": {
+            "$ref": "#/components/schemas/CalculationStrategy"
+          },
+          "currentTemperature": {
+            "type": "number",
+            "description": "Current calculated temperature in climate zone"
+          }
+        },
+        "example": {
+          "mode": "Auto",
+          "handSetPointHeating": 25,
+          "handSetPointCooling": 31,
+          "vacationMode": "Heat",
+          "vacationStartTime": 1563799896,
+          "vacationEndTime": 1564799896,
+          "handMode": "Off",
+          "currentTemperatureHeating": 15,
+          "currentTemperatureCooling": 19,
+          "handTimestamp": 1,
+          "devices": [7, 13],
+          "incompatibleDevices": [7, 13],
+          "temperatureSensors": [44, 45],
+          "calculationStrategy": "avg",
+          "currentTemperature": 28,
+          "monday": {
+            "night": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "evening": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "day": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "morning": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            }
+          },
+          "tuesday": {
+            "night": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "evening": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "day": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "morning": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            }
+          },
+          "wednesday": {
+            "night": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "evening": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "day": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "morning": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            }
+          },
+          "thursday": {
+            "night": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "evening": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "day": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "morning": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            }
+          },
+          "friday": {
+            "night": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "evening": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "day": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "morning": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            }
+          },
+          "saturday": {
+            "night": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "evening": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "day": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "morning": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            }
+          },
+          "sunday": {
+            "night": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "evening": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "day": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            },
+            "morning": {
+              "hour": 5,
+              "temperatureHeating": 25,
+              "temperatureCooling": 39,
+              "minute": 5
+            }
+          }
+        }
+      },
+      "BasicClimateZone": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Climate zone id",
+            "example": 23
+          },
+          "name": {
+            "type": "string",
+            "description": "Climate zone name",
+            "example": "Second floor"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Is climate zone active",
+            "example": false
+          },
+          "mode": {
+            "$ref": "#/components/schemas/PanelMode"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/BasicProperties"
+          }
+        },
+        "example": {
+          "mode": "Schedule",
+          "name": "First floor zone",
+          "active": true,
+          "id": 1,
+          "properties": {
+            "mode": "Auto",
+            "handSetPointHeating": 25,
+            "handSetPointCooling": 31,
+            "vacationMode": "Heat",
+            "vacationStartTime": 1563799896,
+            "vacationEndTime": 1563899896,
+            "currentTemperature": 28,
+            "handMode": "Off",
+            "currentTemperatureHeating": 15,
+            "currentTemperatureCooling": 19,
+            "handTimestamp": 1
+          }
+        }
+      },
+      "AdvancedClimateZone": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Climate zone id",
+            "example": 23
+          },
+          "name": {
+            "type": "string",
+            "description": "Climate zone name",
+            "example": "Second floor"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Is climate zone active",
+            "example": true
+          },
+          "mode": {
+            "$ref": "#/components/schemas/PanelMode"
+          },
+          "created": {
+            "type": "integer",
+            "description": "Timestamp: Date and time of creation",
+            "example": 1561724482
+          },
+          "modified": {
+            "type": "integer",
+            "description": "Timestamp: Date and time of modification",
+            "example": 1561734482
+          },
+          "properties": {
+            "$ref": "#/components/schemas/AdvancedProperties"
+          }
+        },
+        "example": {
+          "mode": "Schedule",
+          "name": "Basement",
+          "active": true,
+          "created": 1561724482,
+          "modified": 1561734482,
+          "id": 3,
+          "properties": {
+            "mode": "Auto",
+            "handSetPointHeating": 25,
+            "handSetPointCooling": 31,
+            "vacationMode": "Heat",
+            "vacationStartTime": 12345,
+            "vacationEndTime": 22345,
+            "handMode": "Off",
+            "currentTemperatureHeating": 15,
+            "currentTemperatureCooling": 19,
+            "handTimestamp": 1,
+            "devices": [7, 13],
+            "temperatureSensors": [44, 45],
+            "calculationStrategy": "avg",
+            "currentTemperature": 28,
+            "monday": {
+              "night": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "evening": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "day": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "morning": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              }
+            },
+            "tuesday": {
+              "night": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "evening": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "day": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "morning": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              }
+            },
+            "wednesday": {
+              "night": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "evening": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "day": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "morning": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              }
+            },
+            "thursday": {
+              "night": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "evening": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "day": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "morning": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              }
+            },
+            "friday": {
+              "night": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "evening": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "day": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "morning": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              }
+            },
+            "saturday": {
+              "night": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "evening": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "day": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "morning": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              }
+            },
+            "sunday": {
+              "night": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "evening": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "day": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              },
+              "morning": {
+                "hour": 5,
+                "temperatureHeating": 25,
+                "temperatureCooling": 39,
+                "minute": 5
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

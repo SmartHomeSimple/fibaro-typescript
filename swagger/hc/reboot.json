@@ -1,0 +1,55 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Reboot API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/service/reboot": {
+      "post": {
+        "tags": ["reboot"],
+        "summary": "Reboot device",
+        "operationId": "reboot",
+        "requestBody": {
+          "description": "Reboot body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetRequestDto"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ResetRequestDto": {
+        "type": "object",
+        "properties": {
+          "recovery": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "recovery": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Weather API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/weather": {
+      "get": {
+        "tags": ["weather"],
+        "summary": "Get weather object",
+        "operationId": "getWeather",
+        "responses": {
+          "200": {
+            "description": "Returns weather data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Weather"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Weather": {
+        "type": "object",
+        "properties": {
+          "ConditionCode": {
+            "type": "integer"
+          },
+          "Humidity": {
+            "type": "number"
+          },
+          "Temperature": {
+            "type": "number"
+          },
+          "TemperatureUnit": {
+            "type": "string"
+          },
+          "WeatherCondition": {
+            "type": "string"
+          },
+          "WeatherConditionConverted": {
+            "type": "string"
+          },
+          "Wind": {
+            "type": "number"
+          },
+          "WindUnit": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "Wind": 5.962133916683182,
+          "WindUnit": "km/h",
+          "Temperature": 1.4658129805029452,
+          "WeatherCondition": "WeatherCondition",
+          "Humidity": 6.027456183070403,
+          "TemperatureUnit": "TemperatureUnit",
+          "ConditionCode": 0,
+          "WeatherConditionConverted": "WeatherConditionConverted"
+        }
+      }
+    }
+  }
+}

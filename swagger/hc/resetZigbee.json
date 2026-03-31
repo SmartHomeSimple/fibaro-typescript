@@ -1,0 +1,30 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Zigbee Reset REST API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/service"
+    }
+  ],
+  "paths": {
+    "/resetZigbee": {
+      "post": {
+        "description": "Reset Zigbee network",
+        "operationId": "resetZigbee",
+        "responses": {
+          "202": {
+            "description": "OK"
+          }
+        },
+        "summary": "Reset Zigbee network",
+        "tags": ["resetZigbee"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "FTI API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/fti/v2": {
+      "get": {
+        "tags": ["fti"],
+        "summary": "Get FTI model",
+        "operationId": "getFTIModel",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FTIDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fti/v2/changeStep/{step}": {
+      "post": {
+        "tags": ["fti"],
+        "summary": "Set current FTI step",
+        "operationId": "setFTIStep",
+        "parameters": [
+          {
+            "name": "step",
+            "in": "path",
+            "description": "Name of an current FTI step",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/fti/v2/finish": {
+      "post": {
+        "tags": ["fti"],
+        "summary": "Finish FTI",
+        "operationId": "finishFTI",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/fti/v2/reset": {
+      "post": {
+        "tags": ["fti"],
+        "summary": "Reset FTI",
+        "operationId": "resetFTI",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FTIDto": {
+        "required": ["currentStep", "availableSteps"],
+        "type": "object",
+        "properties": {
+          "currentStep": {
+            "$ref": "#/components/schemas/FTIStepEnum"
+          },
+          "availableSteps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FTIStepDto"
+            }
+          },
+          "finished": {
+            "type": "boolean"
+          }
+        }
+      },
+      "FTIStepDto": {
+        "required": ["name"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/FTIStepEnum"
+          }
+        }
+      },
+      "FTIStepEnum": {
+        "type": "string",
+        "enum": ["zwave", "network", "location", "timeAndUnits", "localAccess", "remoteAccess", "finish"]
+      }
+    }
+  }
+}

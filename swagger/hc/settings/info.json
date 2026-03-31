@@ -1,0 +1,575 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Info API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/settings/info": {
+      "get": {
+        "tags": ["info settings"],
+        "summary": "Get current info settings",
+        "operationId": "getSettings",
+        "responses": {
+          "200": {
+            "description": "Returns info data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Info"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["info settings"],
+        "summary": "Modify current info settings",
+        "operationId": "modifySettings",
+        "requestBody": {
+          "description": "Modified info settings object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Settings"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns info data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Info"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/settings/info/configurationData": {
+      "get": {
+        "tags": ["info settings"],
+        "summary": "Download system configuration",
+        "operationId": "getConfigurationData",
+        "responses": {
+          "200": {
+            "description": "Returns system configuration data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigurationData"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ConfigurationData": {
+        "type": "object",
+        "properties": {
+          "settingsInfo": {
+            "$ref": "#/components/schemas/Info"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceDto"
+            }
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDto"
+            }
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomDto"
+            }
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SectionDto"
+            }
+          }
+        }
+      },
+      "Settings": {
+        "type": "object"
+      },
+      "CurrentVersion": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "type": "type",
+          "version": "version"
+        }
+      },
+      "InstallVersion": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "progress": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "progress": 5,
+          "type": "type",
+          "version": "version",
+          "status": "status"
+        }
+      },
+      "Info": {
+        "type": "object",
+        "properties": {
+          "serialNumber": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string",
+            "enum": ["HC3", "HC3L", "YH"]
+          },
+          "zwaveEngineVersion": {
+            "$ref": "#/components/schemas/ZwaveEngineVersion"
+          },
+          "zigbeeStatus": {
+            "type": "boolean"
+          },
+          "hcName": {
+            "type": "string"
+          },
+          "mac": {
+            "type": "string"
+          },
+          "zwaveVersion": {
+            "type": "string"
+          },
+          "timeFormat": {
+            "type": "integer"
+          },
+          "dateFormat": {
+            "type": "string"
+          },
+          "timezoneOffset": {
+            "type": "integer"
+          },
+          "decimalMark": {
+            "type": "string"
+          },
+          "zwaveRegion": {
+            "$ref": "#/components/schemas/ZwaveRegion"
+          },
+          "serverStatus": {
+            "type": "integer"
+          },
+          "defaultLanguage": {
+            "type": "string"
+          },
+          "defaultRoomId": {
+            "type": "integer"
+          },
+          "sunsetHour": {
+            "type": "string"
+          },
+          "sunriseHour": {
+            "type": "string"
+          },
+          "hotelMode": {
+            "type": "boolean"
+          },
+          "temperatureUnit": {
+            "type": "string"
+          },
+          "batteryLowNotification": {
+            "type": "boolean"
+          },
+          "date": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "AED",
+              "AFN",
+              "ALL",
+              "AMD",
+              "ANG",
+              "AOA",
+              "ARS",
+              "AUD",
+              "AWG",
+              "AZN",
+              "BAM",
+              "BBD",
+              "BDT",
+              "BGN",
+              "BHD",
+              "BIF",
+              "BMD",
+              "BND",
+              "BOB",
+              "BRL",
+              "BSD",
+              "BTC",
+              "BTN",
+              "BWP",
+              "BYN",
+              "BZD",
+              "CAD",
+              "CDF",
+              "CHF",
+              "CLF",
+              "CLP",
+              "CNH",
+              "CNY",
+              "COP",
+              "CRC",
+              "CUC",
+              "CUP",
+              "CVE",
+              "CZK",
+              "DJF",
+              "DKK",
+              "DOP",
+              "DZD",
+              "EGP",
+              "ERN",
+              "ETB",
+              "EUR",
+              "FJD",
+              "FKP",
+              "GBP",
+              "GEL",
+              "GGP",
+              "GHS",
+              "GIP",
+              "GMD",
+              "GNF",
+              "GTQ",
+              "GYD",
+              "HKD",
+              "HNL",
+              "HRK",
+              "HTG",
+              "HUF",
+              "IDR",
+              "ILS",
+              "IMP",
+              "INR",
+              "IQD",
+              "IRR",
+              "ISK",
+              "JEP",
+              "JMD",
+              "JOD",
+              "JPY",
+              "KES",
+              "KGS",
+              "KHR",
+              "KMF",
+              "KPW",
+              "KRW",
+              "KWD",
+              "KYD",
+              "KZT",
+              "LAK",
+              "LBP",
+              "LKR",
+              "LRD",
+              "LSL",
+              "LYD",
+              "MAD",
+              "MDL",
+              "MGA",
+              "MKD",
+              "MMK",
+              "MNT",
+              "MOP",
+              "MRO",
+              "MRU",
+              "MUR",
+              "MVR",
+              "MWK",
+              "MXN",
+              "MYR",
+              "MZN",
+              "NAD",
+              "NGN",
+              "NIO",
+              "NOK",
+              "NPR",
+              "NZD",
+              "OMR",
+              "PAB",
+              "PEN",
+              "PGK",
+              "PHP",
+              "PKR",
+              "PLN",
+              "PYG",
+              "QAR",
+              "RON",
+              "RSD",
+              "RUB",
+              "RWF",
+              "SAR",
+              "SBD",
+              "SCR",
+              "SDG",
+              "SEK",
+              "SGD",
+              "SHP",
+              "SLL",
+              "SOS",
+              "SRD",
+              "SSP",
+              "STD",
+              "STN",
+              "SVC",
+              "SYP",
+              "SZL",
+              "THB",
+              "TJS",
+              "TMT",
+              "TND",
+              "TOP",
+              "TRY",
+              "TTD",
+              "TWD",
+              "TZS",
+              "UAH",
+              "UGX",
+              "USD",
+              "UYU",
+              "UZS",
+              "VEF",
+              "VES",
+              "VND",
+              "VUV",
+              "WST",
+              "XAF",
+              "XAG",
+              "XAU",
+              "XCD",
+              "XDR",
+              "XOF",
+              "XPD",
+              "XPF",
+              "XPT",
+              "YER",
+              "ZAR",
+              "ZMW",
+              "ZWL"
+            ]
+          },
+          "softVersion": {
+            "type": "string"
+          },
+          "beta": {
+            "type": "boolean"
+          },
+          "currentVersion": {
+            "$ref": "#/components/schemas/CurrentVersion"
+          },
+          "installVersion": {
+            "$ref": "#/components/schemas/InstallVersion"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "online": {
+            "type": "boolean"
+          },
+          "updateStableAvailable": {
+            "type": "boolean"
+          },
+          "updateBetaAvailable": {
+            "type": "boolean"
+          },
+          "newestStableVersion": {
+            "type": "string"
+          },
+          "newestBetaVersion": {
+            "type": "string"
+          },
+          "isFTIConfigured": {
+            "type": "boolean"
+          },
+          "skin": {
+            "type": "string"
+          },
+          "skinSetting": {
+            "type": "string"
+          },
+          "isSlave": {
+            "type": "boolean"
+          },
+          "oemId": {
+            "$ref": "#/components/schemas/OemId"
+          }
+        },
+        "example": {
+          "date": "date",
+          "platform": "HC3",
+          "zwaveEngineVersion": "2.0",
+          "zigbeeStatus": true,
+          "softVersion": "softVersion",
+          "serverStatus": 1,
+          "batteryLowNotification": true,
+          "dateFormat": "dateFormat",
+          "hotelMode": true,
+          "updateStableAvailable": true,
+          "sunsetHour": "sunsetHour",
+          "mac": "mac",
+          "sunriseHour": "sunriseHour",
+          "defaultLanguage": "defaultLanguage",
+          "defaultRoomId": 221,
+          "timezoneOffset": 6,
+          "temperatureUnit": "temperatureUnit",
+          "currency": "EUR",
+          "newestBetaVersion": "newestBetaVersion",
+          "zwaveRegion": "zwaveRegion",
+          "beta": true,
+          "timestamp": 5,
+          "serialNumber": "serialNumber",
+          "currentVersion": {
+            "type": "type",
+            "version": "version"
+          },
+          "newestStableVersion": "newestStableVersion",
+          "installVersion": {
+            "progress": 5,
+            "type": "type",
+            "version": "version",
+            "status": "status"
+          },
+          "updateBetaAvailable": true,
+          "hcName": "hcName",
+          "timeFormat": 0,
+          "online": true,
+          "decimalMark": "decimalMark",
+          "zwaveVersion": "zwaveVersion",
+          "isFTIConfigured": true,
+          "skin": "light",
+          "skinSetting": "auto",
+          "isSlave": false,
+          "oemId": "HC3",
+          "example": {
+            "date": "date",
+            "platform": "HC3",
+            "zwaveEngineVersion": "2.0",
+            "zigbeeStatus": true,
+            "softVersion": "softVersion",
+            "serverStatus": 1,
+            "batteryLowNotification": true,
+            "dateFormat": "dateFormat",
+            "hotelMode": true,
+            "updateStableAvailable": true,
+            "sunsetHour": "sunsetHour",
+            "mac": "mac",
+            "sunriseHour": "sunriseHour",
+            "defaultLanguage": "defaultLanguage",
+            "defaultRoomId": 221,
+            "timezoneOffset": 6,
+            "temperatureUnit": "temperatureUnit",
+            "currency": "EUR",
+            "newestBetaVersion": "newestBetaVersion",
+            "zwaveRegion": "zwaveRegion",
+            "beta": true,
+            "timestamp": 5,
+            "serialNumber": "serialNumber",
+            "currentVersion": {
+              "type": "type",
+              "version": "version"
+            },
+            "newestStableVersion": "newestStableVersion",
+            "installVersion": {
+              "progress": 5,
+              "type": "type",
+              "version": "version",
+              "status": "status"
+            },
+            "updateBetaAvailable": true,
+            "hcName": "hcName",
+            "timeFormat": 0,
+            "online": true,
+            "decimalMark": "decimalMark",
+            "zwaveVersion": "zwaveVersion",
+            "isFTIConfigured": true,
+            "skin": "light",
+            "skinSetting": "auto",
+            "isSlave": false,
+            "oemId": "HC3"
+          }
+        },
+        "ZwaveEngineVersion": {
+          "type": "string",
+          "enum": ["2.0", "3.0"]
+        },
+        "ZwaveRegion": {
+          "type": "string",
+          "enum": ["ANZ", "CN", "EU", "HK", "IL", "IN", "JP", "KR", "MY", "RU", "THA", "TW", "US"]
+        },
+        "OemId": {
+          "type": "string",
+          "enum": ["HC3", "HC3L", "YH", "ZB", "WISE", "HEMS", "YHP", "SG"]
+        }
+      },
+      "ZwaveEngineVersion": {
+        "type": "string",
+        "enum": ["2.0", "3.0"]
+      },
+      "ZwaveRegion": {
+        "type": "string",
+        "enum": ["ANZ", "CN", "EU", "HK", "IL", "IN", "JP", "KR", "MY", "RU", "THA", "TW", "US"]
+      },
+      "OemId": {
+        "type": "string",
+        "enum": ["HC3", "HC3L", "YH", "ZB", "WISE", "HEMS", "YHP", "SG"]
+      }
+    }
+  }
+}

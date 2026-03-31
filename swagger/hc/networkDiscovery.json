@@ -1,0 +1,85 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Network Discovery API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/networkDiscovery/arp": {
+      "post": {
+        "tags": ["networkDiscovery"],
+        "summary": "Network Discovery",
+        "operationId": "networkDiscoveryAction",
+        "requestBody": {
+          "description": "newtork discovery body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NetworkDiscoveryDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns discovered network devices data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeviceNetworkDataDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DeviceNetworkDataDto": {
+        "type": "object",
+        "properties": {
+          "ip": {
+            "type": "string"
+          },
+          "mac": {
+            "type": "string"
+          },
+          "vendor": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "vendor": "vendor",
+          "ip": "ip",
+          "mac": "mac"
+        }
+      },
+      "NetworkDiscoveryDto": {
+        "type": "object",
+        "properties": {
+          "mac": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "example": {
+          "mac": ["mac", "mac"]
+        }
+      }
+    }
+  }
+}

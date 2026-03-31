@@ -1,0 +1,596 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "API description",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/panels/sprinklers": {
+      "get": {
+        "tags": ["sprinklers panel"],
+        "summary": "Get all available sprinkler schedules",
+        "operationId": "getSprinklerSchedules",
+        "responses": {
+          "200": {
+            "description": "Returns all sprinkler schedules",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SprinklerSchedule"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["sprinklers panel"],
+        "summary": "Creates new sprinkler schedule",
+        "operationId": "postSprinklerSchedules",
+        "requestBody": {
+          "description": "Name of new schedule",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SprinklerScheduleCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "New schedule data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SprinklerSchedule"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/sprinklers/{scheduleId}": {
+      "get": {
+        "tags": ["sprinklers panel"],
+        "summary": "Get specific sprinkler schedule",
+        "operationId": "getSprinklerSchedule",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "description": "Id of an existing sprinkler schedule",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns specific sprinkler schedule",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SprinklerSchedule"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["sprinklers panel"],
+        "summary": "Update specific sprinkler schedule",
+        "operationId": "putSprinklerSchedule",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "description": "Id of an existing sprinkler schedule",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "SprinklerSchedule object body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SprinklerScheduleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Return updated SprinklerSchedule object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SprinklerSchedule"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["sprinklers panel"],
+        "summary": "Removes specific sprinkler schedule",
+        "operationId": "deleteSprinklerSchedule",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "description": "Id of an existing sprinkler schedule",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/panels/sprinklers/{scheduleId}/sequences": {
+      "post": {
+        "tags": ["sprinklers panel"],
+        "summary": "Create new sprinkler sequence",
+        "operationId": "postSprinklerSequence",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "description": "Id of an existing sprinkler schedule",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "SprinklerSequence object body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SprinklerSequenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Return created SprinklerSequence object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SprinklerSequence"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/sprinklers/{scheduleId}/sequences/{sequenceId}": {
+      "put": {
+        "tags": ["sprinklers panel"],
+        "summary": "Update specific sprinkler sequence",
+        "operationId": "putSprinklerSequence",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "description": "Id of an existing sprinkler schedule",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sequenceId",
+            "in": "path",
+            "description": "Id of an existing sprinkler sequence",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "SprinklerSequence object body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SprinklerSequenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Return updated SprinklerSequence object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SprinklerSequence"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["sprinklers panel"],
+        "summary": "Removes specific sprinkler sequence from schedule",
+        "operationId": "deleteSprinklerSequence",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "description": "Id of an existing sprinkler schedule",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sequenceId",
+            "in": "path",
+            "description": "Id of an existing sprinkler sequence",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+
+    "/panels/sprinklers/{scheduleId}/sequences/{sequenceId}/startWatering": {
+      "post": {
+        "tags": ["sprinklers panel"],
+        "summary": "Start given sequence",
+        "operationId": "postSprinklerSequenceStartWatering",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "description": "Id of an existing sprinkler schedule",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sequenceId",
+            "in": "path",
+            "description": "Id of an existing sprinkler sequence",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "wateringTime",
+            "in": "query",
+            "description": "Watering time in seconds",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Confirm watering sequence start"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/panels/sprinklers/{scheduleId}/sequences/{sequenceId}/stopWatering": {
+      "post": {
+        "tags": ["sprinklers panel"],
+        "summary": "Stop given sequence",
+        "operationId": "postSprinklerSequenceStopWatering",
+        "parameters": [
+          {
+            "name": "scheduleId",
+            "in": "path",
+            "description": "Id of an existing sprinkler schedule",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sequenceId",
+            "in": "path",
+            "description": "Id of an existing sprinkler sequence",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Confirm watering sequence stop"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Day": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DayEnum"
+        }
+      },
+      "DayEnum": {
+        "type": "string",
+        "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+      },
+      "SprinklerZone": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "integer"
+          },
+          "duration": {
+            "type": "integer",
+            "description": "seconds"
+          }
+        },
+        "example": {
+          "deviceId": 1,
+          "duration": 1800
+        }
+      },
+      "SprinklerSequenceRequest": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "integer",
+            "description": "seconds from midnight"
+          },
+          "sprinklers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SprinklerZone"
+            }
+          }
+        },
+        "example": {
+          "startTime": 7200,
+          "sprinklers": [
+            { "deviceId": 1, "duration": 300 },
+            { "deviceId": 2, "duration": 600 }
+          ]
+        }
+      },
+      "SprinklerSequence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "isRunning": {
+            "type": "boolean"
+          },
+          "startTime": {
+            "type": "integer",
+            "description": "seconds from midnight"
+          },
+          "sprinklers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SprinklerZone"
+            }
+          }
+        },
+        "example": {
+          "id": 1,
+          "startTime": 7200,
+          "sprinklers": [
+            { "deviceId": 1, "duration": 300 },
+            { "deviceId": 2, "duration": 600 }
+          ]
+        }
+      },
+      "SprinklerSequenceStartWateringRequest": {
+        "type": "object",
+        "properties": {
+          "wateringTime": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "wateringTime": 10
+        }
+      },
+      "SprinklerSchedule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "days": {
+            "$ref": "#/components/schemas/Day"
+          },
+          "sequences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SprinklerSequence"
+            }
+          }
+        },
+        "example": {
+          "id": 1,
+          "name": "front garden weekend",
+          "days": ["saturday", "sunday"],
+          "sequences": [
+            {
+              "id": 1,
+              "startTime": 15000,
+              "sprinklers": [
+                { "deviceId": 1, "duration": 300 },
+                { "deviceId": 2, "duration": 500 }
+              ]
+            },
+            {
+              "id": 2,
+              "startTime": 70000,
+              "sprinklers": [
+                { "deviceId": 1, "duration": 300 },
+                { "deviceId": 2, "duration": 1200 }
+              ]
+            }
+          ]
+        }
+      },
+      "SprinklerScheduleCreateRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "name": "New schedule name"
+        }
+      },
+      "SprinklerScheduleRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "days": {
+            "$ref": "#/components/schemas/Day"
+          },
+          "sequences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SprinklerSequenceRequest"
+            }
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "name": "front garden weekend",
+          "days": ["saturday", "sunday"],
+          "sequences": [
+            {
+              "startTime": 15000,
+              "sprinklers": [
+                { "deviceId": 1, "duration": 300 },
+                { "deviceId": 2, "duration": 500 }
+              ]
+            },
+            {
+              "startTime": 70000,
+              "sprinklers": [
+                { "deviceId": 1, "duration": 300 },
+                { "deviceId": 2, "duration": 1200 }
+              ]
+            }
+          ],
+          "isActive": true
+        }
+      }
+    }
+  }
+}

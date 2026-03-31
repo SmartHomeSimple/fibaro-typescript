@@ -1,0 +1,150 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Allows to check action details",
+    "version": "1.0.0",
+    "title": "Actions"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/service/actions": {
+      "get": {
+        "tags": ["actions"],
+        "operationId": "getActions",
+        "summary": "Get list of actions and information about them performed on HC.",
+        "responses": {
+          "200": {
+            "description": "List of actions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/actions/{id}": {
+      "get": {
+        "tags": ["actions"],
+        "operationId": "getActionById",
+        "summary": "Get information about action with given ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user to return.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "3271fba1-75cf-41a1-a41b-5c57123cb522"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Action details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Action not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Action ID."
+          },
+          "name": {
+            "type": "string",
+            "enum": ["createBackup", "restoreBackup", "autoUpdate", "downloadUpdate", "installUpdate"],
+            "description": "Action name."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "inProgress", "failed", "done"],
+            "description": "Action status."
+          },
+          "request": {
+            "type": "object",
+            "description": "Request that created this action.",
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": ["create", "restore", "auto", "download", "install"],
+                "description": "Action."
+              },
+              "params": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "masterOnly": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ActionStageDto": {
+        "type": "object",
+        "required": ["type", "name"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["own", "slave"]
+          },
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "description": "Slave ID"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "inProgress", "failed", "done"]
+          }
+        }
+      },
+      "ActionResponseDto": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/ActionDto"
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ActionStageDto"
+            }
+          }
+        }
+      }
+    }
+  }
+}

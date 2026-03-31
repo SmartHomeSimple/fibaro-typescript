@@ -1,0 +1,257 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Sections API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/sections": {
+      "get": {
+        "tags": ["sections"],
+        "summary": "Get list of all available sections",
+        "operationId": "getSections",
+        "responses": {
+          "200": {
+            "description": "Returns data of sections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SectionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["sections"],
+        "summary": "Create section",
+        "operationId": "newSection",
+        "requestBody": {
+          "description": "Section body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SectionCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response was specified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/sections/{sectionID}": {
+      "get": {
+        "tags": ["sections"],
+        "summary": "Get section object",
+        "operationId": "getSection",
+        "parameters": [
+          {
+            "name": "sectionID",
+            "in": "path",
+            "description": "ID of an existing section",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns data of specified section",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["sections"],
+        "summary": "Modify section",
+        "operationId": "modifySection",
+        "parameters": [
+          {
+            "name": "sectionID",
+            "in": "path",
+            "description": "ID of an existing section",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified section data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SectionUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns data of specific updated section",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["sections"],
+        "summary": "Delete section",
+        "operationId": "deleteSection",
+        "parameters": [
+          {
+            "name": "sectionID",
+            "in": "path",
+            "description": "ID of an existing section",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SectionCreateRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "name": "name",
+          "id": 0
+        }
+      },
+      "SectionUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "integer"
+          },
+          "sortOrder": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "created": 6,
+          "sortOrder": 5,
+          "name": "name",
+          "modified": 1,
+          "id": 0
+        }
+      },
+      "SectionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "integer"
+          },
+          "sortOrder": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "created": 6,
+          "sortOrder": 5,
+          "name": "name",
+          "modified": 1,
+          "id": 0
+        }
+      }
+    }
+  }
+}

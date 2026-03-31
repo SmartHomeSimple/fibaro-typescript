@@ -1,0 +1,1444 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Network Settings",
+    "description": "Network management API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "network"
+    },
+    {
+      "name": "remoteAccess"
+    },
+    {
+      "name": "certificates"
+    }
+  ],
+  "paths": {
+    "/settings/network": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get network configuration",
+        "description": "Return list of network interfaces with their configuration",
+        "operationId": "getNetworkConfigurations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/networkConfiguration"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/connectivity": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get Internet connectivity status",
+        "description": "Returns Internet connectivity status",
+        "operationId": "getInternetConnectivity",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/internetConnectivity"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/radio": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get radio configuration",
+        "description": "Returns radio configuration",
+        "operationId": "getRadioConfiguration",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/radioListConfiguration"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": ["network"],
+        "summary": "Update radio configuration",
+        "description": "Set radio configuration",
+        "operationId": "setRadioConfiguration",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/radioListConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/radio/{radioType}": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get radio configuration by device type",
+        "description": "Get radio configuration by device type",
+        "operationId": "getRadioConfigurationByType",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "radioType",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "wlan",
+              "enum": ["wlan", "wwan", "bluetooth"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/radioConfiguration"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "tags": ["network"],
+        "summary": "Update radio configuration by device type",
+        "description": "Set radio configuration by device type",
+        "operationId": "setRadioConfigurationByType",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "radioType",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "wlan",
+              "enum": ["wlan", "wwan", "bluetooth"]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/radioConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/interfaces": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get list of network interfaces",
+        "description": "Get array with names of network interfaces",
+        "operationId": "getNetworkInterfaces",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/interfaces"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/interfaces/{interfaceName}": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get interface configuration",
+        "description": "Get configuration for the network interface",
+        "operationId": "getNetworkConfigurationByName",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "interfaceName",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "eth0"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/configN"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InterfaceNotAvailable"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": ["network"],
+        "summary": "Update interface configuration",
+        "description": "Set network configuration for the network interface",
+        "operationId": "setNetworkConfigurationByName",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "interfaceName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "wlan0"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/interfaceConfiguration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          },
+          "400": {
+            "$ref": "#/components/responses/InterfaceNotAvailable"
+          },
+          "427": {
+            "$ref": "#/components/responses/WlanConnectionErrorBadSecret"
+          },
+          "473": {
+            "$ref": "#/components/responses/WlanConnectionErrorWiFiNotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/interfaces/{interfaceName}/apList": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get list of APs",
+        "description": "Get list of available access points",
+        "operationId": "getListOfAccessPoints",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "interfaceName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apList"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InterfaceNotAvailable"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/interfaces/{interfaceName}/apInfo": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get list of APs with additional information",
+        "description": "Get list of available access points with additional information",
+        "operationId": "getListOfAccessPointsWithInfo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "interfaceName",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/apListInfo"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InterfaceNotAvailable"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/connections": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get list of network connections",
+        "description": "Returns list of connections",
+        "operationId": "getConnections",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connections"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["network"],
+        "summary": "Add a new connection",
+        "description": "Add a new connection",
+        "operationId": "addConnection",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/connection"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connection"
+                }
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/WlanConnectionErrorWiFiConflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/connections/{connectionUuid}": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get connection status",
+        "description": "Returns connection status",
+        "operationId": "getConnection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connection"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["network"],
+        "summary": "Remove the network connection",
+        "description": "Remove the network connection",
+        "operationId": "removeConnection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          }
+        }
+      },
+      "put": {
+        "tags": ["network"],
+        "summary": "Update the network connection",
+        "description": "Update the network connection",
+        "operationId": "updateConnection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/connection"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connection"
+                }
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/WlanConnectionErrorWiFiConflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/connections/{connectionUuid}/check": {
+      "post": {
+        "tags": ["network"],
+        "summary": "Check the connection status",
+        "description": "Check the connection status",
+        "operationId": "checkConnection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/connection"
+                }
+              }
+            }
+          },
+          "427": {
+            "$ref": "#/components/responses/WlanConnectionErrorBadSecret"
+          },
+          "473": {
+            "$ref": "#/components/responses/WlanConnectionErrorWiFiNotFound"
+          },
+          "480": {
+            "$ref": "#/components/responses/WlanConnectionErrorWiFiConnectionEnqueued"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/connections/{connectionUuid}/connect": {
+      "post": {
+        "tags": ["network"],
+        "summary": "Connect to the wireless network",
+        "description": "Connect to the wireless network",
+        "operationId": "connectConnection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          },
+          "427": {
+            "$ref": "#/components/responses/WlanConnectionErrorBadSecret"
+          },
+          "473": {
+            "$ref": "#/components/responses/WlanConnectionErrorWiFiNotFound"
+          },
+          "480": {
+            "$ref": "#/components/responses/WlanConnectionErrorWiFiConnectionEnqueued"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/connections/{connectionUuid}/disconnect": {
+      "post": {
+        "tags": ["network"],
+        "summary": "Disconnect from the wireless network",
+        "description": "Disconnect from the wireless network",
+        "operationId": "disconnectConnection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/resetInterfaces": {
+      "put": {
+        "tags": ["network"],
+        "summary": "Reset network interfaces configuration",
+        "description": "Resets network interfaces configuration to defaults",
+        "operationId": "resetNetworkInterfaces",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/AccessPointMode": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get AccessPoint status",
+        "description": "Get AccessPoint status",
+        "operationId": "getAccessPointMode",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/accessPointMode"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": ["network"],
+        "summary": "Set AccessPoint mode",
+        "description": "Set AccessPoint mode",
+        "operationId": "setAccessPointMode",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/accessPointMode"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/network/enabledProtocols": {
+      "get": {
+        "tags": ["network"],
+        "summary": "Get enabled protocols",
+        "description": "Get enabled protocols",
+        "operationId": "getEnabledProtocols",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/protocols"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": ["network"],
+        "summary": "Set enabled protocols",
+        "description": "Set enabled protocols",
+        "operationId": "setEnabledProtocols",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/protocols"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/StatusOk"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/settings/remoteAccess/status": {
+      "get": {
+        "tags": ["remoteAccess"],
+        "summary": "Get all remote access statuses",
+        "description": "Get all remote access statuses",
+        "operationId": "getRemoteAccessStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/remoteAccessStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/remoteAccess/status/{typeName}": {
+      "get": {
+        "tags": ["remoteAccess"],
+        "summary": "Get remote access type state",
+        "description": "Get remote access type state",
+        "operationId": "getRemoteAccessTypeState",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "typeName",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["user", "support", "installer"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/remoteAccessState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["remoteAccess"],
+        "summary": "Set remote access type state",
+        "description": "Set remote access type state",
+        "operationId": "setRemoteAccessTypeState",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "typeName",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["user", "support", "installer"]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/remoteAccessState"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/service/remoteAccess/status/{typeName}": {
+      "put": {
+        "tags": ["remoteAccess"],
+        "summary": "Set remote access type state",
+        "description": "Set remote access type state for Gateway Connection",
+        "operationId": "setRemoteAccessTypeStateGC",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "typeName",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["user", "support", "installer"]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/remoteAccessState"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/settings/certificates/ca": {
+      "get": {
+        "tags": ["certificates"],
+        "summary": "Get the Root CA certificate",
+        "operationId": "getRootCACertificate",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Accept",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/caCertificate"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "interfaces": {
+        "type": "object",
+        "properties": {
+          "interfaces": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "example": {
+          "interfaces": ["eth0", "wlan0"]
+        }
+      },
+      "ipConfig": {
+        "type": "object",
+        "required": ["ipMode"],
+        "properties": {
+          "ipMode": {
+            "type": "string",
+            "enum": ["static", "dhcp"]
+          },
+          "ip": {
+            "type": "string",
+            "format": "ipv4"
+          },
+          "mask": {
+            "type": "string",
+            "format": "ipv4"
+          },
+          "gateway": {
+            "type": "string",
+            "format": "ipv4"
+          },
+          "dns1": {
+            "type": "string",
+            "format": "ipv4"
+          },
+          "dns2": {
+            "type": "string",
+            "format": "ipv4"
+          },
+          "macAddress": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "ipConfig": {
+            "ipMode": "dhcp",
+            "ip": "192.168.10.10",
+            "mask": "255.255.255.0",
+            "gateway": "192.168.10.1",
+            "dns1": "8.8.8.8",
+            "dns2": "8.8.4.4",
+            "macAddress": "00:11:22:33:44:55"
+          }
+        }
+      },
+      "apConfig": {
+        "type": "object",
+        "required": ["ssid", "security"],
+        "properties": {
+          "ssid": {
+            "type": "string"
+          },
+          "security": {
+            "type": "string",
+            "enum": ["none", "auto", "wpa-psk"]
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "fallback": {
+            "type": "boolean"
+          },
+          "hidden": {
+            "type": "boolean",
+            "writeOnly": true
+          },
+          "signal": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "bssid": {
+            "type": "string",
+            "readOnly": true
+          },
+          "frequency": {
+            "type": "integer",
+            "readOnly": true
+          }
+        },
+        "example": {
+          "ssid": "Fibaro_Guest",
+          "password": "SecretPassword",
+          "security": "auto"
+        }
+      },
+      "interfaceConfiguration": {
+        "type": "object",
+        "required": ["enabled"],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "ipConfig": {
+            "$ref": "#/components/schemas/ipConfig"
+          },
+          "apConfig": {
+            "$ref": "#/components/schemas/apConfig"
+          }
+        }
+      },
+      "configN": {
+        "additionalProperties": {
+          "$ref": "#/components/schemas/interfaceConfiguration"
+        },
+        "example": {
+          "wlan0": {
+            "enabled": true,
+            "ipConfig": {
+              "ipMode": "dhcp",
+              "ip": "192.168.10.10",
+              "mask": "255.255.255.0",
+              "gateway": "192.168.10.1",
+              "dns1": "8.8.8.8",
+              "dns2": "8.8.4.4",
+              "macAddress": "00:11:22:33:44:55"
+            },
+            "apConfig": {
+              "ssid": "Fibaro_Guest",
+              "bssid": "00:99:88:77:66:55",
+              "security": "wpa2-psk",
+              "signal": 72,
+              "frequency": 2412
+            }
+          }
+        }
+      },
+      "networkConfiguration": {
+        "properties": {
+          "networkConfig": {
+            "$ref": "#/components/schemas/configN"
+          }
+        },
+        "example": {
+          "networkConfig": {
+            "eth0": {
+              "enabled": true,
+              "ipConfig": {
+                "ipMode": "dhcp",
+                "ip": "192.168.10.10",
+                "mask": "255.255.255.0",
+                "gateway": "192.168.10.1",
+                "dns1": "8.8.8.8",
+                "dns2": "8.8.4.4",
+                "macAddress": "00:11:22:33:44:55"
+              }
+            },
+            "wlan0": {
+              "enabled": false,
+              "ipConfig": {
+                "ipMode": "dhcp",
+                "macAddress": "00:11:22:33:44:66"
+              }
+            }
+          }
+        }
+      },
+      "ap": {
+        "type": "object",
+        "required": ["ssid", "security"],
+        "properties": {
+          "ssid": {
+            "type": "string"
+          },
+          "signal": {
+            "type": "integer"
+          },
+          "security": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["none", "wep", "wpa-psk", "wpa2-psk", "wpa-eap", "wpa2-eap", "unknown"]
+            }
+          }
+        }
+      },
+      "apInfo": {
+        "type": "object",
+        "required": ["ssid", "security"],
+        "properties": {
+          "ssid": {
+            "type": "string"
+          },
+          "bssid": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "integer"
+          },
+          "signal": {
+            "type": "integer"
+          },
+          "apMode": {
+            "type": "string",
+            "enum": ["ad-hoc", "infra", "hotspot", "unknown"]
+          },
+          "security": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["none", "wep", "wpa-psk", "wpa2-psk", "wpa-eap", "wpa2-eap", "unknown"]
+            }
+          }
+        }
+      },
+      "apList": {
+        "type": "object",
+        "properties": {
+          "apList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ap"
+            }
+          }
+        },
+        "example": {
+          "apList": [
+            {
+              "ssid": "Fibaro_Guest",
+              "signal": 80,
+              "security": ["wpa-psk", "wpa2-psk"]
+            },
+            {
+              "ssid": "Fibaro",
+              "signal": 63,
+              "security": ["wpa2-psk"]
+            }
+          ]
+        }
+      },
+      "apListInfo": {
+        "type": "object",
+        "properties": {
+          "apListInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/apInfo"
+            }
+          }
+        },
+        "example": {
+          "apListInfo": [
+            {
+              "ssid": "Fibaro_Guest",
+              "apMode": "infra",
+              "bssid": "00:11:22:33:44:55",
+              "frequency": 2412,
+              "signal": 80,
+              "security": ["wpa-psk", "wpa2-psk"]
+            },
+            {
+              "ssid": "Fibaro",
+              "apMode": "infra",
+              "frequency": 5180,
+              "security": ["wpa2-psk"],
+              "bssid": "00:11:22:33:44:66",
+              "signal": 63
+            }
+          ]
+        }
+      },
+      "accessPointMode": {
+        "type": "object",
+        "properties": {
+          "accessPointEnabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "protocols": {
+        "type": "object",
+        "properties": {
+          "http": {
+            "type": "boolean"
+          },
+          "https": {
+            "type": "boolean"
+          }
+        },
+        "required": ["http", "https"],
+        "example": {
+          "http": false,
+          "https": true
+        }
+      },
+      "internetConnectivity": {
+        "type": "object",
+        "required": ["internetConnectivity"],
+        "properties": {
+          "internetConnectivity": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "internetConnectivity": true
+        }
+      },
+      "connections": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/connection"
+        }
+      },
+      "connection": {
+        "type": "object",
+        "required": ["name", "enabled"],
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "readOnly": true,
+            "enum": ["connected", "disconnected", "unknown", "ready"]
+          },
+          "apConfig": {
+            "$ref": "#/components/schemas/apConfig"
+          },
+          "ipConfig": {
+            "$ref": "#/components/schemas/ipConfig"
+          }
+        }
+      },
+      "statusResponse": {
+        "required": ["code", "message"],
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "radioConfiguration": {
+        "required": ["enabled"],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "enabled": true
+        }
+      },
+      "radioListConfiguration": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/radioConfiguration"
+        },
+        "example": {
+          "wlan": {
+            "enabled": true
+          },
+          "wwan": {
+            "enabled": false
+          },
+          "bluetooth": {
+            "enabled": false
+          }
+        }
+      },
+      "remoteAccessState": {
+        "type": "object",
+        "required": ["active"],
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "deadline": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "supportUser": {
+            "type": "boolean"
+          }
+        }
+      },
+      "remoteAccessStatus": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/remoteAccessState"
+          },
+          "support": {
+            "$ref": "#/components/schemas/remoteAccessState"
+          }
+        }
+      }
+    },
+    "responses": {
+      "StatusOk": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 200,
+              "message": "OK"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 500,
+              "message": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "InterfaceNotAvailable": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 400,
+              "message": "Interface not available"
+            }
+          }
+        }
+      },
+      "WlanConnectionErrorBadSecret": {
+        "description": "WLAN connection bad secret",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 427,
+              "message": "Secrets were required, but not provided"
+            }
+          }
+        }
+      },
+      "WlanConnectionErrorWiFiNotFound": {
+        "description": "WLAN connection not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 473,
+              "message": "The Wi-Fi network could not be found"
+            }
+          }
+        }
+      },
+      "WlanConnectionErrorWiFiConflict": {
+        "description": "WLAN connection conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 409,
+              "message": "The Wi-Fi connection conflict"
+            }
+          }
+        }
+      },
+      "WlanConnectionErrorWiFiConnectionEnqueued": {
+        "description": "WLAN connection enqueued",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 480,
+              "message": "New Wi-Fi connection activation was enqueued"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 400,
+              "message": "Bad Request"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/statusResponse"
+            },
+            "example": {
+              "code": 404,
+              "message": "Not Found"
+            }
+          }
+        }
+      },
+      "caCertificate": {
+        "description": "CA certificate",
+        "content": {
+          "application/x-x509-ca-cert": {
+            "schema": {
+              "type": "string"
+            },
+            "example": "-----BEGIN CERTIFICATE-----\n MIIGzDCCBLSgAwIBA...\n ...\n -----END CERTIFICATE-----"
+          },
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "certificate": {
+                  "type": "string"
+                }
+              }
+            },
+            "example": "{\n  \"certificate\": \"\n    -----BEGIN CERTIFICATE-----\n    MIIGzDCCBLSgAwIBA...\n    ...\n    -----END CERTIFICATE-----\"\n}\n"
+          }
+        }
+      }
+    }
+  }
+}

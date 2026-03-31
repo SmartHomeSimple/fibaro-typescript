@@ -1,0 +1,563 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Manage alarms API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/alarms/v1/partitions": {
+      "get": {
+        "tags": ["alarms"],
+        "summary": "Get all alarm partitions",
+        "operationId": "getAlarmPartitions",
+        "responses": {
+          "200": {
+            "description": "Returns list of alarm partitions allowed for logged user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlarmPartitionDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["alarms"],
+        "summary": "Creates new alarm partition. The partition will be disarmed by default.",
+        "operationId": "createAlarmPartition",
+        "requestBody": {
+          "description": "Partition which should be added",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPartitionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Partition has been created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_201"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Partitions in read only mode due to breached",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/alarms/v1/partitions/breached": {
+      "get": {
+        "tags": ["alarms"],
+        "summary": "Get breached partition ids",
+        "operationId": "getBreachedAlarmPartitions",
+        "responses": {
+          "200": {
+            "description": "Returns list of alarm partition ids allowed for logged user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alarms/v1/partitions/{partitionID}": {
+      "get": {
+        "tags": ["alarms"],
+        "summary": "Get existing partition",
+        "operationId": "getAlarmPartitionById",
+        "parameters": [
+          {
+            "name": "partitionID",
+            "in": "path",
+            "description": "ID of an existing partition",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns partition with given id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlarmPartitionDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission denied.",
+            "content": {}
+          },
+          "404": {
+            "description": "Partition not found",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["alarms"],
+        "summary": "Update existing partition",
+        "operationId": "updateAlarmPartitionById",
+        "parameters": [
+          {
+            "name": "partitionID",
+            "in": "path",
+            "description": "ID of an existing partition",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Partition which should be updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPartitionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Partition has been updated",
+            "content": {}
+          },
+          "403": {
+            "description": "Partition in read only mode, due to armed or due to breached",
+            "content": {}
+          },
+          "404": {
+            "description": "Partition not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["alarms"],
+        "summary": "Delete existing partition",
+        "operationId": "deleteAlarmPartitionById",
+        "parameters": [
+          {
+            "name": "partitionID",
+            "in": "path",
+            "description": "ID of an existing partition",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Partition has been deleted",
+            "content": {}
+          },
+          "403": {
+            "description": "Partition in read only mode, due to armed or due to breached",
+            "content": {}
+          },
+          "404": {
+            "description": "Partition not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/alarms/v1/partitions/actions/tryArm": {
+      "post": {
+        "tags": ["alarms"],
+        "summary": "Try to arm all alarm partitions after sensor breached status verification",
+        "operationId": "tryArmAlarmPartitions",
+        "parameters": [
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN. It is optional and depends on user settings",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arm request was accepted but some partitions may not have been armed. Result must be checked.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PartitionArmTryResult"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PIN needed",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/alarms/v1/partitions/actions/arm": {
+      "post": {
+        "tags": ["alarms"],
+        "summary": "Arm all alarm partitions",
+        "operationId": "armAlarmPartitions",
+        "parameters": [
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN. It is optional and depends on user settings",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Partitions has been armed",
+            "content": {}
+          },
+          "403": {
+            "description": "PIN needed",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["alarms"],
+        "summary": "Disarm all alarm partitions",
+        "operationId": "disarmAlarmPartitions",
+        "parameters": [
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Partitions has been disarmed",
+            "content": {}
+          },
+          "403": {
+            "description": "PIN needed",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/alarms/v1/partitions/{partitionID}/actions/tryArm": {
+      "post": {
+        "tags": ["alarms"],
+        "summary": "Try to arm alarm partition after sensor breached status verification",
+        "operationId": "tryArmAlarmPartitionById",
+        "parameters": [
+          {
+            "name": "partitionID",
+            "in": "path",
+            "description": "ID of an existing partition",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN. It is optional and depends on user settings",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arm request was accepted but partition may not have been armed. Result must be checked.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartitionArmTryResult"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PIN needed",
+            "content": {}
+          },
+          "404": {
+            "description": "Partition not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/alarms/v1/partitions/{partitionID}/actions/arm": {
+      "post": {
+        "tags": ["alarms"],
+        "summary": "Arm alarm partition",
+        "operationId": "armAlarmPartitionById",
+        "parameters": [
+          {
+            "name": "partitionID",
+            "in": "path",
+            "description": "ID of an existing partition",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN. It is optional and depends on user settings",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Partition with given id has been armed",
+            "content": {}
+          },
+          "403": {
+            "description": "PIN needed",
+            "content": {}
+          },
+          "404": {
+            "description": "Partition not found",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["alarms"],
+        "summary": "Disarm alarm partition",
+        "operationId": "disarmAlarmPartitionById",
+        "parameters": [
+          {
+            "name": "partitionID",
+            "in": "path",
+            "description": "ID of an existing partition",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Fibaro-User-PIN",
+            "in": "header",
+            "description": "PIN",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Partition with given id has been disarmed",
+            "content": {}
+          },
+          "403": {
+            "description": "PIN needed",
+            "content": {}
+          },
+          "404": {
+            "description": "Partition not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NewPartitionDto": {
+        "required": ["armDelay", "breachDelay", "devices", "name"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "armDelay": {
+            "type": "integer"
+          },
+          "breachDelay": {
+            "type": "integer"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "example": {
+          "armDelay": 0,
+          "breachDelay": 6,
+          "devices": [1, 1],
+          "name": "name"
+        }
+      },
+      "AlarmPartitionDto": {
+        "required": ["armDelay", "armed", "breachDelay", "breached", "devices", "id", "name"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "armed": {
+            "type": "boolean"
+          },
+          "breached": {
+            "type": "boolean"
+          },
+          "armDelay": {
+            "type": "number"
+          },
+          "breachDelay": {
+            "type": "number"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "secondsToArm": {
+            "type": "integer"
+          },
+          "lastActionAt": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "armDelay": 6,
+          "breachDelay": 14,
+          "devices": [5, 5],
+          "armed": true,
+          "name": "name",
+          "breached": true,
+          "secondsToArm": 5,
+          "id": 0,
+          "lastActionAt": null
+        }
+      },
+      "PartitionArmTryResult": {
+        "required": ["id", "result"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "result": {
+            "$ref": "#/components/schemas/PartitionArmState"
+          },
+          "armTime": {
+            "type": "integer"
+          },
+          "breachedDevices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "example": {
+          "id": 5,
+          "result": "armDelayed",
+          "armTime": 1644488054,
+          "breachedDevices": [7, 13]
+        }
+      },
+      "PartitionArmState": {
+        "type": "string",
+        "enum": ["notArmed", "armed", "armDelayed"]
+      },
+      "inline_response_201": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "id": 0
+        }
+      }
+    }
+  }
+}

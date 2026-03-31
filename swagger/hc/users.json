@@ -1,0 +1,811 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Users API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get a list of available users",
+        "operationId": "getUsers",
+        "parameters": [
+          {
+            "name": "hasDeviceRights",
+            "in": "query",
+            "description": "Filter users by rights to given devices",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "hasSceneRights",
+            "in": "query",
+            "description": "Filter users by rights to given scenes",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "includeInstaller",
+            "in": "query",
+            "description": "Flag indicating if installer user should be included in response",
+            "required": false,
+            "explode": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns registered users data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["users"],
+        "summary": "Create User",
+        "operationId": "createUser",
+        "parameters": [
+          {
+            "name": "isOffline",
+            "in": "query",
+            "description": "Is user created offline",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User Create body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "No response was specified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/users/{userID}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Get user object",
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "description": "ID of a existing user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns specific user data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["users"],
+        "summary": "Modify user",
+        "operationId": "modifyUser",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "description": "ID of a existing user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified user body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Put data into existing user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["users"],
+        "summary": "Delete user",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "description": "ID of a existing user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "keepLocalUser",
+            "in": "query",
+            "description": "Keep Local User",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "X-Fibaro-Password",
+            "in": "header",
+            "required": false,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remove specific user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userID}/raInvite": {
+      "post": {
+        "tags": ["users"],
+        "summary": "User invitation",
+        "operationId": "inviteUser",
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "description": "ID of a existing user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/action/changeAdmin/{newAdminId}": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Initiates transfer of administrator role to {newAdminId}",
+        "operationId": "transferAdminRoleInit",
+        "parameters": [
+          {
+            "name": "newAdminId",
+            "in": "path",
+            "description": "ID of a existing user",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/action/confirmAdminTransfer": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Confirms pending admin role transfer. Only user that is target for admin role may call this endpoint successfully",
+        "operationId": "transferAdminRoleConfirm",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/action/cancelAdminTransfer": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Cancels pending admin role transfer. Only current superuser may call this endpoint successfully",
+        "operationId": "transferAdminRoleCancel",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/action/synchronize": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Users synchronization",
+        "operationId": "synchronize",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/users/action/setPassword": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Set user password using one-time code for authorization",
+        "operationId": "setUserPassword",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "query",
+            "description": "User login or email",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "description": "One-time authorization code",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tosAccepted",
+            "in": "query",
+            "description": "Flag indicating if user accepted TOS",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "privacyPolicyAccepted",
+            "in": "query",
+            "description": "Flag indicating if user accepted Privacy Policy",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "X-Fibaro-Password",
+            "in": "header",
+            "description": "User password to be set",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserCreateRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "email": "email",
+          "name": "name",
+          "type": "advanced"
+        }
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "pin": {
+            "type": "string"
+          },
+          "passwordConfirm": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["superuser", "advanced", "user", "support", "installer"]
+          },
+          "email": {
+            "type": "string"
+          },
+          "alarmRights": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "climateZoneRights": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "profileRights": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "raStatus": {
+            "type": "string",
+            "enum": ["CONNECTED", "NOT_CONNECTED", "PENDING_INVITATION", "NOT_CONNECTED_CAN_INVITE"]
+          },
+          "isAdminTransferPossible": {
+            "type": "boolean"
+          },
+          "rights": {
+            "$ref": "#/components/schemas/UserDtoRights"
+          },
+          "hotelRoom": {
+            "type": "integer"
+          },
+          "sendNotifications": {
+            "type": "boolean"
+          },
+          "tracking": {
+            "type": "integer"
+          },
+          "useOptionalArmPin": {
+            "type": "boolean"
+          },
+          "useIntegrationPin": {
+            "type": "boolean"
+          },
+          "integrationPin": {
+            "type": "string"
+          },
+          "initialWizard": {
+            "type": "boolean"
+          },
+          "pendingAdminRoleTransfer": {
+            "type": "boolean"
+          },
+          "fidUuid": {
+            "type": "string"
+          },
+          "fidLastSynchronizationTimestamp": {
+            "type": "integer"
+          },
+          "fidRole": {
+            "type": "string",
+            "enum": ["USER", "SHARED"]
+          },
+          "skin": {
+            "type": "string"
+          },
+          "skinSetting": {
+            "type": "string",
+            "enum": ["auto", "manual"]
+          },
+          "isAddTileVisible": {
+            "type": "boolean"
+          },
+          "buiSettings": {
+            "type": "object",
+            "properties": {
+              "dontShowMultipleFunctions": {
+                "type": "boolean"
+              },
+              "dontShowNameUnchanged": {
+                "type": "boolean"
+              }
+            }
+          },
+          "tosAccepted": {
+            "type": "boolean"
+          },
+          "privacyPolicyAccepted": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "useOptionalArmPin": true,
+          "type": "superuser",
+          "tracking": 2,
+          "initialWizard": true,
+          "password": "password",
+          "pin": "1234",
+          "deviceRights": [10, 20],
+          "climateZoneRights": [5],
+          "passwordConfirm": "passwordConfirm",
+          "name": "name",
+          "id": 0,
+          "hotelRoom": 5,
+          "sendNotifications": true,
+          "sceneRights": [101, 102],
+          "alarmRights": [3, 4],
+          "profileRights": [3, 4],
+          "rights": {
+            "advanced": {
+              "devices": false,
+              "rooms": false,
+              "blockScenes": false,
+              "scenarios": false,
+              "profiles": false,
+              "variablesAndEvents": false,
+              "access": true,
+              "update": false,
+              "backup": false,
+              "network": false,
+              "diagnostics": false,
+              "zWave": false,
+              "niceAndElero": false,
+              "zigBee": false,
+              "climate": false,
+              "alarm": false,
+              "garden": false,
+              "knx": false
+            },
+            "devices": {
+              "all": false,
+              "sections": [1],
+              "rooms": [2, 3],
+              "devices": [10, 20]
+            },
+            "scenes": {
+              "all": false,
+              "sections": [1],
+              "rooms": [4, 5],
+              "scenes": [101, 102]
+            },
+            "alarmPartitions": {
+              "all": true,
+              "partitions": []
+            },
+            "profiles": {
+              "all": false,
+              "profiles": [3, 4]
+            },
+            "climateZones": {
+              "all": false,
+              "zones": [5]
+            }
+          },
+          "email": "email",
+          "fidUuid": "xxxx-xxxx",
+          "skin": "light",
+          "skinSetting": "auto",
+          "useIntegrationPin": true,
+          "integrationPin": "1234",
+          "isAddTileVisible": true,
+          "tosAccepted": true,
+          "privacyPolicyAccepted": true
+        }
+      },
+      "UserDtoRights": {
+        "type": "object",
+        "properties": {
+          "advanced": {
+            "type": "object",
+            "properties": {
+              "access": {
+                "type": "boolean"
+              },
+              "alarm": {
+                "type": "boolean"
+              },
+              "backup": {
+                "type": "boolean"
+              },
+              "blockScenes": {
+                "type": "boolean"
+              },
+              "climate": {
+                "type": "boolean"
+              },
+              "devices": {
+                "type": "boolean"
+              },
+              "diagnostics": {
+                "type": "boolean"
+              },
+              "garden": {
+                "type": "boolean"
+              },
+              "knx": {
+                "type": "boolean"
+              },
+              "network": {
+                "type": "boolean"
+              },
+              "niceAndElero": {
+                "type": "boolean"
+              },
+              "profiles": {
+                "type": "boolean"
+              },
+              "rooms": {
+                "type": "boolean"
+              },
+              "scenarios": {
+                "type": "boolean"
+              },
+              "update": {
+                "type": "boolean"
+              },
+              "variablesAndEvents": {
+                "type": "boolean"
+              },
+              "zWave": {
+                "type": "boolean"
+              },
+              "zigBee": {
+                "type": "boolean"
+              }
+            }
+          },
+          "devices": {
+            "type": "object",
+            "properties": {
+              "all": {
+                "type": "boolean"
+              },
+              "sections": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "rooms": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "scenes": {
+            "type": "object",
+            "properties": {
+              "all": {
+                "type": "boolean"
+              },
+              "sections": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "rooms": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "scenes": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "alarmPartitions": {
+            "type": "object",
+            "properties": {
+              "partitions": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "all": {
+                "type": "boolean"
+              }
+            }
+          },
+          "profiles": {
+            "type": "object",
+            "properties": {
+              "profiles": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "all": {
+                "type": "boolean"
+              }
+            }
+          },
+          "climateZones": {
+            "type": "object",
+            "properties": {
+              "zones": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "all": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

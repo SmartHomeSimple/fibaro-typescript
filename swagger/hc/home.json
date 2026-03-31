@@ -1,0 +1,169 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Home API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/home": {
+      "get": {
+        "tags": ["home"],
+        "summary": "Get home info",
+        "operationId": "getHomeInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["home"],
+        "summary": "Update home info",
+        "operationId": "updateHomeInfo",
+        "requestBody": {
+          "description": "update home info body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HomeDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "HomeDto"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HomeDto": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "number"
+          },
+          "defaultSensors": {
+            "$ref": "#/components/schemas/HomeDto_defaultSensors"
+          },
+          "meters": {
+            "$ref": "#/components/schemas/HomeDto_meters"
+          },
+          "notificationClient": {
+            "$ref": "#/components/schemas/HomeDto_notificationClient"
+          },
+          "hcName": {
+            "type": "string"
+          },
+          "weatherProvider": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "fireAlarmTemperature": {
+            "type": "number"
+          },
+          "freezeAlarmTemperature": {
+            "type": "number"
+          },
+          "timeFormat": {
+            "type": "number"
+          },
+          "dateFormat": {
+            "type": "string"
+          },
+          "firstRunAfterUpdate": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "firstRunAfterUpdate": true,
+          "notificationClient": {
+            "marketingNotificationAllowed": true
+          },
+          "freezeAlarmTemperature": 7.061401241503109,
+          "dateFormat": "dateFormat",
+          "defaultSensors": {
+            "light": 69,
+            "temperature": 12,
+            "humidity": 5
+          },
+          "meters": {
+            "energy": 12345
+          },
+          "hcName": "hcName",
+          "fireAlarmTemperature": 222,
+          "timeFormat": 12,
+          "weatherProvider": 5,
+          "currency": "currency",
+          "timestamp": 0.8008281904610115
+        }
+      },
+      "HomeDto_defaultSensors": {
+        "properties": {
+          "light": {
+            "type": "number"
+          },
+          "temperature": {
+            "type": "number"
+          },
+          "humidity": {
+            "type": "number"
+          }
+        },
+        "example": {
+          "light": 60,
+          "temperature": 12,
+          "humidity": 5
+        }
+      },
+      "HomeDto_meters": {
+        "properties": {
+          "energy": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "example": {
+          "energy": [11, 12, 13]
+        }
+      },
+      "HomeDto_notificationClient": {
+        "properties": {
+          "marketingNotificationAllowed": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "marketingNotificationAllowed": true
+        }
+      }
+    }
+  }
+}

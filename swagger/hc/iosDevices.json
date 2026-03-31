@@ -1,0 +1,64 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "IOS Devices API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/iosDevices": {
+      "get": {
+        "tags": ["iosDevices"],
+        "summary": "Get a list of all available iosDevices",
+        "operationId": "getIosDevices",
+        "responses": {
+          "200": {
+            "description": "Returns iOS devices data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/iOSDev"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "iOSDev": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "push": {
+            "type": "boolean"
+          },
+          "udid": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "name": "name",
+          "id": 0,
+          "udid": "udid",
+          "push": true
+        }
+      }
+    }
+  }
+}

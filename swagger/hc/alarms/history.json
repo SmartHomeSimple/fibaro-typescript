@@ -1,0 +1,162 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Alarm history API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/alarms/v1/history/": {
+      "get": {
+        "tags": ["alarms"],
+        "summary": "Get alarm history entries",
+        "operationId": "getAlarmHistory",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "The start time 'from' which historical entries will be shown. Default value is 0 if not specifiad.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The end time 'to' which historical entries will be shown. Default value is current timestamp if not specifiad.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The number of items to skip before starting to collect the result set. Default value is 50 if not specifiad.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The number of items to return. Default value is 0 if not specifiad.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort history records by timestamp either in ascending or descending(default) order.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "enum": ["desc", "asc"]
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter history records by type. If not specified return all records.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns list of historical entries that match query criterias",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlarmHistoryEntryDto"
+                  },
+                  "example": [
+                    {
+                      "type": "PartitionArmed",
+                      "partitionId": 1,
+                      "userId": 5,
+                      "timestamp": 21358869347655
+                    },
+                    {
+                      "type": "PartitionDisarmed",
+                      "partitionId": 1,
+                      "userId": 6,
+                      "timestamp": 4658129805029452
+                    },
+                    {
+                      "type": "PartitionBreached",
+                      "partitionId": 7,
+                      "deviceId": 9,
+                      "timestamp": 616076749251911
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlarmHistoryEntryDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["PartitionArmed", "PartitionDisarmed", "PartitionBreached"],
+            "description": "Event type."
+          },
+          "partitionId": {
+            "type": "number",
+            "description": "Partition id which generated the entry."
+          },
+          "userId": {
+            "type": "number",
+            "description": "Field required for PartitionArmed and PartitionDisarmed types. Does not occur in PartitionBreached."
+          },
+          "deviceId": {
+            "type": "number",
+            "description": "Field required for PartitionBreached type. Does not occur in PartitionArmed and PartitionDisarmed."
+          },
+          "timestamp": {
+            "type": "number",
+            "description": "Creation time."
+          }
+        },
+        "example": {
+          "type": "PartitionBreached",
+          "partitionId": 7,
+          "deviceId": 9,
+          "timestamp": 616076749251911
+        }
+      }
+    }
+  }
+}

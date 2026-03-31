@@ -1,0 +1,349 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "RGB Programms API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/RGBPrograms": {
+      "get": {
+        "tags": ["RGBPrograms"],
+        "summary": "Get a list of all available RGB programs",
+        "operationId": "getRGBPrograms",
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProgramDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["RGBPrograms"],
+        "summary": "Create RGB program",
+        "operationId": "newRGBProgram",
+        "requestBody": {
+          "description": "RGB program body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProgramRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Returns data of RGB program",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/RGBPrograms/{programID}": {
+      "get": {
+        "tags": ["RGBPrograms"],
+        "summary": "Get RGB program object",
+        "operationId": "getRGBProgram",
+        "parameters": [
+          {
+            "name": "programID",
+            "in": "path",
+            "description": "RGB program ID",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns data of specified RGB program",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["RGBPrograms"],
+        "summary": "Modify RGB program",
+        "operationId": "modifyRGBProgram",
+        "parameters": [
+          {
+            "name": "programID",
+            "in": "path",
+            "description": "RGB program ID",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified RGB program body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgramDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns data changed RGB program",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgramDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["RGBPrograms"],
+        "summary": "Delete RGB program",
+        "operationId": "deleteProgram",
+        "parameters": [
+          {
+            "name": "programID",
+            "in": "path",
+            "description": "RGB program ID",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ColorDto": {
+        "type": "object",
+        "properties": {
+          "b": {
+            "type": "integer"
+          },
+          "g": {
+            "type": "integer"
+          },
+          "r": {
+            "type": "integer"
+          },
+          "w": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "b": 1,
+          "r": 5,
+          "g": 5,
+          "w": 2
+        }
+      },
+      "StepDto": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "$ref": "#/components/schemas/ColorDto"
+          },
+          "duration": {
+            "type": "integer"
+          },
+          "transitionTime": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "duration": 7,
+          "transitionTime": 9,
+          "color": {
+            "b": 1,
+            "r": 5,
+            "g": 5,
+            "w": 2
+          }
+        }
+      },
+      "ProgramDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "totalDurationTime": {
+            "type": "number"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepDto"
+            }
+          }
+        },
+        "example": {
+          "totalDurationTime": 6.027456183070403,
+          "name": "name",
+          "id": 0,
+          "steps": [
+            {
+              "duration": 7,
+              "transitionTime": 9,
+              "color": {
+                "b": 1,
+                "r": 5,
+                "g": 5,
+                "w": 2
+              }
+            },
+            {
+              "duration": 7,
+              "transitionTime": 9,
+              "color": {
+                "b": 1,
+                "r": 5,
+                "g": 5,
+                "w": 2
+              }
+            }
+          ]
+        }
+      },
+      "CreateProgramRequest": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepDto"
+            }
+          },
+          "totalDurationTime": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "created": 0,
+          "totalDurationTime": 5,
+          "name": "name",
+          "modified": 1,
+          "id": 6,
+          "steps": [
+            {
+              "duration": 7,
+              "transitionTime": 9,
+              "color": {
+                "b": 1,
+                "r": 5,
+                "g": 5,
+                "w": 2
+              }
+            },
+            {
+              "duration": 7,
+              "transitionTime": 9,
+              "color": {
+                "b": 1,
+                "r": 5,
+                "g": 5,
+                "w": 2
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

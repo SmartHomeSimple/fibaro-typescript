@@ -1,0 +1,122 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Specifics Events API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/events/publishEvent/{eventName}": {
+      "post": {
+        "tags": ["Main events endpoint"],
+        "summary": "Publish event",
+        "operationId": "publishEvent",
+        "parameters": [
+          {
+            "name": "eventName",
+            "in": "path",
+            "description": "Name of an event",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "publish events body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/events/publishEvent/GeofenceEvent": {
+      "post": {
+        "tags": ["Specific events"],
+        "summary": "Publish GeofenceEvent event",
+        "operationId": "publishGeofenceEvent",
+        "requestBody": {
+          "description": "publish GeofenceEvent body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "body": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "integer"
+          },
+          "locationId": {
+            "type": "integer"
+          },
+          "geofenceAction": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

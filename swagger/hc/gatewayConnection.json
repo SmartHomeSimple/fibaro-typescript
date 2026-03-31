@@ -1,0 +1,618 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Gateway Connection Api",
+    "description": "Manage gateway connections",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/service/discovery/resolve/{type}/{value}": {
+      "get": {
+        "tags": ["gatewayConnection"],
+        "summary": "Gateway connection resolve",
+        "operationId": "discoveryResolve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["serial", "ip"]
+            }
+          },
+          {
+            "in": "path",
+            "name": "value",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "options",
+            "description": "Array of additional options to apply (one can omit square brackets when only one filter is applied)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["withSettingsInfo", "gatewayConnection", "hc3GatewayConnection"]
+              }
+            },
+            "example": "/api/service/discovery/resolve/serial/HC3-00000001?options=hc3GatewayConnection"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resolved data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayFilterMapResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid type"
+          },
+          "404": {
+            "description": "Couldn't resolve ip/serial"
+          }
+        }
+      }
+    },
+    "/service/discovery/search": {
+      "get": {
+        "tags": ["gatewayConnection"],
+        "summary": "Discovery search",
+        "operationId": "discoverySearch",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filterMap",
+            "description": "Array of filters and mappings to apply (one can omit square brackets when only one filter is applied)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["hc3", "withVersion", "gatewayConnection", "hc3GatewayConnection"]
+              }
+            },
+            "example": "/service/discovery/search?filterMap=hc3GatewayConnection"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Result with applied filters/mappings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GatewayFilterMapResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fitler or mapping"
+          }
+        }
+      }
+    },
+    "/service/resolve/{type}/{value}": {
+      "get": {
+        "tags": ["gatewayConnection"],
+        "summary": "Discover gateway in the network by serial number or ip",
+        "operationId": "discoveryGateway",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Type of the value: serial or ip",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["serial", "ip"]
+            }
+          },
+          {
+            "name": "value",
+            "in": "path",
+            "description": "Value as type given: serial number or IP address of the HC to be discovered",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gateway discovered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayFilterMapResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/gateway/role": {
+      "get": {
+        "tags": ["gatewayConnection"],
+        "summary": "Gateway role",
+        "operationId": "getGatewayRole",
+        "responses": {
+          "200": {
+            "description": "Current role. By default HC is slaveless master.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayRole"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Switch role from master to slave.",
+        "tags": ["gatewayConnection"],
+        "summary": "Switch role",
+        "operationId": "switchGatewayRole",
+        "requestBody": {
+          "description": "An object with software version requried by master.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GatewayRequiredVersion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully converted hc to slave"
+          },
+          "409": {
+            "description": "Cannot convert hc to slave",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response409"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/gateway/role/slave": {
+      "head": {
+        "description": "Checks if gateway is ready to be slave. Omit version check.",
+        "tags": ["gatewayConnection"],
+        "summary": "Check slave readiness",
+        "operationId": "checkSlaveReady",
+        "responses": {
+          "204": {
+            "description": "Gateway is ready to be slave"
+          },
+          "403": {
+            "description": "Gateway is already slave"
+          },
+          "409": {
+            "description": "Gateway is not ready to be slave"
+          }
+        }
+      }
+    },
+    "/service/slaves": {
+      "get": {
+        "summary": "Get list of slaves",
+        "tags": ["gatewayConnection"],
+        "operationId": "getSlavesList",
+        "responses": {
+          "200": {
+            "description": "List of slave HCs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GatewaySlave"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["gatewayConnection"],
+        "operationId": "addNewSlave",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GatewayNewSlave"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns Id assigned to successfully added HC",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewaySlaveId"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Could not resolve Serial number to IP address"
+          },
+          "409": {
+            "description": "Failed to add HC as slave",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response409"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/slaves/{id}/password": {
+      "get": {
+        "tags": ["gatewayConnection"],
+        "summary": "Slave login and password (Base64 encoded)",
+        "operationId": "slavePassword",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login and password (Base64 encoded) to access slave",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewaySlavePassword"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Slave with specified id was not found"
+          }
+        }
+      }
+    },
+    "/service/slaves/{id}": {
+      "put": {
+        "tags": ["gatewayConnection"],
+        "summary": "Replace slave",
+        "operationId": "replaceSlave",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GatewayNewSlave"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully replaced slave"
+          },
+          "404": {
+            "description": "Could not resolve Serial number to IP address"
+          },
+          "409": {
+            "description": "Failed to add HC as slave",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response409"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["gatewayConnection"],
+        "summary": "Delete slave",
+        "operationId": "deleteSlave",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully deleted slave"
+          },
+          "404": {
+            "description": "Could not resolve Serial number to IP address"
+          }
+        }
+      }
+    },
+    "/service/slaves/{serialOrId}/ip": {
+      "get": {
+        "tags": ["gatewayConnection"],
+        "summary": "Get slave IP address",
+        "operationId": "getSlaveIp",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "serialOrId",
+            "description": "Slave serial number or ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "rediscover",
+            "description": "Flag indication whether slave IP needs to be rediscovered",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Slave IP found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GatewayDiscoveredIP"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find slave with given serial or ID, or cannot discover given slave in the network"
+          }
+        }
+      }
+    },
+    "/remoteGateway/verifyGateway": {
+      "get": {
+        "summary": "Verify the serial of given gateway",
+        "tags": ["gatewayConnection"],
+        "operationId": "verifyGateway",
+        "parameters": [
+          {
+            "name": "ip",
+            "in": "query",
+            "description": "IP to verify.",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "serial",
+            "in": "query",
+            "description": "Serial number to verify.",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gateway contain given serial"
+          },
+          "409": {
+            "description": "Gateway does not contain given serial"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GatewayDiscoveredData": {
+        "type": "object",
+        "required": ["serial", "ip"],
+        "properties": {
+          "serial": {
+            "type": "string"
+          },
+          "ip": {
+            "type": "string"
+          }
+        }
+      },
+      "GatewayDiscoveredIP": {
+        "type": "object",
+        "required": ["ip"],
+        "properties": {
+          "ip": {
+            "type": "string"
+          }
+        }
+      },
+      "GatewayFilterMapResult": {
+        "type": "object",
+        "required": ["ip", "mac", "serialNumber"],
+        "properties": {
+          "ip": {
+            "type": "string"
+          },
+          "mac": {
+            "type": "string"
+          },
+          "serialNumber": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "slaveReady": {
+            "type": "boolean",
+            "description": "This flag only denotes that this HC can become a slave, but not necessarily with this master. version and zwaveEngineVersion needs to be taken into account."
+          },
+          "zwaveEngineVersion": {
+            "$ref": "#/components/schemas/ZwaveEngineVersion"
+          }
+        }
+      },
+      "GatewaySlave": {
+        "type": "object",
+        "required": ["serial", "id"],
+        "properties": {
+          "serial": {
+            "type": "string",
+            "description": "Serial number"
+          },
+          "id": {
+            "type": "string",
+            "description": "Identification number assigned by master."
+          },
+          "mac": {
+            "type": "string"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "zwaveEngineVersion": {
+            "$ref": "#/components/schemas/ZwaveEngineVersion"
+          },
+          "online": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GatewayNewSlave": {
+        "type": "object",
+        "required": ["serial", "ip"],
+        "properties": {
+          "serial": {
+            "type": "string",
+            "description": "Serial number of slave that is going to be added to network"
+          },
+          "login": {
+            "type": "string",
+            "description": "login to slave that is going to be added to network (if omited then 'admin' is assumed)"
+          },
+          "password": {
+            "type": "string",
+            "description": "password to slave that is going to be added to network (if omited then 'admin' is assumed)"
+          },
+          "ip": {
+            "type": "string",
+            "description": "ip address"
+          }
+        }
+      },
+      "GatewayRole": {
+        "type": "object",
+        "required": ["role"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["slave", "master"]
+          }
+        }
+      },
+      "GatewayRequiredVersion": {
+        "type": "object",
+        "required": ["requiredVersion"],
+        "properties": {
+          "requiredVersion": {
+            "type": "string"
+          }
+        }
+      },
+      "GatewaySlavePassword": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "login": {
+            "type": "string"
+          }
+        }
+      },
+      "GatewaySlaveId": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Response409": {
+        "type": "object",
+        "required": ["message", "code"],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": ["WRONG_ZWAVE_VERSION", "SLAVE_AUTH_ERROR", "ALREADY_SLAVE", "HAVE_OWN_SLAVES", "SOFT_VERSION_MISMATCHED", "NOT_IN_FACTORY_DEFAULT_STATE"]
+          }
+        }
+      },
+      "ZwaveEngineVersion": {
+        "type": "string",
+        "enum": ["2.0", "3.0"]
+      }
+    }
+  }
+}

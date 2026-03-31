@@ -1,0 +1,100 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Additional interfaces API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/additionalInterfaces": {
+      "get": {
+        "tags": ["additionalInterfaces"],
+        "summary": "Get list of all additional interfaces",
+        "operationId": "getAdditionalInterfaces",
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "query",
+            "required": true,
+            "description": "Device id",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns list of all additional interfaces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of additional interfaces.",
+                  "example": ["inversion", "virtualPowerConsumption"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Device not found"
+          }
+        }
+      }
+    },
+    "/additionalInterfaces/{interfaceName}": {
+      "get": {
+        "tags": ["additionalInterfaces"],
+        "summary": "Get list of all devices id which can add this additional interface.",
+        "operationId": "getDevicesIdByAdditionalInterfaceName",
+        "parameters": [
+          {
+            "name": "interfaceName",
+            "in": "path",
+            "description": "Additional interface name",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns list of all devices id which can add this additional interface.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DevicesDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Interface not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DevicesDto": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        },
+        "description": "List of devices id.",
+        "example": [1, 2, 3]
+      }
+    }
+  }
+}

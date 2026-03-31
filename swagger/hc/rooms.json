@@ -1,0 +1,464 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Rooms API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/rooms": {
+      "get": {
+        "tags": ["rooms"],
+        "summary": "Get a list of all available rooms",
+        "operationId": "getRooms",
+        "parameters": [
+          {
+            "name": "visible",
+            "in": "query",
+            "description": "Filter rooms by visible.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "empty",
+            "in": "query",
+            "description": "Filter rooms if are empty or not.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns data rooms",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoomDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["rooms"],
+        "summary": "Create room",
+        "operationId": "newRoom",
+        "requestBody": {
+          "description": "Room body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Returns data of room",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/rooms/{roomID}": {
+      "get": {
+        "tags": ["rooms"],
+        "summary": "Get room object",
+        "operationId": "getRoom",
+        "parameters": [
+          {
+            "name": "roomID",
+            "in": "path",
+            "description": "ID of an existing room",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns data of specified room",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["rooms"],
+        "summary": "Modify room",
+        "operationId": "modifyRoom",
+        "parameters": [
+          {
+            "name": "roomID",
+            "in": "path",
+            "description": "ID of an existing room",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified room body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns data changed room",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["rooms"],
+        "summary": "Delete room",
+        "operationId": "deleteRoom",
+        "parameters": [
+          {
+            "name": "roomID",
+            "in": "path",
+            "description": "ID of an existing room",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/rooms/{roomID}/action/setAsDefault": {
+      "post": {
+        "tags": ["rooms"],
+        "summary": "Sets as default room in system",
+        "operationId": "setAsDefault",
+        "parameters": [
+          {
+            "name": "roomID",
+            "in": "path",
+            "description": "ID of an existing room",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "operation successful",
+            "content": {}
+          },
+          "404": {
+            "description": "Room with {roomID} not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/rooms/{roomID}/groupAssignment": {
+      "post": {
+        "tags": ["rooms"],
+        "summary": "Assigns roomID to all entities given in a body",
+        "operationId": "groupAssignment",
+        "parameters": [
+          {
+            "name": "roomID",
+            "in": "path",
+            "description": "ID of an existing room",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Object with entities to update roomId",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomGroupAssignment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "operation successful",
+            "content": {}
+          },
+          "404": {
+            "description": "Room with {roomID} not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DefaultSensors": {
+        "type": "object",
+        "properties": {
+          "temperature": {
+            "type": "integer"
+          },
+          "humidity": {
+            "type": "integer"
+          },
+          "light": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "light": 5,
+          "temperature": 1,
+          "humidity": 5
+        }
+      },
+      "IconColor": {
+        "type": "string",
+        "enum": ["accent", "green", "orange", "pink", "purple", "red", "violet", "yellow"]
+      },
+      "RoomCreateRequest": {
+        "type": "object",
+        "required": ["name", "sectionID", "category", "icon"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sectionID": {
+            "type": "integer"
+          },
+          "category": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "iconExtension": {
+            "type": "string",
+            "enum": ["png", "svg"]
+          },
+          "iconColor": {
+            "$ref": "#/components/schemas/IconColor"
+          },
+          "visible": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "name": "newRoom",
+          "sectionID": 219,
+          "category": "other",
+          "icon": "unsigned",
+          "visible": true
+        }
+      },
+      "RoomUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sectionID": {
+            "type": "integer"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "iconExtension": {
+            "type": "string",
+            "enum": ["png", "svg"]
+          },
+          "iconColor": {
+            "$ref": "#/components/schemas/IconColor"
+          },
+          "defaultSensors": {
+            "$ref": "#/components/schemas/DefaultSensors"
+          },
+          "defaultThermostat": {
+            "type": "integer"
+          },
+          "sortOrder": {
+            "type": "integer"
+          },
+          "category": {
+            "type": "string"
+          },
+          "visible": {
+            "type": "boolean"
+          }
+        },
+        "example": {
+          "defaultSensors": {
+            "light": 5,
+            "temperature": 1,
+            "humidity": 5
+          },
+          "meters": {
+            "energy": 0
+          },
+          "sortOrder": 5,
+          "name": "name",
+          "icon": "icon",
+          "id": 0,
+          "sectionID": 6,
+          "category": "category",
+          "defaultThermostat": 1
+        }
+      },
+      "RoomDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sectionID": {
+            "type": "integer"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "iconExtension": {
+            "type": "string",
+            "enum": ["png", "svg"]
+          },
+          "iconColor": {
+            "$ref": "#/components/schemas/IconColor"
+          },
+          "defaultSensors": {
+            "$ref": "#/components/schemas/DefaultSensors"
+          },
+          "defaultThermostat": {
+            "type": "integer"
+          },
+          "sortOrder": {
+            "type": "integer"
+          },
+          "category": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "defaultSensors": {
+            "light": 5,
+            "temperature": 1,
+            "humidity": 5
+          },
+          "meters": {
+            "energy": 0
+          },
+          "sortOrder": 7,
+          "isDefault": false,
+          "name": "name",
+          "icon": "icon",
+          "id": 0,
+          "sectionID": 6,
+          "category": "category",
+          "defaultThermostat": 2
+        }
+      },
+      "RoomGroupAssignment": {
+        "type": "object",
+        "properties": {
+          "deviceIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}

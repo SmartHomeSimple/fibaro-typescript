@@ -1,0 +1,219 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "API description",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/globalVariables": {
+      "get": {
+        "tags": ["globalVariables panel"],
+        "summary": "Get a list of all available global variables",
+        "operationId": "getGlobalVariables",
+        "responses": {
+          "200": {
+            "description": "Returns global variables data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GlobalVariableDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["globalVariables panel"],
+        "summary": "Create global variable",
+        "operationId": "createGlobalVariable",
+        "requestBody": {
+          "description": "Create global variable body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalVariableDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns global variables data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlobalVariableDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/globalVariables/{globalVariableName}": {
+      "get": {
+        "tags": ["globalVariables panel"],
+        "summary": "Get global variable",
+        "operationId": "getGlobalVariable",
+        "parameters": [
+          {
+            "name": "globalVariableName",
+            "in": "path",
+            "description": "Name of an existing global variable",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns global variable data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlobalVariableDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["globalVariables panel"],
+        "summary": "Modify global variable",
+        "operationId": "modifyGlobalVariable",
+        "parameters": [
+          {
+            "name": "globalVariableName",
+            "in": "path",
+            "description": "Name of an existing global variable",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modify global variable body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalVariableDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns global variables data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlobalVariableDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["globalVariables panel"],
+        "summary": "Delete global variable",
+        "operationId": "deleteGlobalVariable",
+        "parameters": [
+          {
+            "name": "globalVariableName",
+            "in": "path",
+            "description": "Name of an existing global variable",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GlobalVariableDto": {
+        "type": "object",
+        "properties": {
+          "enumValues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isEnum": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "readOnly": {
+            "type": "boolean"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "name": "name",
+          "isEnum": true,
+          "readOnly": true,
+          "value": "value"
+        }
+      }
+    }
+  }
+}

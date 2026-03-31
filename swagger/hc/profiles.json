@@ -1,0 +1,787 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Profiles",
+    "description": "API to manage profiles",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/profiles": {
+      "get": {
+        "tags": ["profiles"],
+        "summary": "Get all profiles and active profile",
+        "operationId": "getProfiles",
+        "parameters": [
+          {
+            "name": "showHidden",
+            "in": "query",
+            "description": "Return all or visible actors.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns all profiles and active profile id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileServiceDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["profiles"],
+        "summary": "Update profiles and set active profile",
+        "operationId": "updateProfiles",
+        "requestBody": {
+          "description": "Data to update profiles",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileServiceDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns all profiles and active profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileServiceDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["profiles"],
+        "summary": "Create new profile with provided name",
+        "operationId": "createProfile",
+        "requestBody": {
+          "description": "Object with name to create profile",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileCreateDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns created profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Not sufficient rights to perform action",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/profiles/{profileId}": {
+      "get": {
+        "tags": ["profiles"],
+        "summary": "Get profile",
+        "operationId": "getProfileById",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "ID of existing profile",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "showHidden",
+            "in": "query",
+            "description": "Return all or visible actors.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns updated profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Provided profile id does not exist",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["profiles"],
+        "summary": "Update existing profile",
+        "operationId": "updateProfileById",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "ID of existing profile",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Profile which should be updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns profile for given id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {}
+          },
+          "404": {
+            "description": "Provided profile id does not exist",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["profiles"],
+        "summary": "Remove existing profile",
+        "operationId": "removeProfileById",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "ID of existing profile",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful deletion"
+          },
+          "400": {
+            "description": "Cannot remove active profile",
+            "content": {}
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {}
+          },
+          "404": {
+            "description": "Provided profile id does not exist",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/profiles/{profileId}/partitions/{partitionId}": {
+      "put": {
+        "tags": ["profiles"],
+        "summary": "Update profile partition action",
+        "operationId": "updateProfilePartitionAction",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "ID of existing profile",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "partitionId",
+            "in": "path",
+            "description": "ID of existing partition",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Data to update profiles",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartitionActionUpdateDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profiles/{profileId}/climateZones/{zoneId}": {
+      "put": {
+        "tags": ["profiles"],
+        "summary": "Update profile climate zone action",
+        "operationId": "updateProfileClimateZoneAction",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "ID of existing profile",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "zoneId",
+            "in": "path",
+            "description": "ID of existing climate zone",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Data to update profiles",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClimateZoneActionUpdateDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profiles/{profileId}/scenes/{sceneId}": {
+      "put": {
+        "tags": ["profiles"],
+        "summary": "Update profile scene actor",
+        "operationId": "updateProfileSceneActor",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "ID of existing profile",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sceneId",
+            "in": "path",
+            "description": "ID of existing scene",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Data to update profiles",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SceneActorUpdateDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profiles/reset": {
+      "post": {
+        "tags": ["profiles"],
+        "summary": "Rest profiles model to default value",
+        "operationId": "resetProfiles",
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/profiles/activeProfile/{profileId}": {
+      "post": {
+        "tags": ["profiles"],
+        "summary": "Set active profile",
+        "operationId": "setActiveProfile",
+        "parameters": [
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "ID of existing profile",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {}
+          },
+          "404": {
+            "description": "Profile not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProfileCreateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "iconId": {
+            "type": "integer"
+          },
+          "sourceId": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "name": "Vacation",
+          "iconId": 4,
+          "sourceId": 1
+        }
+      },
+      "ProfileServiceDto": {
+        "type": "object",
+        "properties": {
+          "activeProfile": {
+            "type": "integer"
+          },
+          "profiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProfileDto"
+            }
+          }
+        },
+        "example": {
+          "activeProfile": 1,
+          "profiles": [
+            {
+              "devices": [
+                {
+                  "action": {
+                    "name": "setValue",
+                    "args": [99]
+                  },
+                  "id": 1
+                },
+                {
+                  "action": null,
+                  "id": 2
+                }
+              ],
+              "name": "Home",
+              "id": 1,
+              "iconId": 1
+            },
+            {
+              "devices": [
+                {
+                  "action": null,
+                  "id": 1
+                },
+                {
+                  "action": {
+                    "name": "turnOn",
+                    "args": []
+                  },
+                  "id": 2
+                }
+              ],
+              "name": "Away",
+              "id": 2,
+              "iconId": 2
+            }
+          ]
+        }
+      },
+      "ProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "iconId": {
+            "type": "integer"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DeviceActorDto"
+            }
+          },
+          "scenes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SceneActorDto"
+            }
+          },
+          "partitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PartitionActionDto"
+            }
+          },
+          "climateZones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClimateZonesActionDto"
+            }
+          }
+        },
+        "example": {
+          "devices": [
+            {
+              "id": 1,
+              "action": null
+            },
+            {
+              "id": 2,
+              "action": {
+                "name": "turnOn",
+                "args": []
+              }
+            }
+          ],
+          "scenes": [
+            {
+              "sceneId": 2,
+              "actions": ["run"]
+            },
+            {
+              "sceneId": 3,
+              "actions": ["enable"]
+            }
+          ],
+          "partitions": [
+            {
+              "partitionId": 1,
+              "action": "arm"
+            },
+            {
+              "partitionId": 2,
+              "action": "disarm"
+            }
+          ],
+          "name": "Home",
+          "id": 6,
+          "iconId": 1
+        }
+      },
+      "DeviceActorDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "action": {
+            "$ref": "#/components/schemas/DeviceActionDto"
+          }
+        },
+        "example": {
+          "id": 36,
+          "action": null
+        }
+      },
+      "SceneActorDto": {
+        "type": "object",
+        "properties": {
+          "sceneId": {
+            "type": "integer"
+          },
+          "actions": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/action"
+            }
+          }
+        },
+        "example": {
+          "sceneId": 2,
+          "actions": ["run"]
+        }
+      },
+      "PartitionActionDto": {
+        "type": "object",
+        "properties": {
+          "partitionId": {
+            "type": "integer"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["arm", "disarm"]
+          }
+        },
+        "example": {
+          "partitionId": 1,
+          "action": "arm"
+        }
+      },
+      "ClimateZonesActionDto": {
+        "type": "object",
+        "required": ["id", "mode"],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ClimateZonesActionMode"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/ClimateZonesActionProperties"
+          }
+        },
+        "example": {
+          "partitionId": 1,
+          "action": "arm"
+        }
+      },
+      "ClimateZonesActionMode": {
+        "type": "string",
+        "enum": ["Schedule", "Manual"],
+        "nullable": true
+      },
+      "ClimateZonesActionProperties": {
+        "type": "object",
+        "properties": {
+          "handSetPointHeating": {
+            "type": "number",
+            "description": "Heating temperature for manual mode",
+            "example": 20
+          },
+          "handSetPointCooling": {
+            "type": "number",
+            "description": "Cooling temperature for manual mode",
+            "example": 25
+          },
+          "handMode": {
+            "$ref": "#/components/schemas/ClimateZonesActionHandMode"
+          }
+        },
+        "example": {
+          "handSetPointHeating": 25,
+          "handSetPointCooling": 31,
+          "handMode": "Off"
+        }
+      },
+      "ClimateZonesActionHandMode": {
+        "type": "string",
+        "enum": ["Auto", "Heat", "Cool", "Off"]
+      },
+      "PartitionActionUpdateDto": {
+        "type": "object",
+        "required": ["acton"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["arm", "disarm"],
+            "nullable": true
+          }
+        },
+        "example": {
+          "action": "arm"
+        }
+      },
+      "ClimateZoneActionUpdateDto": {
+        "type": "object",
+        "required": ["mode"],
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/ClimateZonesActionMode"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/ClimateZonesActionProperties"
+          }
+        },
+        "example": {
+          "action": "arm"
+        }
+      },
+      "SceneActorUpdateDto": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "type": "array",
+            "nullable": true,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/action"
+            }
+          }
+        },
+        "example": {
+          "actions": ["run"]
+        }
+      },
+      "action": {
+        "type": "string",
+        "enum": ["run", "setToAuto", "setToManual", "enable", "disable"]
+      },
+      "DeviceActionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "isUIAction": {
+            "type": "boolean"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "object"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "required": ["name", "args"],
+        "example": {
+          "name": "setValue",
+          "args": ["99"]
+        }
+      }
+    }
+  }
+}

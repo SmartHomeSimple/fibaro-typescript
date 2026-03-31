@@ -1,0 +1,1592 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Energy API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/energy/devices": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Energy devices info",
+        "operationId": "getEnergyDevices",
+        "responses": {
+          "200": {
+            "description": "Returns energy devices info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnergyDeviceInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/consumption/summary": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Summary of energy production/consumption",
+        "operationId": "getConsumptionSummary",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Time period for which data is returned",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTimeUnitDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns sum of energy production and consumption for whole house with list of top consuming devices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergySummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/consumption/metrics": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Metrics of energy production/consumption",
+        "operationId": "getConsumptionMetrics",
+        "responses": {
+          "200": {
+            "description": "Returns different energy related metrics like temporary power consumption/production etc.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyMetricsDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/consumption/detail": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Details of energy production/consumption",
+        "operationId": "getConsumptionDetail",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Array of time periods for which data is returned",
+            "required": true,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DateTimeUnitDto"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns sum of energy consumption broken down into rooms",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/consumption/room/{roomId}/detail": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Details of energy production/consumption in room",
+        "operationId": "getConsumptionRoomDetail",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "description": "Array of time periods for which data is returned",
+            "required": true,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DateTimeUnitDto"
+              }
+            }
+          },
+          {
+            "name": "roomId",
+            "in": "path",
+            "description": "Id of room for which data is returned",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns sum of energy consumption in room broken down into devices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyRoomDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/consumption/device/{deviceId}/detail": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Details of given device energy production/consumption in given periods of time",
+        "operationId": "getConsumptionDeviceDetail",
+        "parameters": [
+          {
+            "name": "periods",
+            "in": "query",
+            "description": "Array of time periods for which data is returned",
+            "required": true,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/DateTimeUnitDto"
+              }
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "Id of device for which data is returned",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns given device energy consumption details for given periods",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyDeviceDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/billing/summary": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Summary of energy cost and consumption during current and last billing periods",
+        "operationId": "getBillingSummary",
+        "responses": {
+          "200": {
+            "description": "Returns sum of energy cost, production and consumption for whole house for current and previous billing periods",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyBillingSummaryTypesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/billing/periods": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "List of billing periods",
+        "operationId": "getBillingPeriods",
+        "responses": {
+          "200": {
+            "description": "Returns list of billing periods",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnergyBillingPeriodDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["energy"],
+        "summary": "Sets new billing period",
+        "operationId": "postBillingPeriods",
+        "requestBody": {
+          "description": "New billing period data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnergyBillingPeriodDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "operation succesfull"
+          },
+          "400": {
+            "description": "wrong input errors"
+          }
+        }
+      }
+    },
+    "/energy/billing/tariff": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Energy billing tariff",
+        "operationId": "getBillingTariff",
+        "responses": {
+          "200": {
+            "description": "Returns currently defined energy tariff",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyTariffDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["energy"],
+        "summary": "Changes energy tariff",
+        "operationId": "putBillingTariff",
+        "requestBody": {
+          "description": "New energy tariff",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnergyTariffDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "operation succesfull"
+          },
+          "400": {
+            "description": "wrong input errors"
+          }
+        }
+      }
+    },
+    "/energy/installationCost": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "List of energy installation costs",
+        "operationId": "getInstallationCosts",
+        "responses": {
+          "200": {
+            "description": "Returns list of energy installation costs. First element is an initial cost of installation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InstallationCostDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["energy"],
+        "summary": "Creates installation cost",
+        "operationId": "createInstallationCost",
+        "requestBody": {
+          "description": "Installation cost data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstallationCostDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Installation cost created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallationCostDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/installationCost/{id}": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Energy installation cost by id",
+        "operationId": "getInstallationCostById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of installation cost",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns energy installation cost by given id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallationCostDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["energy"],
+        "summary": "Updates energy installation cost with given id.",
+        "operationId": "updateInstallationCostById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of installation cost",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Installation cost data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstallationCostDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "operation succesfull",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstallationCostDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "wrong input errors"
+          },
+          "404": {
+            "description": "installation cost with given id not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["energy"],
+        "summary": "Deletes installation cost with given id. Main installation cost with id 1 cannot deleted.",
+        "operationId": "deleteInstallationCostById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of installation cost",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful deletion"
+          },
+          "400": {
+            "description": "Main installation cost cannot be removed"
+          },
+          "404": {
+            "description": "installation cost with given id not found"
+          }
+        }
+      }
+    },
+    "/energy/savings/detail": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Details of energy savings",
+        "operationId": "getSavingsDetail",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Start of time period for which data is returned.",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/DateTimeUnitDto"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "End of time period for which data is returned.",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/DateTimeUnitDto"
+            }
+          },
+          {
+            "name": "intervalType",
+            "in": "query",
+            "description": "Time interval seed for data to be returned. Default is Daily.",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/TimeIntervalEnum"
+            }
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "Time interval seed for data to be returned. Default is 1.",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns sum of energy usage and cost broken down into 1h/8h (daily/weekly) periods",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SavingsDetailsDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/savings/summary": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Summary of energy savings",
+        "operationId": "getSavingsSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns summary of energy usage and cost",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavingsSummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/savings/installation": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Energy savings data from beginning of installation",
+        "operationId": "getSavingsInstallation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns production and cost data from beginning of installation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SavingsInstallationDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/ecology/summary": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Summary of energy ecology",
+        "operationId": "getEcologySummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns summary of ecology data related to energy production",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EcologySummaryDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/ecology/detail": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Details of energy ecology",
+        "operationId": "getEcologyDetail",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "Start of time period for which data is returned.",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/DateTimeUnitDto"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "End of time period for which data is returned.",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/DateTimeUnitDto"
+            }
+          },
+          {
+            "name": "intervalType",
+            "in": "query",
+            "description": "Time interval seed for data to be returned. Default is Daily.",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/TimeIntervalEnum"
+            }
+          },
+          {
+            "name": "interval",
+            "in": "query",
+            "description": "Time interval seed for data to be returned. Default is 1.",
+            "required": false,
+            "style": "form",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns ecology detailed data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EcologyDetailsDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/energy/consumption": {
+      "delete": {
+        "tags": ["energy"],
+        "summary": "Clears energy data. Clears all energy data when no parameters are passed.",
+        "operationId": "clearEnergyData",
+        "parameters": [
+          {
+            "name": "deviceIds",
+            "in": "query",
+            "explode": false,
+            "description": "Device ids for which energy data should be cleared. If not given then energy data for all devices will be cleared.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "startPeriod",
+            "in": "query",
+            "description": "Start period (inclusive) of the data to be cleared.",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/DateTimeUnitDto"
+            }
+          },
+          {
+            "name": "endPeriod",
+            "in": "query",
+            "description": "End period (exclusive) of the data to be cleared.",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/DateTimeUnitDto"
+            }
+          },
+          {
+            "name": "subtractWholeHouseEnergy",
+            "in": "query",
+            "description": "Flag indicating if removed devices energy data should be subtracted from cumulative house energy data",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All energy data cleared successfully"
+          }
+        }
+      }
+    },
+    "/energy/settings": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Energy related settings",
+        "operationId": "getSettings",
+        "responses": {
+          "200": {
+            "description": "Returns energy settings like consumption measurement and main energy/power meters etc.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergySettingsDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["energy"],
+        "summary": "Updates energy related settings",
+        "operationId": "updateSettings",
+        "requestBody": {
+          "description": "Energy related settings",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnergySettingsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Settings updated"
+          }
+        }
+      }
+    },
+    "/energy/datadump": {
+      "get": {
+        "tags": ["energy"],
+        "summary": "Dumps file containing all energy data stored in database on Home Center",
+        "operationId": "dumpEnergyData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "7zip file containing csv files for each energy data table",
+            "content": {
+              "application/x-7z-compressed": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TimeIntervalEnum": {
+        "type": "string",
+        "enum": ["Quarterly", "Hourly", "Daily", "Weekly", "Monthly", "Yearly"]
+      },
+      "ConsumptionMeasurementEnum": {
+        "type": "string",
+        "enum": ["whole", "gridOnly"]
+      },
+      "EnergyDeviceInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Id of device"
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Is device deleted"
+          },
+          "roomId": {
+            "type": "number",
+            "description": "Id of room"
+          },
+          "mainEnergyMeter": {
+            "type": "boolean",
+            "description": "Is main energy meter"
+          }
+        }
+      },
+      "EnergyValueDto": {
+        "type": "number",
+        "description": "Energy consumed/produced in Wh"
+      },
+      "PowerValueDto": {
+        "type": "number",
+        "description": "Currently consumed/produced power in W"
+      },
+      "EnergyCostDto": {
+        "type": "number",
+        "description": "Cost of consumed/produced energy"
+      },
+      "DateTimeUnitDto": {
+        "type": "string",
+        "description": "String representing time period for which we want data to be returned. It is complient with ISO-8601 and accepts values like:<br />YYYY (2019)<br />YYYY-MM (2019-07)<br />YYYY-Www (2020-W01 week 01 is the week containing first Thursday of a year)<br />YYYY-MM-DD (2020-01-12)<br />YYYY-MM-DDThh (2020-01-12T13).<br />This parameter must be in gateway (not browser) timezone."
+      },
+      "BillingDurationEnum": {
+        "type": "string",
+        "enum": ["monthly1", "monthly2", "monthly3", "monthly6", "monthly12"]
+      },
+      "EnergyBillingPeriodDto": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "$ref": "#/components/schemas/BillingDurationEnum",
+            "description": "How long the billing period lasts - curently only 1,2,3,6,12 months are supported"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Day at which billing period started: YYYY-MM-DD"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Day at which billing period ended: YYYY-MM-DD. This value is empty for current period."
+          },
+          "fixedCost": {
+            "type": "number",
+            "description": "Fixed cost per billing period"
+          }
+        }
+      },
+      "EnergyDeviceEntryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "id of device"
+          },
+          "name": {
+            "type": "string",
+            "description": "name of device; this is important if record coresponds to device that is already deleted"
+          },
+          "roomId": {
+            "type": "integer",
+            "description": "Id of room the device is in; this is important if record coresponds to device that is already deleted"
+          },
+          "consumption": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "production": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "consumptionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          },
+          "productionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          }
+        }
+      },
+      "EnergyRoomEntryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "id of room"
+          },
+          "production": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "consumption": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "productionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          },
+          "consumptionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          }
+        }
+      },
+      "EnergyCategoryEntryDto": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "name of category"
+          },
+          "production": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "consumption": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "productionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          },
+          "consumptionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          }
+        }
+      },
+      "EnergySummaryDto": {
+        "type": "object",
+        "properties": {
+          "production": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "consumption": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "productionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          },
+          "consumptionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          },
+          "topConsumingDevices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnergyDeviceEntryDto"
+            }
+          }
+        },
+        "example": {
+          "production": 329.02,
+          "consumption": 0.0,
+          "productionCost": 52.3,
+          "consumtionCost": 0.0,
+          "topConsumingDevices": [
+            {
+              "id": 34,
+              "name": "table lamp",
+              "roomId": 12,
+              "production": 329.02,
+              "consumption": 0.0,
+              "productionCost": 52.3,
+              "consumtionCost": 0.0
+            },
+            {
+              "id": 45,
+              "name": "refrigerator",
+              "roomId": 12,
+              "production": 329.02,
+              "consumption": 0.0,
+              "productionCost": 52.3,
+              "consumtionCost": 0.0
+            },
+            {
+              "id": 17,
+              "name": "wallplug",
+              "roomId": 17,
+              "production": 329.02,
+              "consumption": 0.0,
+              "productionCost": 52.3,
+              "consumtionCost": 0.0
+            }
+          ]
+        }
+      },
+      "EnergyMetricsDto": {
+        "type": "object",
+        "properties": {
+          "productionPower": {
+            "$ref": "#/components/schemas/PowerValueDto"
+          },
+          "consumptionPower": {
+            "$ref": "#/components/schemas/PowerValueDto"
+          }
+        },
+        "example": {
+          "productionPower": 13.13,
+          "consumptionPower": 130.23
+        }
+      },
+      "EnergyDetailDto": {
+        "type": "object",
+        "properties": {
+          "energy": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "period": {
+                  "$ref": "#/components/schemas/DateTimeUnitDto"
+                },
+                "production": {
+                  "$ref": "#/components/schemas/EnergyValueDto"
+                },
+                "consumption": {
+                  "$ref": "#/components/schemas/EnergyValueDto"
+                },
+                "productionCost": {
+                  "$ref": "#/components/schemas/EnergyCostDto"
+                },
+                "consumptionCost": {
+                  "$ref": "#/components/schemas/EnergyCostDto"
+                },
+                "rooms": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnergyRoomEntryDto"
+                  }
+                },
+                "categories": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnergyCategoryEntryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "energy": [
+            {
+              "period": "2020-01-12",
+              "production": 329.02,
+              "consumption": 0.0,
+              "productionCost": 52.3,
+              "consumtionCost": 0.0,
+              "rooms": [
+                {
+                  "id": 34,
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                },
+                {
+                  "id": 45,
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                },
+                {
+                  "id": 17,
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                }
+              ],
+              "categories": []
+            },
+            {
+              "period": "2020-01-13",
+              "production": 329.02,
+              "consumption": 0.0,
+              "productionCost": 52.3,
+              "consumtionCost": 0.0,
+              "rooms": [
+                {
+                  "id": 34,
+                  "production": 12.32,
+                  "consumption": 0.0,
+                  "productionCost": 12.3,
+                  "consumtionCost": 0.0
+                },
+                {
+                  "id": 45,
+                  "production": 0.0,
+                  "consumption": 10.0,
+                  "productionCost": 0.0,
+                  "consumtionCost": 21.0
+                },
+                {
+                  "id": 17,
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                }
+              ],
+              "categories": []
+            }
+          ]
+        }
+      },
+      "EnergyRoomDetailDto": {
+        "type": "object",
+        "properties": {
+          "energy": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "period": {
+                  "$ref": "#/components/schemas/DateTimeUnitDto"
+                },
+                "production": {
+                  "$ref": "#/components/schemas/EnergyValueDto"
+                },
+                "consumption": {
+                  "$ref": "#/components/schemas/EnergyValueDto"
+                },
+                "productionCost": {
+                  "$ref": "#/components/schemas/EnergyCostDto"
+                },
+                "consumptionCost": {
+                  "$ref": "#/components/schemas/EnergyCostDto"
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnergyDeviceEntryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "energy": [
+            {
+              "period": "2020-01-12",
+              "production": 329.02,
+              "consumption": 0.0,
+              "productionCost": 52.3,
+              "consumtionCost": 0.0,
+              "devices": [
+                {
+                  "id": 34,
+                  "name": "table lamp",
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                },
+                {
+                  "id": 45,
+                  "name": "refrigerator",
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                },
+                {
+                  "id": 17,
+                  "name": "wallplug",
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                }
+              ]
+            },
+            {
+              "period": "2020-01-13",
+              "energyValue": 14.9,
+              "devices": [
+                {
+                  "id": 34,
+                  "name": "table lamp",
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                },
+                {
+                  "id": 45,
+                  "name": "refrigerator",
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                },
+                {
+                  "id": 17,
+                  "name": "wallplug",
+                  "production": 329.02,
+                  "consumption": 0.0,
+                  "productionCost": 52.3,
+                  "consumtionCost": 0.0
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "EnergyDeviceDetailDto": {
+        "type": "object",
+        "properties": {
+          "energy": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "period": {
+                  "$ref": "#/components/schemas/DateTimeUnitDto"
+                },
+                "production": {
+                  "$ref": "#/components/schemas/EnergyValueDto"
+                },
+                "consumption": {
+                  "$ref": "#/components/schemas/EnergyValueDto"
+                },
+                "productionCost": {
+                  "$ref": "#/components/schemas/EnergyCostDto"
+                },
+                "consumptionCost": {
+                  "$ref": "#/components/schemas/EnergyCostDto"
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "energy": [
+            {
+              "period": "2023",
+              "production": 0.0,
+              "consumption": 199.00682444858053,
+              "productionCost": 0.0,
+              "consumptionCost": 239.7126816739704
+            },
+            {
+              "period": "2023-W25",
+              "production": 0.0,
+              "consumption": 23.88721430989085,
+              "productionCost": 0.0,
+              "consumptionCost": 32.35845355144079
+            },
+            {
+              "period": "2023-06-20",
+              "production": 0.0,
+              "consumption": 8.027043893530618,
+              "productionCost": 0.0,
+              "consumptionCost": 8.027043893530618
+            }
+          ]
+        }
+      },
+      "EnergyBillingSummaryTypesDto": {
+        "type": "object",
+        "properties": {
+          "currentBillingPeriod": {
+            "$ref": "#/components/schemas/EnergyBillingSummaryDto"
+          },
+          "previousBillingPeriod": {
+            "$ref": "#/components/schemas/EnergyBillingSummaryDto"
+          }
+        }
+      },
+      "EnergyBillingSummaryDto": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "$ref": "#/components/schemas/DateTimeUnitDto"
+          },
+          "endDate": {
+            "$ref": "#/components/schemas/DateTimeUnitDto"
+          },
+          "productionCost": {
+            "type": "number",
+            "description": "Cost of energy produced during billig period"
+          },
+          "consumptionCost": {
+            "type": "number",
+            "description": "Cost of energy consumed during billig period"
+          },
+          "production": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "consumption": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          }
+        }
+      },
+      "InstallationCostDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Id of installation cost"
+          },
+          "date": {
+            "type": "string",
+            "description": "YYYY-MM-DD"
+          },
+          "cost": {
+            "type": "number",
+            "description": "cost of installation >= 0"
+          },
+          "name": {
+            "type": "string",
+            "description": "installation cost name"
+          }
+        },
+        "example": {
+          "date": "2021-01-20",
+          "cost": 2000.5,
+          "name": "Installation price"
+        }
+      },
+      "DayEnum": {
+        "type": "string",
+        "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+      },
+      "EnergyAdditionalTariffDto": {
+        "type": "object",
+        "description": "represents kWh cost for specified period of time during week (from startTime to endTime in specified days)",
+        "properties": {
+          "rate": {
+            "type": "number",
+            "description": "how much 1kWh costs"
+          },
+          "name": {
+            "type": "string",
+            "description": "name of tariff"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "HH:mm"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "HH:mm if endTime<startTime it means next day (e.g.: from 23:00 till 03:00 next day)"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DayEnum"
+            }
+          }
+        }
+      },
+      "EnergyTariffDto": {
+        "type": "object",
+        "properties": {
+          "rate": {
+            "type": "number",
+            "description": "how much 1kWh costs"
+          },
+          "name": {
+            "type": "string",
+            "description": "name of main tariff"
+          },
+          "returnRate": {
+            "type": "number",
+            "description": "rate of return "
+          },
+          "additionalTariffs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnergyAdditionalTariffDto"
+            },
+            "description": "additionl tariffs for some time periods during week. The higher the tariff in the list, the more priority it has"
+          }
+        }
+      },
+      "SavingsDetailsDto": {
+        "type": "object",
+        "properties": {
+          "periodStart": {
+            "$ref": "#/components/schemas/DateTimeUnitDto"
+          },
+          "periodEnd": {
+            "$ref": "#/components/schemas/DateTimeUnitDto"
+          },
+          "production": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "consumption": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "productionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          },
+          "consumptionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnergyDeviceEntryDto"
+            }
+          }
+        }
+      },
+      "SavingsSummaryDto": {
+        "type": "object",
+        "properties": {
+          "hasProduction": {
+            "type": "boolean",
+            "description": "Determines whether user has producing device"
+          },
+          "installationCost": {
+            "type": "number",
+            "description": "Installation cost (producing device only)"
+          },
+          "averageReturn": {
+            "type": "number",
+            "description": "Average return per billing period (producing device only)"
+          },
+          "averageReturnPeriod": {
+            "$ref": "#/components/schemas/BillingDurationEnum",
+            "description": "Billing period for average return (producing device only)"
+          },
+          "alreadyReturned": {
+            "type": "number",
+            "description": "An amount of produced energy in money (producing device only)"
+          },
+          "currentPeriodCost": {
+            "type": "number",
+            "description": "Cost of enrgy in current billing period (without producing device only)"
+          },
+          "averageCost": {
+            "type": "number",
+            "description": "Average cost of energy per billing period (without producing device only)"
+          },
+          "averageCostPeriod": {
+            "$ref": "#/components/schemas/BillingDurationEnum",
+            "description": "Billing period for average cost (without producing device only)"
+          },
+          "currentYearCost": {
+            "type": "number",
+            "description": "Cost of energy in current year (without producing device only)"
+          }
+        },
+        "example": {
+          "hasProduction": true,
+          "installationCost": 1000.0,
+          "averageReturn": 200.0,
+          "averageReturnPeriod": 2,
+          "alreadyReturned": 500.0
+        }
+      },
+      "SavingsInstallationDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "$ref": "#/components/schemas/DateTimeUnitDto"
+          },
+          "production": {
+            "$ref": "#/components/schemas/EnergyValueDto"
+          },
+          "productionCost": {
+            "$ref": "#/components/schemas/EnergyCostDto"
+          }
+        },
+        "example": {
+          "period": "2020-01-13",
+          "production": 100.0,
+          "productionCost": 120.0
+        }
+      },
+      "EcologySummaryDto": {
+        "type": "object",
+        "properties": {
+          "productionStart": {
+            "type": "string",
+            "description": "Date when energy production has started"
+          },
+          "selfSufficiency": {
+            "type": "number",
+            "description": "Percentage value describing how many of produced energy is directly used by the household"
+          },
+          "treesPlanted": {
+            "type": "number",
+            "description": "Equivalent of produced energy in trees planted"
+          },
+          "reductionCO2": {
+            "type": "number",
+            "description": "Tons of CO2 reduced thanks to produced energy"
+          }
+        },
+        "example": {
+          "productionStart": "2021-01-01",
+          "selfSufficiency": 55.98,
+          "treesPlanted": 113,
+          "reductionCO2": 6.66
+        }
+      },
+      "EcologyDetailsDto": {
+        "type": "object",
+        "properties": {
+          "periodStart": {
+            "$ref": "#/components/schemas/DateTimeUnitDto"
+          },
+          "periodEnd": {
+            "$ref": "#/components/schemas/DateTimeUnitDto"
+          },
+          "treesPlanted": {
+            "type": "number",
+            "description": "Cumulative equivalent of produced energy in trees planted"
+          },
+          "reductionCO2": {
+            "type": "number",
+            "description": "Cumulative tons of CO2 reduced thanks to produced energy"
+          }
+        },
+        "example": {
+          "periodStart": "2021-10-01",
+          "periodEnd": "2021-10-03",
+          "treesPlanted": 113,
+          "reductionCO2": 6.66
+        }
+      },
+      "EnergySettingsDto": {
+        "type": "object",
+        "properties": {
+          "consumptionMeasurement": {
+            "$ref": "#/components/schemas/ConsumptionMeasurementEnum"
+          },
+          "energyConsumptionMeters": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "List of device ids set as energy consumption meters."
+          },
+          "energyProductionMeters": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "List of device ids set as energy production meters."
+          },
+          "powerConsumptionMeters": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "List of device ids set as power consumption meters."
+          },
+          "powerProductionMeters": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "List of device ids set as power production meters."
+          },
+          "gridConsumptionMeters": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "List of device ids set as grid energy consumption meters."
+          },
+          "gridProductionMeters": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "List of device ids set as grid energy production meters."
+          },
+          "gridPowerConsumptionMeters": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "List of device ids set as grid power consumption meters."
+          },
+          "gridPowerProductionMeters": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "description": "List of device ids set as grid power production meters."
+          }
+        },
+        "example": {
+          "consumptionMeasurement": "whole",
+          "energyConsumptionMeters": [123, 125],
+          "energyProductionMeters": [],
+          "powerConsumptionMeters": [1677],
+          "powerProductionMeters": [],
+          "gridConsumptionMeters": [],
+          "gridProductionMeters": []
+        }
+      }
+    }
+  }
+}

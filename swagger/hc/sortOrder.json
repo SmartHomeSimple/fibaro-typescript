@@ -1,0 +1,112 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Sort Order API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/sortOrder": {
+      "post": {
+        "tags": ["sortOrder"],
+        "summary": "Update sort order",
+        "operationId": "updateSortOrder",
+        "requestBody": {
+          "description": "SortOrder body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SortOrderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/sortOrder/syncUsersWithAdmin": {
+      "post": {
+        "tags": ["sortOrder"],
+        "summary": "Synchronize sort order for all users based on admin",
+        "operationId": "synchronizeUsersSortOrderWithAdmin",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {}
+          },
+          "403": {
+            "description": "Only admin can synchronize users sort oder",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SortOrderRequest": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "integer"
+          },
+          "to": {
+            "type": "integer"
+          },
+          "fromSection": {
+            "type": "integer"
+          },
+          "toSection": {
+            "type": "integer"
+          },
+          "fromRoom": {
+            "type": "integer"
+          },
+          "toRoom": {
+            "type": "integer"
+          },
+          "fromType": {
+            "type": "string"
+          },
+          "toType": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "toRoom": 2,
+          "toType": "toType",
+          "fromType": "fromType",
+          "toSection": 5,
+          "action": "action",
+          "from": 0,
+          "fromRoom": 5,
+          "to": 6,
+          "fromSection": 1
+        }
+      }
+    }
+  }
+}

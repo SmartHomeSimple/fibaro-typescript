@@ -1,0 +1,212 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Login Status API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/loginStatus": {
+      "get": {
+        "tags": ["loginStatus"],
+        "summary": "Get login status",
+        "description": "Produces different response when not logged in (optional parameters not included).",
+        "operationId": "getLoginStatus",
+        "responses": {
+          "200": {
+            "description": "Returns login status data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginStatus"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["loginStatus"],
+        "summary": "Call login action",
+        "operationId": "callLoginAction",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "description": "Name of an action",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns login status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "403": {
+            "description": "Returns logout status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string"
+          },
+          "userID": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "analyticsUserIdHash": {
+            "type": "string"
+          },
+          "skin": {
+            "type": "string"
+          },
+          "skinSetting": {
+            "type": "string"
+          },
+          "isAddTileVisible": {
+            "type": "boolean"
+          },
+          "buiSettings": {
+            "type": "object"
+          },
+          "tosAccepted": {
+            "type": "boolean"
+          },
+          "privacyPolicyAccepted": {
+            "type": "boolean"
+          },
+          "rights": {
+            "$ref": "#/components/schemas/UserDtoRights"
+          }
+        },
+        "example": {
+          "type": "advanced",
+          "userID": 13,
+          "status": true,
+          "username": "username",
+          "role": "USER",
+          "analyticsUserIdHash": "6fc58393e0000000000000000",
+          "skin": "light",
+          "skinSetting": "auto",
+          "buiSettings": {},
+          "tosAccepted": true,
+          "privacyPolicyAccepted": false,
+          "rights": {
+            "advanced": {
+              "devices": false,
+              "rooms": false,
+              "blockScenes": false,
+              "scenarios": false,
+              "profiles": false,
+              "variablesAndEvents": false,
+              "access": true,
+              "update": false,
+              "backup": false,
+              "network": false,
+              "diagnostics": false,
+              "zWave": false,
+              "niceAndElero": false,
+              "zigBee": false,
+              "climate": false,
+              "alarm": false,
+              "garden": false
+            },
+            "devices": {
+              "all": false,
+              "sections": [1],
+              "rooms": [2, 3],
+              "devices": [10, 20]
+            },
+            "scenes": {
+              "all": false,
+              "sections": [1],
+              "rooms": [4, 5],
+              "scenes": [101, 102]
+            },
+            "alarmPartitions": {
+              "all": true,
+              "partitions": []
+            },
+            "profiles": {
+              "all": false,
+              "profiles": [3, 4]
+            },
+            "climateZones": {
+              "all": false,
+              "zones": [5]
+            }
+          }
+        }
+      },
+      "LogoutStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "retryNumber": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "timeLeft": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "status": false,
+          "retryNumber": 1,
+          "limit": 4,
+          "timeLeft": 0
+        }
+      }
+    }
+  }
+}

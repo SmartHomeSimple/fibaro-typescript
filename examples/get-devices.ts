@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer';
 import { getDevices } from '../src';
 import { client } from '../src/client.gen';
 
-const baseUrl = process.env.FIBARO_BASE_URL ?? 'http://192.168.1.35/api';
+const baseUrl = process.env.FIBARO_BASE_URL;
 const username = process.env.FIBARO_USERNAME;
 const password = process.env.FIBARO_PASSWORD;
 

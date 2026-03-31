@@ -1,0 +1,337 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Update API",
+    "version": "1.0.0",
+    "title": "Update"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/update": {
+      "get": {
+        "tags": ["updateHC"],
+        "operationId": "getUpdates",
+        "summary": "Get list of updates and information about them.",
+        "responses": {
+          "200": {
+            "description": "Information about updates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/checkUpdate": {
+      "post": {
+        "tags": ["updateHC"],
+        "operationId": "startUpdateChecking",
+        "summary": "Start asynchronous update availability checking",
+        "responses": {
+          "202": {
+            "description": "Process started"
+          }
+        }
+      }
+    },
+    "/service/update": {
+      "post": {
+        "tags": ["updateHC"],
+        "operationId": "postUpdate",
+        "summary": "Create/Post an action related to update.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/DownloadDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/InstallDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AutoDto"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CancelDownloadDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Action created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionIdDto"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Download cancelled successfully."
+          },
+          "400": {
+            "description": "Unsupported action."
+          },
+          "409": {
+            "description": "Could not cancel a download."
+          },
+          "429": {
+            "description": "Another instance running."
+          }
+        }
+      },
+      "delete": {
+        "tags": ["updateHC"],
+        "operationId": "removeDownloadedUpdate",
+        "summary": "Remove downloaded update from HC",
+        "responses": {
+          "202": {
+            "description": "Downloaded update has been successfully removed"
+          },
+          "500": {
+            "description": "Failed to remove downloaded update due to internal problem"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionIdDto": {
+        "type": "object",
+        "properties": {
+          "actionId": {
+            "type": "string",
+            "description": "String representing Action ID."
+          }
+        }
+      },
+      "Version": {
+        "type": "string",
+        "description": "Version number."
+      },
+      "VersionType": {
+        "type": "string",
+        "enum": ["stable", "beta", "alpha"],
+        "description": "Version type."
+      },
+      "BackupType": {
+        "type": "string",
+        "enum": ["remote", "local"],
+        "description": "Backup type."
+      },
+      "UpdateStatus": {
+        "type": "string",
+        "enum": ["Downloading", "Canceled", "ReadyToInstall", "ChecksumError", "DownloadingError"]
+      },
+      "UpdateProgress": {
+        "type": "integer",
+        "description": "Progress in percents."
+      },
+      "UpdatesDto": {
+        "type": "object",
+        "required": ["updates", "conditions"],
+        "description": "Object with update information.",
+        "properties": {
+          "updates": {
+            "type": "object",
+            "required": ["stable", "beta", "alpha"],
+            "properties": {
+              "stable": {
+                "type": "object",
+                "required": ["available", "version"],
+                "properties": {
+                  "available": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "$ref": "#/components/schemas/Version"
+                  }
+                }
+              },
+              "beta": {
+                "type": "object",
+                "required": ["available", "version"],
+                "properties": {
+                  "available": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "$ref": "#/components/schemas/Version"
+                  }
+                }
+              },
+              "alpha": {
+                "type": "object",
+                "required": ["available", "version"],
+                "properties": {
+                  "available": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "$ref": "#/components/schemas/Version"
+                  }
+                }
+              }
+            }
+          },
+          "conditions": {
+            "type": "object",
+            "required": ["storage", "allConditionsMet"],
+            "properties": {
+              "storage": {
+                "type": "boolean",
+                "description": "Enough storage for update"
+              },
+              "allConditionsMet": {
+                "type": "boolean"
+              }
+            }
+          },
+          "localUpdate": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "$ref": "#/components/schemas/UpdateStatus"
+              },
+              "type": {
+                "$ref": "#/components/schemas/VersionType"
+              },
+              "version": {
+                "$ref": "#/components/schemas/Version"
+              },
+              "progress": {
+                "$ref": "#/components/schemas/UpdateProgress"
+              }
+            }
+          },
+          "updateStableAvailable": {
+            "type": "boolean"
+          },
+          "updateBetaAvailable": {
+            "type": "boolean"
+          },
+          "newestStableVersion": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "newestBetaVersion": {
+            "$ref": "#/components/schemas/Version"
+          },
+          "allConditionsMet": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DownloadDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["download"]
+          },
+          "params": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "$ref": "#/components/schemas/Version"
+              },
+              "type": {
+                "$ref": "#/components/schemas/VersionType"
+              }
+            },
+            "oneOf": [
+              {
+                "required": ["version"]
+              },
+              {
+                "required": ["type"]
+              }
+            ]
+          }
+        }
+      },
+      "InstallDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["install"]
+          },
+          "params": {
+            "type": "object",
+            "properties": {
+              "backupType": {
+                "$ref": "#/components/schemas/BackupType"
+              },
+              "masterOnly": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "AutoDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["auto"]
+          },
+          "params": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "$ref": "#/components/schemas/Version"
+              },
+              "type": {
+                "$ref": "#/components/schemas/VersionType"
+              },
+              "backupType": {
+                "$ref": "#/components/schemas/BackupType"
+              }
+            },
+            "oneOf": [
+              {
+                "required": ["version"]
+              },
+              {
+                "required": ["type"]
+              }
+            ]
+          }
+        }
+      },
+      "CancelDownloadDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["cancelDownload"]
+          }
+        }
+      }
+    }
+  }
+}

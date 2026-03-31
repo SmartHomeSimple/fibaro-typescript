@@ -1,0 +1,536 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Manage Linked Devices",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/linkedDevices/v1/devices": {
+      "get": {
+        "tags": ["linkedDevices"],
+        "summary": "Get information about linked devices",
+        "operationId": "getLinkedDevices",
+        "parameters": [
+          {
+            "name": "type",
+            "style": "form",
+            "in": "query",
+            "description": "Type of linked devices.",
+            "required": false,
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return list of linked devices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LinkedDeviceDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["linkedDevices"],
+        "summary": "Create new linked device",
+        "operationId": "createLinkedDevice",
+        "requestBody": {
+          "description": "Linked device information needed to create new device",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewLinkedDeviceDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "New linked device has been created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedDeviceCreatedDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request: Devices to be linked do not fulfill requirements",
+            "content": {}
+          },
+          "404": {
+            "description": "Device or Provider not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/linkedDevices/v1/providers": {
+      "get": {
+        "tags": ["linkedDevices"],
+        "summary": "Get linked devices providers list and information about available links",
+        "operationId": "getLinkedDevicesProviders",
+        "responses": {
+          "200": {
+            "description": "Returns list of providers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LinkedDeviceProviderDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/linkedDevices/v1/devices/{deviceID}": {
+      "get": {
+        "tags": ["linkedDevices"],
+        "summary": "Get information about linked device",
+        "operationId": "getLinkedDevice",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return linked device",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedDeviceDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Linked device not found",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["linkedDevices"],
+        "summary": "Update linked device",
+        "operationId": "updateLinkedDevice",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Linked device information needed to update device",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLinkedDeviceDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Linked device has been updated",
+            "content": {}
+          },
+          "400": {
+            "description": "Bad Request: Devices to be linked do not fulfill requirements",
+            "content": {}
+          },
+          "404": {
+            "description": "Device or Provider not found",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["linkedDevices"],
+        "summary": "Delete existing linked device",
+        "operationId": "deleteLinkedDevice",
+        "parameters": [
+          {
+            "name": "deviceID",
+            "in": "path",
+            "description": "ID of an existing device",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Device has been deleted",
+            "content": {}
+          },
+          "404": {
+            "description": "Linked device not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/linkedDevices/v1/inputDevices": {
+      "get": {
+        "tags": ["linkedDevices"],
+        "summary": "Get id list of all input devices",
+        "operationId": "getLinkedDevicesInputs",
+        "responses": {
+          "200": {
+            "description": "Returns list of input device ids",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LinkedDeviceInputDeviceDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LinkedDeviceProviderDtoSupportedLinksInputDevices": {
+        "required": ["role", "minCount", "maxCount", "availableDevices"],
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "minCount": {
+            "type": "integer"
+          },
+          "maxCount": {
+            "type": "integer"
+          },
+          "availableDevices": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "LinkedDeviceDto": {
+        "required": ["id", "provider", "type", "devicesVisibility", "devices"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "devicesVisibility": {
+            "type": "boolean"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "required": ["role", "ids"],
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "id": 1,
+          "provider": "HCProvider",
+          "type": "Thermostat",
+          "devicesVisibility": true,
+          "devices": [
+            {
+              "role": "sensor",
+              "ids": [1]
+            },
+            {
+              "role": "switch",
+              "ids": [2]
+            }
+          ]
+        }
+      },
+      "NewLinkedDeviceDto": {
+        "required": ["name", "provider", "type", "devices"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "roomId": {
+            "type": "integer"
+          },
+          "devicesVisibility": {
+            "type": "boolean"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "required": ["role", "ids"],
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string"
+                },
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "deviceType": {
+            "type": "string",
+            "description": "One of available device type from provider. If not specified use outputType.",
+            "example": "com.fibaro.binarySwitch"
+          },
+          "properties": {
+            "type": "object"
+          }
+        },
+        "example": {
+          "name": "DeviceName",
+          "provider": "HCProvider",
+          "type": "Thermostat",
+          "roomId": 1,
+          "devicesVisibility": true,
+          "deviceType": "com.fibaro.binarySwitch",
+          "devices": [
+            {
+              "role": "sensor",
+              "ids": [1]
+            },
+            {
+              "role": "switch",
+              "ids": [2]
+            }
+          ],
+          "properties": {}
+        }
+      },
+      "UpdateLinkedDeviceDto": {
+        "type": "object",
+        "properties": {
+          "devicesVisibility": {
+            "type": "boolean"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "required": ["role", "ids"],
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "description": "Device role in linked device",
+                  "example": "sensor"
+                },
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "List of devices performing the role.",
+                  "example": [1, 2]
+                }
+              }
+            },
+            "example": [
+              {
+                "role": "sensor",
+                "ids": [1]
+              },
+              {
+                "role": "switch",
+                "ids": [2]
+              }
+            ]
+          }
+        },
+        "example": {
+          "devicesVisibility": true,
+          "devices": [
+            {
+              "role": "sensor",
+              "ids": [1]
+            },
+            {
+              "role": "switch",
+              "ids": [2]
+            }
+          ]
+        }
+      },
+      "LinkedDeviceProviderDto": {
+        "required": ["name", "supportedLinks"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "supportedLinks": {
+            "type": "array",
+            "items": {
+              "required": ["name", "outputType", "inputDevices", "interfaces"],
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "outputType": {
+                  "type": "string"
+                },
+                "availableDeviceTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "availableDeviceRoles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "interfaces": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "thermostatMode"
+                  }
+                },
+                "inputDevices": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LinkedDeviceProviderDtoSupportedLinksInputDevices"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "example": {
+          "name": "HCProvider",
+          "supportedLinks": [
+            {
+              "name": "Thermostat",
+              "outputType": "com.fibaro.SetPoint",
+              "interfaces": ["thermostatMode"],
+              "inputDevices": [
+                {
+                  "role": "sensor",
+                  "minCount": 1,
+                  "maxCount": 1,
+                  "availableDevices": [3, 4, 5]
+                },
+                {
+                  "role": "switch",
+                  "minCount": 1,
+                  "maxCount": 1,
+                  "availableDevices": [6, 7]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "LinkedDeviceCreatedDto": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          }
+        },
+        "example": {
+          "id": 1
+        }
+      },
+      "LinkedDeviceInputDeviceDto": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "integer",
+            "description": "Id of used device."
+          },
+          "linkedDevicesId": {
+            "type": "array",
+            "description": "List of linked devices ids in which the device is used.",
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "example": {
+          "deviceId": 1,
+          "linkedDevicesId": [2, 4, 14]
+        }
+      }
+    }
+  }
+}

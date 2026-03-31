@@ -1,0 +1,288 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Location API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/panels/location": {
+      "get": {
+        "tags": ["location panel"],
+        "summary": "Get a list of all available locations",
+        "operationId": "getPanelsLocations",
+        "responses": {
+          "200": {
+            "description": "Returns list of locations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Location"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["location panel"],
+        "summary": "Create location",
+        "operationId": "newPanelsLocation",
+        "requestBody": {
+          "description": "New location body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationRequest"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "201": {
+            "description": "Returns location data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Location"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/panels/location/{locationID}": {
+      "get": {
+        "tags": ["location panel"],
+        "summary": "Get location",
+        "operationId": "getPanelsLocation",
+        "parameters": [
+          {
+            "name": "locationID",
+            "in": "path",
+            "description": "ID of an existing location",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns location data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Location"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": ["location panel"],
+        "summary": "Modify location",
+        "operationId": "modifyPanelsLocationById",
+        "parameters": [
+          {
+            "name": "locationID",
+            "in": "path",
+            "description": "ID of an existing location",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modified location body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns location data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Location"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["location panel"],
+        "summary": "Delete location",
+        "operationId": "deletePanelsLocation",
+        "parameters": [
+          {
+            "name": "locationID",
+            "in": "path",
+            "description": "ID of an existing location",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response was specified"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden. Not sufficient rights to perform action"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Location": {
+        "required": ["name"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Location Id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Location name",
+            "example": "My Home"
+          },
+          "address": {
+            "type": "string",
+            "description": "Location addres",
+            "example": "Serdeczna 3, Wysogotowo"
+          },
+          "longitude": {
+            "type": "number",
+            "description": "The longitude of the location in EPSG:4326 coordinate system",
+            "example": "16.791597"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "The latitude of the location in EPSG:4326 coordinate system",
+            "example": "52.404958"
+          },
+          "radius": {
+            "type": "integer",
+            "description": "Map radius in meters",
+            "example": "150"
+          },
+          "home": {
+            "type": "boolean",
+            "description": "Location type. If 'true': Home location, if 'false': Other location. There can be only one Home Location"
+          },
+          "created": {
+            "type": "integer",
+            "description": "Timestamp: Date and time of creation"
+          },
+          "modified": {
+            "type": "integer",
+            "description": "Timestamp: Date and time of last modification"
+          }
+        },
+        "example": {
+          "id": 6,
+          "name": "My Home",
+          "address": "Serdeczna 3, Wysogotowo",
+          "longitude": 16.791597,
+          "latitude": 52.404958,
+          "radius": 150,
+          "home": true,
+          "created": 1561724482,
+          "modified": 1563182049
+        }
+      },
+      "LocationRequest": {
+        "required": ["name"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Location name",
+            "example": "My Home"
+          },
+          "address": {
+            "type": "string",
+            "description": "Location addres",
+            "example": "Serdeczna 3, Wysogotowo"
+          },
+          "longitude": {
+            "type": "number",
+            "description": "The longitude of the location in EPSG:4326 coordinate system",
+            "example": "16.791597"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "The latitude of the location in EPSG:4326 coordinate system",
+            "example": "52.404958"
+          },
+          "radius": {
+            "type": "integer",
+            "description": "Map radius in meters",
+            "example": "150"
+          }
+        },
+        "example": {
+          "name": "My Home",
+          "address": "Serdeczna 3, Wysogotowo",
+          "longitude": 16.791597,
+          "latitude": 52.404958,
+          "radius": 150
+        }
+      }
+    }
+  }
+}

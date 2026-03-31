@@ -1,0 +1,267 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "API description",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "paths": {
+    "/customEvents": {
+      "get": {
+        "tags": ["customEvents panel"],
+        "summary": "Get a list of all defined custom events",
+        "operationId": "getCustomEvents",
+        "responses": {
+          "200": {
+            "description": "Returns all custom events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CustomEventDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["customEvents panel"],
+        "summary": "Create custom event",
+        "operationId": "createCustomEvent",
+        "requestBody": {
+          "description": "Create new custom event",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomEventDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns created event",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomEventDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "409": {
+            "description": "Conflict. Custom event with provided name already exists",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/customEvents/{customEventName}": {
+      "get": {
+        "tags": ["customEvents panel"],
+        "summary": "Get custom event with provided name",
+        "operationId": "getCustomEvent",
+        "parameters": [
+          {
+            "name": "customEventName",
+            "in": "path",
+            "description": "Name of an existing custom event",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns custom event data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomEventDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "post": {
+        "tags": ["customEvents panel"],
+        "summary": "Emit custom event",
+        "operationId": "emitCustomEvent",
+        "parameters": [
+          {
+            "name": "customEventName",
+            "in": "path",
+            "description": "Name of an existing custom event",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["customEvents panel"],
+        "summary": "Modify custom event",
+        "operationId": "modifyCustomEvent",
+        "parameters": [
+          {
+            "name": "customEventName",
+            "in": "path",
+            "description": "Name of an existing custom event",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Modify custom event body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomEventDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns custom event data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomEventDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          },
+          "409": {
+            "description": "Custom event with provided name already exists",
+            "content": {}
+          }
+        }
+      },
+      "delete": {
+        "tags": ["customEvents panel"],
+        "summary": "Delete custom event",
+        "operationId": "deleteCustomEvent",
+        "parameters": [
+          {
+            "name": "customEventName",
+            "in": "path",
+            "description": "Name of an existing custom event",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/customEvents/{customEventName}/publish": {
+      "get": {
+        "tags": ["customEvents panel"],
+        "summary": "Emit custom event",
+        "operationId": "emitCustomEventByGet",
+        "parameters": [
+          {
+            "name": "customEventName",
+            "in": "path",
+            "description": "Name of an existing custom event",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response was specified",
+            "content": {}
+          },
+          "404": {
+            "description": "Not found",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CustomEventDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "userDescription": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "name": "sunrise",
+          "userDescription": "Good morning"
+        }
+      }
+    }
+  }
+}

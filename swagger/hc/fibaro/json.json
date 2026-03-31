@@ -1,0 +1,74 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Home Center",
+    "description": "Device Parametetrs JSON API",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "/fibaro"
+    }
+  ],
+  "paths": {
+    "/json/{parametersTemplate}.json": {
+      "get": {
+        "tags": ["DeviceParameters"],
+        "summary": "Get device parameters template",
+        "operationId": "getDeviceParametersTemplate",
+        "parameters": [
+          {
+            "name": "parametersTemplate",
+            "in": "path",
+            "description": "Device parameters",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns device data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceParametersDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DeviceParametersDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        },
+        "example": {
+          "description": "description",
+          "id": 0,
+          "parameters": ["{}", "{}"]
+        }
+      }
+    }
+  }
+}
