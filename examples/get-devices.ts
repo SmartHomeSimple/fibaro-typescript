@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { Buffer } from 'node:buffer';
-import { getDevices } from '../src';
-import { client } from '../src/client.gen';
+import * as Fibaro from '../src';
 
 const baseUrl = process.env.FIBARO_BASE_URL;
 const username = process.env.FIBARO_USERNAME;
@@ -14,7 +13,7 @@ if (!username || !password) {
   process.exit(1);
 }
 
-client.setConfig({
+Fibaro.client.setConfig({
   baseUrl,
   headers: {
     Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
@@ -22,7 +21,7 @@ client.setConfig({
 });
 
 async function main() {
-  const { data, error, response } = await getDevices();
+  const { data, error, response } = await Fibaro.getDevices();
 
   if (error) {
     console.error('Request failed:', response.status, error);

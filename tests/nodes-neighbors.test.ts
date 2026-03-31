@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { Buffer } from 'node:buffer';
 import test from 'node:test';
 
-import { client } from '../src/client.gen';
 import { getZwaveNodes, getZwaveNodesByNodeIdNeighbors } from '../src';
+import * as Fibaro from '../src';
 
 const baseUrl = process.env.FIBARO_BASE_URL ?? 'http://192.168.1.35/api';
 const username = process.env.FIBARO_USERNAME;
@@ -26,7 +26,7 @@ function setupClient() {
     );
   }
 
-  client.setConfig({
+  Fibaro.client.setConfig({
     baseUrl,
     headers: {
       Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
