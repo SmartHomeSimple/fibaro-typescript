@@ -1,6 +1,24 @@
 # fibaro-typescript
 
-Download Fibaro HC3 swagger JSON files so they can be used to generate TypeScript types/clients.
+TypeScript SDK client for the Fibaro Home Center API.
+
+## Install
+
+```bash
+npm install fibaro-typescript
+```
+
+## Package usage
+
+```ts
+import { client, getDevices } from 'fibaro-typescript';
+
+client.setConfig({
+  baseUrl: 'http://YOUR-HC3-IP/api',
+});
+
+const devices = await getDevices();
+```
 
 ## Prerequisites
 
@@ -41,6 +59,21 @@ npm run generate
 ```
 
 Generated files are written to [src/](src/).
+
+## Build package
+
+```bash
+npm run build
+```
+
+Build artifacts are emitted to [dist/](dist/).
+
+## Publish
+
+```bash
+npm login
+npm publish
+```
 
 ## Examples
 
